@@ -13,6 +13,22 @@
 using namespace std;
 using namespace cv;
 
+// FYI: hue ranges from 0 to 179 in OpenCV
+const unsigned int MIN_HUE = 0;
+const unsigned int LOWER_HUE = 13;
+const unsigned int UPPER_HUE = 157;
+const unsigned int MAX_HUE = 179;
+// FYI: saturation ranges from 0 to 255 in OpenCV
+const unsigned int LOWER_SAT = 163;
+const unsigned int UPPER_SAT = 255;
+// FYI: value ranges from 0 to 255 in OpenCV
+const unsigned int LOWER_VAL = 58;
+const unsigned int UPPER_VAL = 122;
+
+// hull size filter range
+const int MIN_SIZE = 50; // about 1/4 the size of one corner of the target
+const int MAX_SIZE = 5000; // about 4 times the size of one corner of the target
+
 bool compareContourAreas ( std::vector<cv::Point> contour1, std::vector<cv::Point> contour2 );
 
 /**
@@ -28,6 +44,14 @@ int main()
     return -1;
   }
 
+  // try to set the camera properties
+  cap.set(CV_CAP_PROP_FRAME_WIDTH, 320);
+  cap.set(CV_CAP_PROP_FRAME_HEIGHT, 240);
+  cap.set(CV_CAP_PROP_FPS, 30);
+
+  // initialize the camera
+  cap.grab();
+
   Mat scene;
   while(1)
   {
@@ -39,8 +63,8 @@ int main()
 
       // filter the scene by hue
       Mat upr_scene, lwr_scene;
-      inRange( scene, Scalar( 172, 120, 70 ), Scalar( 179, 150, 150 ), upr_scene );
-      inRange( scene, Scalar( 0, 120, 70 ), Scalar( 5, 150, 150 ), lwr_scene );
+      inRange( scene, Scalar( UPPER_HUE, LOWER_SAT, LOWER_VAL ), Scalar( MAX_HUE, UPPER_SAT, UPPER_VAL ), upr_scene );
+      inRange( scene, Scalar( MIN_HUE, LOWER_SAT, LOWER_VAL ), Scalar( LOWER_HUE, UPPER_SAT, UPPER_VAL ), lwr_scene );
       add( upr_scene, lwr_scene, scene );
 
       // erode/dilate to remove small noise clusters
@@ -66,8 +90,6 @@ int main()
         areas[i] = contourArea( hulls[i] );
 
       // filter hulls quickly for size
-      const int MIN_SIZE = 10;
-      const int MAX_SIZE = 10000;
       for( int i = hulls.size() - 1; i >= 0; i-- )
       {
         if( areas[i] < MIN_SIZE || areas[i] > MAX_SIZE )
