@@ -132,11 +132,11 @@
 // 20000 + ( fmax( abs( pan_difference ), abs( tilt_difference ) ) * us_per_pixel )
 // frame shots processed per movement unit: (int)ceil( movement_time_us / shot_time_us );
 
-#define SHOT_L			100
-#define SHOT_R			160
+#define SHOT_L			333
+#define SHOT_R			300
 
-#define SHOT1_U			80
-#define SHOT1_D			160
+#define SHOT1_U			330
+#define SHOT1_D			290
 
 #define SHOT2_U         210
 #define SHOT2_D         240

@@ -17,7 +17,7 @@ int main()
 	int tilt_position = INL_TILT_POSITION;
 	int locate_failures = 0;	
 	int num = 0;
-  int movAmt = 10000;
+  int movAmt = 17500;
   int notFoundCount = 0;
   int adjAmt = 200000;
   int up[3] = {SHOT1_U, SHOT2_U, SHOT3_U};
@@ -110,12 +110,13 @@ printf("yeah...about that while loop....\n");
       				tilt_position -= movAmt;
 
 
-            if((centroid.x > SHOT_L) && (centroid.x < SHOT_R) && (centroid.y > up[i]) && (centroid.y < down[i]))
+            if((centroid.x < SHOT_L) && (centroid.x > SHOT_R)/* && (centroid.y > up[i]) && (centroid.y < down[i])*/)
             {
               printf("firing...");
               setGPIOValue( GPIO_P9_23, "1" );
               usleep( 100000 );
               value = '1';
+printf("hey fucK\n");
               while(getGPIOValue(GPIO_P9_12, &value) && value == '1');
               value = '0';
               i++;
