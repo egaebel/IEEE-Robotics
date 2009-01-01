@@ -33,8 +33,8 @@ static int rTargetPos;
 
 //Non-Static
 //Variables for blocks currently held
-Block lBlock; //Block held by the left claw.
-Block rBlock; //Block held by the right claw.
+Block rBlock;
+Block lBlock;
 
 //array of pointers to Blocks
 //for reference::
@@ -46,11 +46,12 @@ static Block loadingZone[14];
 static Block seaZone[6]; 
 //Rail zone colours, listed west to east. 
 static Block railZone[6]; 
+//pointer used to point to one of the bays
+static Block *blocks;
 
 //Drop-off zones complete
 static bool railDone;
 static bool seaDone;
-
 
 //The sizes of the zones
 const int PICKUP_SIZE = 14;
@@ -67,8 +68,6 @@ static int rBlockPos;
 static int internalState;
 //boolean indicating if the robot is scanning zones
 static bool isScanning; 
-//pointer used to point to one of the bays
-static Block *blocks;
 
 //State objects
 //Put it here since it needs to know that the functions exist
@@ -79,17 +78,15 @@ State pickUpState = State(pickUpEnter, pickUpUpdate, defExit);
 State dropState = State(dropEnter, dropUpdate, defExit);
 /** Air **/
 State moveToAirState = State(moveToPlatformEnter, moveToAirPlatform, moveAP_cleanUp);
-
 //End State objects
 
 //*****START State Functions*****//
 //initState Functions
-
 void initEnter() {
 
     //initialize necessary variables
-    //TODO: SKIP THE FIRST STATE FOR NOW
-    internalState = 1;
+        //TODO: CHANGE BACK TO 0
+    internalState = 2;
     move.init();
     isScanning = true;
 }
@@ -98,6 +95,7 @@ void initUpdate() {
     //setup wall follower
     switch(internalState){
         case 0:
+            //TODO: probably needs to back up more than normal
             if (move.backOffWall()) {
                 internalState++;
             }
@@ -126,6 +124,9 @@ void scanEnter() {
 }
 
 void scanUpdate() {
+    
+    fsm.transitionTo(moveToState);
+    /*
     //Perform the scanning actions
     switch(internalState){
         //Move until hitting a colour
@@ -135,8 +136,9 @@ void scanUpdate() {
                 //focused on bay, read colour
                 if(centerBay(RIGHT,curPos,RIGHT)){
                     move.stop();             
-                    loadingZone[rBlockPos].colour = rightCam.getBlockColour(); 
-                    loadingZone[rBlockPos].size = rightCam.getBlockSize(loadingZone[rBlockPos].colour);
+                    seaZone[rBlockPos].colour = rightCam.getBlockColour(); 
+                    seaZone[rBlockPos].size = rightCam.getBlockSize(loadingZone[rBlockPos].colour);
+                    seaZone[rBlockPos].present = false;
                     rBlockPos++;
                     if(rBlockPos == 5)
                         internalState = 2;
@@ -149,8 +151,9 @@ void scanUpdate() {
                 //if we're focused on a bay, read colour
                 if (centerBay(LEFT,curPos,LEFT)) {
                     move.stop();
-                    loadingZone[lBlockPos].colour = leftCam.getBlockColour(); 
-                    loadingZone[lBlockPos].size = leftCam.getBlockSize(loadingZone[lBlockPos].colour);
+                    railZone[lBlockPos].colour = leftCam.getBlockColour(); 
+                    railZone[lBlockPos].size = leftCam.getBlockSize(loadingZone[lBlockPos].colour);
+                    railZone[lBlockPos].present = false;
                     lBlockPos++;
                     if(lBlockPos == 5)
                         internalState = 2;
@@ -192,10 +195,11 @@ void scanUpdate() {
             //nextPos and curPos transitions were handled in most recent moveTo call
             fsm.transitionTo(moveToState);
             break;
-       
-	}
+	} */
 }
+void moveToExit(){
 
+}
 //moveToState
 void moveToEnter() {
     //initialize necessary variables & sensors
@@ -204,24 +208,23 @@ void moveToEnter() {
 
 //Handles all the movement, set curPos and nextPos before entering
 void moveToUpdate() {
-    Serial.println("MOVE TO UPDATE");
     //Start to sea (1 in state diagram) 
     if(curPos == POS_START && nextPos == POS_SEA){
-        Serial.println("GOING TO SEA");
+        Serial.println("MOVE TO: START TO SEA");
         if(goToBay(POS_SEA,0,RIGHT)){
-			Serial.println("grreg");
             curPos = nextPos;
             nextPos = POS_RAIL;
             fsm.transitionTo(scanState);
         }
     }
     //pickup to sea (10 in state diagram)
+/*    Back off wall, turns 90 deg left to face sea wall,
+    goes to wall, switches to drop off state*/
     else if (curPos == POS_PICK_UP && nextPos == POS_SEA) {
-        Serial.println("POS_PICKUP && POS_SEA");
+        Serial.println("MOVE TO: PICK_UP TO SEA");
         switch (internalState) {
 
             case 0:
-                Serial.println("before backOffWall");
                 if(move.backOffWall())
                     internalState++;
                 break;
@@ -239,21 +242,19 @@ void moveToUpdate() {
                 break;
         }
     }
-    //sea to pickup (12 in state diagram)
+/*    Move left if we need to by checking sonar, so we don't pack up into pickUp,
+    back off of wall, turn 90 to the right (pickup zone), go to wall,
+    if the scanning flag is set, switch to scan state else switch to pickup, 
+    if we are done with sea,make rail the next zone after pick up */
     else if (curPos == POS_SEA && nextPos == POS_PICK_UP) {
-
+        Serial.println("MOVE TO: SEA TO PICKUP");
         switch (internalState) {
             //check if we need to move sector in zone
             case 0:
                 //check if we are safe to turn around
-                if (sonarRight.getDistance() >= SEA_SAFE_ZONE) {
-                    move.slideLeft(0.1);
-                    //check if we're in the safe zone now
-                    if (sonarRight.getDistance() >= SEA_SAFE_ZONE) {
-                        internalState++;
-                    }
-                }
-                else {
+                move.slideLeft(0.1);
+                if (sonarLeft.getDistance() < SEA_SAFE_ZONE) {
+                    move.stop();
                     internalState++;
                 }
                 break;
@@ -294,9 +295,9 @@ void moveToUpdate() {
                 break;
         }
     }
-    //pickup to rail (16 & 22 in state diagram)
+    //Move off wall, do 180 to face rail zone, go to rail wall, switch to drop off state
     else if(curPos == POS_PICK_UP && nextPos == POS_RAIL){
-        
+        Serial.println("MOVE TO: PICKUP TO RAIL");
         switch(internalState) {
             //backup 
             case 0:
@@ -312,7 +313,6 @@ void moveToUpdate() {
                     internalState++;
                 }
                 break;
-            //TODO: review this
             case 3:
                 if (isScanning) {
                     curPos = nextPos;
@@ -336,9 +336,10 @@ void moveToUpdate() {
                 break;
         }
     }
-    //rail to pickup (7 & 18 in state diagram)
+    //Move off of wall, 180 to face pick up, go to pick_up wall
+    //Transition to scan state if scan flag is still set, else pick up
     else if (curPos == POS_RAIL && nextPos == POS_PICK_UP) {
-
+        Serial.println("MOVE TO: RAIL TO PICKUP");
         switch (internalState) {
 
             case 0:
@@ -374,14 +375,28 @@ void moveToUpdate() {
                 break;
         }
     }
+    //back off wall, turn 90 to the left, transition to scanstate
     else if(curPos == POS_SEA && nextPos == POS_RAIL){
+        Serial.println("MOVE TO: SEA TO RAIL");
         switch(internalState){
             case 0:
+                move.slideLeft(0.1);
+                if (sonarLeft.getDistance() < SEA_SAFE_ZONE) {
+                    move.stop();
+                    internalState++;
+                }
+            case 1:
                 if(move.backOffWall())
                     internalState++;
                 break;
-            case 1:
+            
+            case 2:
                 if(move.turn90(LEFT)){
+
+                }
+                break;
+            case 3:
+                if(goToWall()){
                     curPos = nextPos;
                     nextPos = POS_PICK_UP;
                     fsm.transitionTo(scanState);
@@ -395,8 +410,84 @@ void moveToUpdate() {
     }
 }
 
+void pickUpShortestEnter(){
+    internalState = 0;
+    Block *curZone;
+    int min1Dist = 9999;
+    int min2Dist = 9999;
+    int tempDist;
+    int block1;
+    int block2;
+    int i1;
+    int i2;
+    //What type of blocks are we doing?
+    if(!seaDone)
+        curZone = seaZone;
+    else if(!railDone)
+        curZone = railZone;
+    //what are the two closest blocsks?
+    if(!seaDone || !railDone){
+        for(int i = 0; i < 6;i++){
+            if(curZone[i].present == false){
+                tempDist = getBayDist(POS_PICK_UP,curZone[i].loadPos,RIGHT);
+                if(tempDist < min1Dist){
+                    min2Dist = min1Dist;
+                    block2 = block1;
+                    i2 = i1;
+                    min1Dist = tempDist;
+                    block1 = curZone[i].loadPos;
+                    i1 = i;
+                }
+                else if(tempDist <= min2Dist){
+                    min2Dist = tempDist;
+                    block2 = curZone[i].loadPos;
+                    i2 = i1;
+                }
+            }
+        }
+    }
+    //this is air!
+    else{
+
+        //find the air blocks
+        int i = 0;
+        for(; i < 14; i++) {
+            if(loadingZone[i].present == true) {
+                block2 = i;
+                break;
+            }
+        }
+        for(; i < 14; i++) {
+            if(loadingZone[i].present == true) {
+                block1 = i;
+                break;
+            }
+        }
+
+        //if the right block is closer, swap the two blocks
+        if(getBayDist(POS_PICK_UP, block1, RIGHT) < getBayDist(POS_PICK_UP, block2, RIGHT)){
+            block2 ^= block1;
+            block1 ^= block2;
+            block2 ^= block1;
+        }
+    }
+    
+    //if block2 is in the last pickup position
+        //or if we're dropping off at the last position in sea
+    if (block2 == 13 || (i2 == 5 && !seaDone)) {
+        rTargetPos = block2;
+        lTargetPos = block1;
+    }
+    //base case
+    else {
+        rTargetPos = block1;
+        lTargetPos = block2;
+    }
+}
+
 //pickUpState
 void pickUpEnter() {
+
     internalState = 0;
 
   	//Figure out which blocks you need to pick up
@@ -420,18 +511,27 @@ void pickUpEnter() {
 	}
 	else {
 	    int i = 0;
-		for(i = 0; i < 14; i++) {
+		for(; i < 14; i++) {
 			if(loadingZone[i].present == true) {
 				lTargetBlock = loadingZone[i];
 				break;
 			}
 		}
-		
-		for(i++; i < 14; i++) {
+		for(; i < 14; i++) {
 			if(loadingZone[i].present == true) {
 				rTargetBlock = loadingZone[i];
                 break;
 			}
+		}
+	}
+	
+	//Set target positions of blocks in loading
+	for(int i = 0; i < 14; i++) {
+		if(loadingZone[i].colour == lTargetBlock.colour && loadingZone[i].size == lTargetBlock.size) {
+			lTargetPos = i;
+		}
+		else if(loadingZone[i].colour == rTargetBlock.colour && loadingZone[i].size == rTargetBlock.size) {
+			rTargetPos = i;
 		}
 	}
 }
@@ -496,7 +596,7 @@ void dropEnter() {
 
     //Set target positions of blocks in loading
     for(int i = 0; i < 6; i++) {
-        if(blocks[i].colour == lBlock.colour) {
+        if(blocks[i].colour == lTargetBlock.colour) {
             lTargetPos = i;
         }
         else if(blocks[i].colour == rTargetBlock.colour) {

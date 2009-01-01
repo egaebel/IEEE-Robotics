@@ -41,13 +41,13 @@ void setup() {
     delay(200);
 
 	Serial.begin(9600);
-    Serial.println("SETUP COMPLETED!!!");
+    Serial.println("SETUP COMPLETED!!");
 }
 
 void loop() {
     sonarLeft.update();
     sonarRight.update();
-#if DEBUG_FSM ==0
+#if DEBUG_FSM == 0
     fsm.update();
 #else
     fsm_debug.update();

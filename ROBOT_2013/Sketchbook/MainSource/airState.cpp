@@ -27,10 +27,7 @@ extern Block rBlock; //Block held by the right claw.
 //Whether order of bays in air and whats in hand is the same
 static bool airOrderSame;
 
-//Air zone colours, listed west to east. 
-static Block airZoneLeft; 
-
-static int airInternalState;
+static int airInternalState; //Used for internal state 
 
 State scanAirPlatformState = State(scanAirPlatformEnter, scanAirPlatform, scanAP_cleanUp);
 State dropAirBlocksState = State(dropAirBlocksEnter, dropAirBlocks, dropAP_cleanUp);
@@ -50,43 +47,33 @@ void moveToAirPlatform() {
 		
 		case 0: //Turn around to face wall oposite pick_up area
 			
-			//Move Backwards for 200ms
-			timer.init(200);
-			timer.start();
-			while(!timer.isDone()) {
-				move.backward(MEDIUM);
-			}
+			while(!move.backOffWall()); //Back off the wall
+			move.stop();
 				
-			//Turn around
-			move.turn90(LEFT);
-			move.turn90(LEFT);
+			move.turnAround(RIGHT);
 			
 			airInternalState++;
 			break;
 			
 		case 1: //Once reached wall go to next internalState
-			if(goToWall()) {
-				airInternalState++;
-				move.slideLeft(FAST); //Slide to far wall.
-			}
+			while(!goToWall()); //Go to the wall
+			move.stop();
+			
+			airInternalState++;
+			move.slideLeft(MEDIUM); //Slide to far-wall.
 			break;
 			
 		case 2: 
 			if(sonarLeft.getDistance() < 20) { //Stop when 20cm from far-side wall
 				move.stop();
-				
-				//Move Backwards for 200ms
-				timer.init(200);
-				while(!timer.isDone()) {
-					move.backward(MEDIUM);
-				}
+
+				while(!move.backOffWall()); //Back off wall
 				move.stop();
 				
-				//Turn around
-				move.around(LEFT);
-				move.stop();
-				
+				move.turnAround(RIGHT);
+			
 				airInternalState++;
+				move.forwardForDuration(VERY_FAST, 400);
 				move.forward(MEDIUM); //Move forward
 			}
 			break;
@@ -95,18 +82,12 @@ void moveToAirPlatform() {
 			if(leftIR.getIR() > 10.0 && rightIR.getIR() > 10.0) { //If front is off edge
 				move.stop();
 				
-				//Move backwards from ledge
-				timer.init(100);
-				timer.start();
-				while(!timer.isDone()) {
-					move.backward(VERY_SLOW);
-				}
-				move.stop();
+				move.backwardForDuration(VERY_SLOW, 100); //Move backwards from ledge
+				move.turn90(LEFT); //Turn to face up-ramp
 				
 				airInternalState++;
-				move.turn90(LEFT);
-				airInternalState++;
-				move.forward(FAST);
+				move.forwardForDuration(FAST, 2500);
+				move.forward(MEDIUM);
 			}
 			break;
 			
@@ -137,15 +118,12 @@ void scanAirPlatform() {
 			airInternalState++;
 			
 			//Move backwards for time and until both IR's back over the platform
-			timer.init(100);  
-			timer.start();
-			while(!timer.isDone() && leftIR.getIR() < 10.0 && rightIR.getIR() < 10.0)  {
-				move.backward(VERY_SLOW);
+			while(leftIR.getIR() > 10.0 && rightIR.getIR() > 10.0) {
+				move.backwardForDuration(VERY_SLOW,40);
 			}
-			move.stop();
 			
 			airInternalState++;
-			move.slideLeft(VERY_SLOW); //Start strafing left
+			move.slideLeft(SLOW); //Start strafing left
 			break;
 			
         case 1: //Stop strafing left when left IR hanging off edge (At left edge of platform)
@@ -158,7 +136,7 @@ void scanAirPlatform() {
         case 2: //Strafe right until leftCam.inZone() of left most bay -> then read color
 			if (leftCam.inZone()) { /**ASSUMING CAM IN ZONE MEANS LEFT BLOCK IS OVER THE BAY**/
 				move.stop();
-				airOrderSame = (lBlock.colour == (airZoneLeft.colour = leftCam.getBlockColour())); //Assigns cam's detected color to left bay's color in airZone and tests whether it's equal to left held block's color
+				airOrderSame = (lBlock.colour == leftCam.getBlockColour()); //Assigns cam's detected color to left bay's color in airZone and tests whether it's equal to left held block's color
 				fsm.transitionTo(dropAirBlocksState);	
 			}
 			break;
@@ -198,27 +176,29 @@ void dropAirBlocks() {
 
 					break;
 			}
-		}
+	}
 		
 	else { //Order of bay colors not same as order of blocks in hand
 		switch(airInternalState) {
-			switch 0:
+			case 0:
+				//Move just-right of the current left bay, to get our of inZone() (skip current bay under left block)
+				move.slideRightForDuration(VERY_SLOW, 30);
+				
 				airInternalState++; 
-				
-				//Move just-right of the current left bay, to get our of inZone()
-				timer.init(50);  
-				timer.start();
-				while(!timer.isDone())  {
-					move.slideRight(VERY_SLOW);
-				}
-				move.stop();
-				
 				move.slideRight(VERY_SLOW);
 			
-			switch 1:
+			case 1:
 				if(leftCam.inZone()) {
 					move.stop();
 					move.dropClaw(LEFT);
+					
+					airInternalState++;
+					move.slideLeftForDuration(VERY_SLOW, 30);
+				}
+			case 2:
+				if(rightCam.inZone()) { //right cam in right bay (if reads block as a bay)
+					
+					airInternalState++;
 					move.dropClaw(RIGHT);
 					//<VICTORY DANCE!>
 				}
@@ -305,7 +285,6 @@ void dropAirBlocks() {
 				//}
 				//break;
 		//}	
-	
 }
 
 void moveAP_cleanUp() {	};

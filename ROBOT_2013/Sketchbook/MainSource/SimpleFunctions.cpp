@@ -5,6 +5,7 @@ extern cam rightCam;
 extern cam leftCam;
 extern Sonar sonarRight;
 extern Sonar sonarLeft;
+
 bool fullOfBlocks(Block blocks[], int numBlocks) {
 
 	for (int i = 0; i < numBlocks; i++) {
@@ -80,30 +81,30 @@ Block* getZoneByPos(bPosition pos, Block * seaZone, Block * railZone, Block * lo
 bool goToBay(bPosition bay, int nBay, side clawSide) {
 	if(goToWall()){
 		Sonar *tempSonar;
-		side posSide;
+
 		int dist = getBayDist(bay,nBay,clawSide);
 		if(bay==POS_SEA)
 			tempSonar = &sonarLeft;
 		else
 			tempSonar = &sonarRight;
 		
-		if(tempSonar->getDistance()>dist){
-			if(bay==POS_SEA)
+		if(tempSonar->getDistance() > dist){
+			if(bay == POS_SEA)
 				move.slideWall(LEFT);
 			else
 				move.slideWall(RIGHT);
-			return 0;
+			return false;
 		}
-		else if(tempSonar->getDistance()<dist){
-			if(bay==POS_SEA)
+		else if(tempSonar->getDistance() < dist){
+			if(bay == POS_SEA)
 				move.slideWall(RIGHT);
 			else
 				move.slideWall(LEFT);
-			return 0;
+			return false;
 		}
 		else{
 			move.stop();
-			return 1;
+			return true;
 		}
 	}
 
@@ -111,15 +112,19 @@ bool goToBay(bPosition bay, int nBay, side clawSide) {
 
 int getBayDist(bPosition bay, int nBay, side clawSide) {
 	int dist;
+	int clawAddition = 0;
+	if(clawSide == LEFT)
+		clawAddition = CLAW_CENTER_DISTANCE;
+
 	switch(bay){
 		case POS_PICK_UP:
-			dist = 122 - (nBay*7);
+			dist = 122 - (nBay*7) + clawAddition;
 			break;
 		case POS_RAIL:
-			dist = 142 - (nBay*7);
+			dist = 142 - (nBay*7) + clawAddition;
 			break;
 		case POS_SEA:
-			dist =  37 + (nBay*7);
+			dist =  37 + (nBay*7) - clawAddition;
 			break;
 	}
 	
