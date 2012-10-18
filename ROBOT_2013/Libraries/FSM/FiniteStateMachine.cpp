@@ -107,7 +107,7 @@ State& FiniteStateMachine::getCurrentState() {
 }
 
 //check if state is equal to the currentState
-boolean FiniteStateMachine::isInState( State &state ) const {
+bool FiniteStateMachine::isInState( State &state ) const {
 	if (&state == currentState) {
 		return true;
 	} else {

@@ -30,7 +30,7 @@
 #ifndef FINITESTATEMACHINE_H
 #define FINITESTATEMACHINE_H
 
-#include <WProgram.h>
+//#include <Arduino.h>
 
 #define NO_ENTER (0)
 #define NO_UPDATE (0)
@@ -66,7 +66,7 @@ class FiniteStateMachine {
 		FiniteStateMachine& immediateTransitionTo( State& state );
 		
 		State& getCurrentState();
-		boolean isInState( State &state ) const;
+		bool isInState( State &state ) const;
 		
 		unsigned long timeInCurrentState();
 		
