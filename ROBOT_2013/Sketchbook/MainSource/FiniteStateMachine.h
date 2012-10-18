@@ -46,7 +46,7 @@ class State {
 		//State( byte newId, void (*enterFunction)(), void (*updateFunction)(), void (*exitFunction)() );
 		
 		//void getId();
-		void enter();
+		void enter(FiniteStateMachine &fsm);
 		void update();
 		void exit();
 	private:
@@ -54,6 +54,8 @@ class State {
 		void (*userEnter)();
 		void (*userUpdate)();
 		void (*userExit)();
+
+		FiniteStateMachine* fsm;
 };
 
 //define the finite state machine functionality
