@@ -2,54 +2,89 @@
 
 //List of states
 State initState = State(NULL);
-State moveToState = State(NULL);
 State scanState = State(NULL);
+State moveToState = State(NULL);
+
 State pickUpState = State(NULL);
 State dropState = State(NULL);
 
-//*****State Functions*****//
+//*****START State Functions*****//
 //initState Functions
-void initEnter(FinteStateMachine& parent) {
+void initEnter() {
 
-    fsm = parent;
     //initialize necessary variables & sensors
 }
 
 void initUpdate() {
-
+    
+    //perform initialization actions
 }
 
 void initExit() {
 
+    //stop listening to sensors
 }
 
 //scanState
-void scanEnter(FiniteStateMachine& parent) {
+void scanEnter() {
 
-    fsm = parent;
     //initialize necessary variables & sensors
 }
 
 void scanUpdate() {
     
+    //Perform the scanning actions
 }
 
 void scanExit() {
 
+    //stop listening to sensors
 }
 
 //moveToState
-void moveToEnter(FiniteStateMachine& parent) {
+void moveToEnter() {
 
-    fsm = parent;
     //initialize necessary variables & sensors
 }
 
-void moveUpdate() {
+void moveToUpdate() {
 
+    //Perform the move actions
 }
 
-void moveExit() {
-
+void moveToExit() {
+    
+    //stop listening to sensors
 }
 
+//pickUpState
+void pickUpEnter() {
+
+    //initialize necessary variables & sensors
+}
+
+void pickUpUpdate() {
+
+    //Perform the drop actions
+}
+
+void pickUpExit() {
+    
+    //stop listening to sensors
+}
+
+//dropState
+void dropEnter() {
+
+    //initialize necessary variables & sensors
+}
+
+void dropUpdate() {
+
+    //Perform the drop actions
+}
+
+void dropExit() {
+    
+    //stop listening to sensors
+}
