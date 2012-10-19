@@ -1,3 +1,6 @@
+#ifndef STATES_H_
+#define STATES_H_H
+
 //State Function Prototypes
 void initEnter();
 void initUpdate();
@@ -19,3 +22,5 @@ void dropEnter();
 void dropUpdate();
 void dropExit();
 //End State Function Prototypes
+
+#endif
