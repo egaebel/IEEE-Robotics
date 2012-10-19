@@ -38,6 +38,8 @@
 
 #define FSM FiniteStateMachine
 
+class FiniteStateMachine;
+
 //define the functionality of the states
 class State {
 	public:
@@ -46,7 +48,7 @@ class State {
 		//State( byte newId, void (*enterFunction)(), void (*updateFunction)(), void (*exitFunction)() );
 		
 		//void getId();
-		void enter(FiniteStateMachine &fsm);
+		void enter(FiniteStateMachine* fsm);
 		void update();
 		void exit();
 	private:
