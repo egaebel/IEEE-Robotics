@@ -1,7 +1,8 @@
 #include <Arduino.h>
 #include "FiniteStateMachine.h"
-#include "States.cpp"
+#include "States.h"
 
+extern State initState;
 FiniteStateMachine fsm(initState);
 
 void setup()
