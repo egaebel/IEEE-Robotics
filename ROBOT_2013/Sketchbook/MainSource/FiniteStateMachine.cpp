@@ -43,7 +43,7 @@ State::State( void (*enterFunction)(), void (*updateFunction)(), void (*exitFunc
 }
 
 //what to do when entering this state
-void State::enter(FiniteStateMachine& parent){
+void State::enter(FiniteStateMachine* parent){
 	fsm = parent;
 	if (userEnter){
 		userEnter();
@@ -77,7 +77,7 @@ FiniteStateMachine& FiniteStateMachine::update() {
 	//simulate a transition to the first state
 	//this only happens the first time update is called
 	if (needToTriggerEnter) { 
-		currentState->enter(*this);
+		currentState->enter(this);
 		needToTriggerEnter = false;
 	} else {
 		if (currentState != nextState){
@@ -97,7 +97,7 @@ FiniteStateMachine& FiniteStateMachine::transitionTo(State& state){
 FiniteStateMachine& FiniteStateMachine::immediateTransitionTo(State& state){
 	currentState->exit();
 	currentState = nextState = &state;
-	currentState->enter(*this);
+	currentState->enter(this);
 	stateChangeTime = millis();
 	return *this;
 }
@@ -117,6 +117,6 @@ bool FiniteStateMachine::isInState( State &state ) const {
 }
 
 unsigned long FiniteStateMachine::timeInCurrentState() { 
-	millis() - stateChangeTime; 
+	return millis() - stateChangeTime; 
 }
 //END FINITE STATE MACHINE
