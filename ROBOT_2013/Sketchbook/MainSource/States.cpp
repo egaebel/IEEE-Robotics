@@ -1,12 +1,13 @@
 #include "FiniteStateMachine.h"
+#include "States.h"
 
-//List of states
-State initState = State(NULL);
-State scanState = State(NULL);
-State moveToState = State(NULL);
-
-State pickUpState = State(NULL);
-State dropState = State(NULL);
+//State objects
+State initState = State(initEnter, initUpdate, initExit);
+State scanState = State(scanEnter, scanUpdate, scanExit);
+State moveToState = State(moveToEnter, moveToUpdate, moveToExit);
+State pickUpState = State(pickUpEnter, pickUpUpdate, pickUpExit);
+State dropState = State(dropEnter, dropUpdate, dropExit);
+//End State objects
 
 //*****START State Functions*****//
 //initState Functions
@@ -88,3 +89,4 @@ void dropExit() {
     
     //stop listening to sensors
 }
+//*****END State Functions*****//
