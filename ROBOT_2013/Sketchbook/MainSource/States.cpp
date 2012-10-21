@@ -1,14 +1,6 @@
 #include "FiniteStateMachine.h"
 #include "States.h"
 
-//State objects
-State initState = State(initEnter, initUpdate, initExit);
-State scanState = State(scanEnter, scanUpdate, scanExit);
-State moveToState = State(moveToEnter, moveToUpdate, moveToExit);
-State pickUpState = State(pickUpEnter, pickUpUpdate, pickUpExit);
-State dropState = State(dropEnter, dropUpdate, dropExit);
-//End State objects
-
 //*****START State Functions*****//
 //initState Functions
 void initEnter() {
@@ -90,3 +82,12 @@ void dropExit() {
     //stop listening to sensors
 }
 //*****END State Functions*****//
+
+//State objects
+//Put it here since it needs to know that the functions exist
+State initState = State(initEnter, initUpdate, initExit);
+State scanState = State(scanEnter, scanUpdate, scanExit);
+State moveToState = State(moveToEnter, moveToUpdate, moveToExit);
+State pickUpState = State(pickUpEnter, pickUpUpdate, pickUpExit);
+State dropState = State(dropEnter, dropUpdate, dropExit);
+//End State objects
