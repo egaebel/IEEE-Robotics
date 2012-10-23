@@ -6,11 +6,31 @@
 void initEnter() {
 
     //initialize necessary variables & sensors
+    internalState = 0;
 }
 
 void initUpdate() {
-    
-    //perform initialization actions
+    //setup wall follower
+
+    /* psuedo code
+    switch(internalState){
+        case 0:
+            move.back();
+            if(sensor.line()==WHITE){
+                wallFollower.lower();
+                internalState++;
+            }
+            break;
+        case 1:
+            move.foward();
+            if(wallFollower.isTouching()){
+                curPos = POS_START;
+                toPos = POS_SEA_LOAD;
+                fsm->transitionTo(moveToState)
+            }
+        break;
+    }
+    */
 }
 
 void initExit() {

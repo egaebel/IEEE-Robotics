@@ -56,7 +56,7 @@ class State {
 		void (*userEnter)();
 		void (*userUpdate)();
 		void (*userExit)();
-
+		int internalState;
 		FiniteStateMachine* fsm;
 };
 
@@ -66,7 +66,7 @@ class FiniteStateMachine {
 		FiniteStateMachine(State& current);
 		
 		FiniteStateMachine& update();
-		FiniteStateMachine& transitionTo( State& state );
+		FiniteStateMachine& transitionTo( State& state);
 		FiniteStateMachine& immediateTransitionTo( State& state );
 		
 		State& getCurrentState();
