@@ -47,6 +47,8 @@ void scanEnter() {
 void scanUpdate() {
     
     //Perform the scanning actions
+    /*
+    */
 }
 
 void scanExit() {
@@ -63,6 +65,38 @@ void moveToEnter() {
 void moveToUpdate() {
 
     //Perform the move actions
+    /*
+        if (curPos is to the left of toPos) {
+            move.right()
+        }
+        else if (curPos is to the right of toPos) {
+            move.left();
+        }
+        else if (curPos is in front of toPos) {
+            move.forward();
+        }
+        else if (curPos is behind toPos) {
+            move.turnAround();
+            move.forward()
+        }
+        
+        if (//wall is hit) {
+            if (isScanning) {
+                fsm->transitionTo(scanState);
+                curPos = toPos;
+            }
+            else {
+                if (curPos is equivalent to PICKUP) {
+                    fsm->transitionTo(pickUpState);
+                }
+                else {
+                    fsm->transitionTo(dropOffState);
+                }
+                curPos = toPos;
+                toPos = NULL;
+            }
+        }
+    */
 }
 
 void moveToExit() {
@@ -78,7 +112,7 @@ void pickUpEnter() {
 
 void pickUpUpdate() {
 
-    //Perform the drop actions
+    //Perform the pick up actions
 }
 
 void pickUpExit() {
