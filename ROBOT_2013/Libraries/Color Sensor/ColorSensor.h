@@ -1,3 +1,5 @@
+#ifndef _COLORSENSOR_H_
+#define _COLORSENSOR_H_
 /*
 ||
 || @file colorSensor.h
@@ -14,7 +16,7 @@
 */
 
 //define the functionality of the states
-class State {
+class ColorSensor{
 	public:
 		void senseColor();
 		
@@ -26,3 +28,4 @@ class State {
 
 
 
+#endif
