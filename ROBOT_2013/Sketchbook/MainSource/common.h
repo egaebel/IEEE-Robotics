@@ -1,5 +1,5 @@
-#ifndef _COMMONS_H_
-#define _COMMONS_H_
+#ifndef _COMMON_H_
+#define _COMMON_H_
 
 /*
  * This is where all globals and constants should be defined
@@ -15,13 +15,13 @@ enum POSITION{	POS_START = 0,
 enum COLOR{}; //TODO: Colors Should be defined.
 enum SIZE{}; //TODO: Sizes of the blocks.
 
-POSITION curPos = 0;
-POSITION nextPos = 0;
+POSITION curPos = (POSITION)0;
+POSITION nextPos = (POSITION)0;
 
 struct block {
 	COLOR color; 
 	SIZE size; 
-}
+};
 
 struct block LClaw; //Block held by the left claw.
 struct block RClaw; //Block held by the right claw.
