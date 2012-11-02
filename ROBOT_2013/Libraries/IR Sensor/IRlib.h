@@ -1,11 +1,11 @@
 #define ANALOG_PIN 1
-#define length 20
+#define lengthArray 20
 
 class IRAverager
 {
 public:
 	IRAverager();
-	float valArray[length];
+	float valArray[lengthArray];
 	int slot;
 	float sum;
 	void updateIR();
