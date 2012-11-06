@@ -37,4 +37,8 @@ COLOR railZone[6]; //Rail zone colors, listed west to east.
 #define RIGHT_MOTOR 10
 #define REAR_MOTOR 11
 
+#define LCLAW_SERVO 0
+#define RCLAW_SERVO 0
+#define CLAW_EXTEND_SERVO 0
+
 #endif
