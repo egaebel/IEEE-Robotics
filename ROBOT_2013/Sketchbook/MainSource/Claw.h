@@ -7,11 +7,35 @@
 class Claw{
 
 public:
-	void init();
-	bool extend();
-	bool retract();
+	void init(int extend_servo_pin, int grab_servo_pin);
+	void extend();
+	void retract();
 	void grab();
+	void drop();
 private:
+	const Servo EXTEND_SERVO;
+	const Servo GRAB_SERVO;
 };
 
 #endif
+
+void Claw::init(int extend_servo_pin, int grab_servo_pin){
+	EXTEND_SERVO.attach(extend_servo_pin);
+	GRAB_SERVO.attach(grab_servo_pin);
+}
+
+void Claw::extend(){
+	EXTEND_SERVO.write(180);
+}
+
+void Claw::retract(){
+	EXTEND_SERVO.write(0);
+}
+
+void Claw::grab(){
+	GRAB_SERVO.write(0);
+}
+
+void Claw::drop(){
+	GRAB_SERVO.write(180);
+}
