@@ -18,27 +18,30 @@ enum SIZE{}; //TODO: Sizes of the blocks.
 POSITION curPos = (POSITION)0;
 POSITION nextPos = (POSITION)0;
 
-struct block {
+typedef struct block_t {
 	COLOR color; 
 	SIZE size; 
-};
+} block;
 
-struct block LClaw; //Block held by the left claw.
-struct block RClaw; //Block held by the right claw.
+block LClaw; //Block held by the left claw.
+block RClaw; //Block held by the right claw.
 
-struct block LoadingZone[14]; // Blocks in the loading zone, listed west to east.
+block LoadingZone[14]; // Blocks in the loading zone, listed west to east.
 COLOR seaZone[6]; //Sea zone colors, listed south to north.
 COLOR railZone[6]; //Rail zone colors, listed west to east. 
 
 /* PIN DEFINITIONS */
 #define COLOR_SENSOR 0 //Pin for color sensor (pin 0 is fake) 
 	//Motors (Servos)
-#define LEFT_MOTOR 9
-#define RIGHT_MOTOR 10
+#define LEFT_MOTOR 13
+#define RIGHT_MOTOR 12
 #define REAR_MOTOR 11
-
-#define LCLAW_SERVO 0
-#define RCLAW_SERVO 0
-#define CLAW_EXTEND_SERVO 0
+	//Claw Servos
+#define LCLAW_SERVO 10
+#define RCLAW_SERVO 9
+#define LCLAW_EXTEND_SERVO 8
+#define RCLAW_EXTEND_SERVO 7
+	//Wallfolloer servos
+#define WALL_FOLLOW_SERVO 6
 
 #endif
