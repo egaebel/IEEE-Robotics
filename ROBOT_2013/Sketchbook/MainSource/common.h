@@ -8,7 +8,8 @@
 enum POSITION{	POS_START = 0,
 				POS_SEA_LOAD,
 				POS_RAIL_LOAD,
-				POS_PICK_UP,
+				POS_PICK_UP_RIGHT,
+				POS_PICK_UP_LEFT,
 				POS_AIR
 	      	};
 
