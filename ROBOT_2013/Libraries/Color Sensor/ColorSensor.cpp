@@ -1,8 +1,6 @@
 /*
-
 Eecher's TCS3200 program
 adapted from code found at reibot.org
-
 */
 
 int S0 = 8;//pinB
@@ -12,27 +10,52 @@ int S3 = 11;//pinF
 int taosOutPin = 10;//pinC
 int LED = 13;//pinD
 
-/*void setup() {
-TCS3200setup();
-Serial.begin(115200);
-Serial.print("\n\n\nready\n\n\n");
-delay(100);
+/*
+ * Calls sensor setup method and setsup the serialoutput
+ */
+void testing() {
+	TCS3200setup();
+
+	/*Sets up testing console*/
+	Serial.begin(115200); //Sets the data transfer rate at 115.2 Kbps
+	Serial.print("\n\n\nready\n\n\n"); 
+	delay(100); //Pauses program for 100ms
+	detectColor(taosOutPin); //Will print the pulse readings for each color W,R,G,B
+}
+
+void TCS3200setup(){
+
+    //initialize pins
+    pinMode(LED,OUTPUT); //LED pinD
+    
+    //color mode selection
+    pinMode(S2,OUTPUT); //S2 pinE
+    pinMode(S3,OUTPUT); //s3 pinF
+    
+    //color response pin (only actual input from taos)
+    pinMode(taosOutPin, INPUT); //taosOutPin pinC
+    
+    //communication freq (sensitivity) selection
+    pinMode(S0,OUTPUT); //S0 pinB
+    pinMode(S1,OUTPUT); //S1 pinA 
+    
+    return;
+}
+
+/* COMMENTED OUT FOR TESTING
+// primary loop takes color readings from all four channels and displays the raw values once per second.  
+void loop() {
+detectColor(taosOutPin);
+Serial.print("\n\n\n");
+delay(1000);
 }
 */
 
 /*
-// primary loop takes color readings from all four channels and displays the raw values once per second.  What you might wish to do with those values is up to you...
-void loop() {
-
-detectColor(taosOutPin);
-Serial.print("\n\n\n");
-delay(1000);
-
-}
-*/
-
+ * Detects the color (calls colorRead on each color)
+ */
 int detectColor(int taosOutPin){
-
+	//Outputs each color's pulse readings to the Serial.out console FOR TESTING 
     float white = colorRead(taosOutPin,0,1);
     float red = colorRead(taosOutPin,1,1);
     float blue = colorRead(taosOutPin,2,1);
@@ -49,7 +72,6 @@ int detectColor(int taosOutPin){
 
     Serial.print("green ");
     Serial.println(green);
-
 }
 
 /*
@@ -64,9 +86,6 @@ float colorRead(int taosOutPin, int color, boolean LEDstate){
       
     //turn on sensor and use highest frequency/sensitivity setting
     taosMode(1);
-
-    //setting for a delay to let the sensor sit for a moment before taking a reading.
-    int sensorDelay = 100;
 
     //set the S2 and S3 pins to select the color to be sensed 
     if(color == 0){//white
@@ -93,8 +112,7 @@ float colorRead(int taosOutPin, int color, boolean LEDstate){
         // Serial.print(" g");
     }
 
-    // create a var where the pulse reading from sensor will go
-    float readPulse;
+    float readPulse; //where the pulse reading from sensor will go
 
     //  turn LEDs on or off, as directed by the LEDstate var
     if(LEDstate == 0){
@@ -104,8 +122,7 @@ float colorRead(int taosOutPin, int color, boolean LEDstate){
         digitalWrite(LED, HIGH);
     }
 
-    // wait a bit for LEDs to actually turn on, as directed by sensorDelay var
-    delay(sensorDelay);
+    delay(100); //Delay for 100ms for before reading
 
     // now take a measurement from the sensor, timing a low pulse on the sensor's "out" pin
     readPulse = pulseIn(taosOutPin, LOW, 80000);
@@ -115,7 +132,7 @@ float colorRead(int taosOutPin, int color, boolean LEDstate){
         readPulse = 80000;
     }
 
-    //turn off color sensor and LEDs to save power 
+    //turn off color sensor and LEDs to save power POSSIBLE REMOVE --> b/c in the IEEE Comp power is not a constraint
     taosMode(0);
 
     // return the pulse value back to whatever called for it... 
@@ -155,24 +172,6 @@ void taosMode(int mode){
     }
     
     return;
-
 }
 
-void TCS3200setup(){
 
-    //initialize pins
-    pinMode(LED,OUTPUT); //LED pinD
-    
-    //color mode selection
-    pinMode(S2,OUTPUT); //S2 pinE
-    pinMode(S3,OUTPUT); //s3 pinF
-    
-    //color response pin (only actual input from taos)
-    pinMode(taosOutPin, INPUT); //taosOutPin pinC
-    
-    //communication freq (sensitivity) selection
-    pinMode(S0,OUTPUT); //S0 pinB
-    pinMode(S1,OUTPUT); //S1 pinA 
-    
-    return;
-}

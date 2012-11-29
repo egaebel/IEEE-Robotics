@@ -15,17 +15,15 @@
 ||
 */
 
-//define the functionality of the states
+//TODO define the functionality of the states
 class ColorSensor{
 	public:
-		void senseColor();
-		
+		void testing();
 	private:
-		int colorRead(int taosOutPin);
 		void TCS3200setup();
+		int detectColor(int taosOutPin);
+		float colorRead(int taosOutPin, int color, boolean LEDstate);
+		void taosMode(int mode);
 };
-
-
-
 
 #endif
