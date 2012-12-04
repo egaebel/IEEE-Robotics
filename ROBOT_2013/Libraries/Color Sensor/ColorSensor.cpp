@@ -2,6 +2,10 @@
 Eecher's TCS3200 program
 adapted from code found at reibot.org
 */
+struct colorID { 
+	float value;
+	int color; /* color = [0 is white] [1 is red] [2 is blue] [3 is green] */
+};
 
 int S0 = 8;//pinB
 int S1 = 9;//pinA
@@ -10,21 +14,37 @@ int S3 = 11;//pinF
 int taosOutPin = 10;//pinC
 int LED = 13;//pinD
 
-/*
- * Calls sensor setup method and setsup the serialoutput
- */
-void testing() {
-	TCS3200setup();
 
-	/*Sets up testing console*/
+int readCounter; //counter for looping colorReads
+colorID whites [10]; //array of white pulses
+colorID reds [10]; //array of white pulses
+colorID blues [10]; //array of white pulses
+colorID greens [10]; //array of white pulses
+
+colorID sumWhite;
+colorID sumRed;
+colorID sumBlue;
+colorID sumGreen;
+
+void setup() {
+	TCS3200setup();
 	Serial.begin(115200); //Sets the data transfer rate at 115.2 Kbps
-	Serial.print("\n\n\nready\n\n\n"); 
-	delay(100); //Pauses program for 100ms
-	detectColor(taosOutPin); //Will print the pulse readings for each color W,R,G,B
+	Serial.print("\n\n\nready\n\n\n\n\n\n");
+	
+	//Loop prep
+	readCounter = 0; 
+	whites[:10].color = 0;
+	reds[:10].color = 1;
+	blues[:10].color = 2;
+	greens[:10].color = 3;
 }
 
-void TCS3200setup(){
+void loop()	{
+	delay(100); //Pauses program for 100ms
+	detectColor(taosOutPin); //read pulse readings for each color W,R,G,B
+}
 
+void TCS3200setup()	{
     //initialize pins
     pinMode(LED,OUTPUT); //LED pinD
     
@@ -54,24 +74,31 @@ delay(1000);
 /*
  * Detects the color (calls colorRead on each color)
  */
-int detectColor(int taosOutPin){
-	//Outputs each color's pulse readings to the Serial.out console FOR TESTING 
-    float white = colorRead(taosOutPin,0,1);
-    float red = colorRead(taosOutPin,1,1);
-    float blue = colorRead(taosOutPin,2,1);
-    float green = colorRead(taosOutPin,3,1);
+void detectColor(int taosOutPin){
 
-    Serial.print("white ");
-    Serial.println(white);
+	if(readCounter < 10)	{
+		whites[readCounter].value = colorRead(taosOutPin,0,1);
+		reds[readCounter].value = colorRead(taosOutPin,1,1);
+		blues[readCounter].value = colorRead(taosOutPin,2,1);
+		greens[readCounter].value = colorRead(taosOutPin,3,1);
+		
+		readCounter++; //Increments readCoutner
+	}
+	
+	else if(readCounter == 10)	{
+		//Sums all the values
+		for(readCounter = 0; readCounter < 10; readCounter++)	{
+			sumWhite.value += (int)whites[readCounter];
+			sumRed.value += (int)reds[readCounter];
+			sumBlue.value += (int)blues[readCounter];
+			sumGreen.value += (int)greens[readCounter];
+		}
+		
+		Serial.print((std::min(std::min(std::min(sumWhite, sumRed), sumBlue), sumGreen)).color); //returns the lowest's pulse readings color (the dominant color)
+	}
+	
+	else { readCounter = 0; }
 
-    Serial.print("red ");
-    Serial.println(red);
-
-    Serial.print("blue ");
-    Serial.println(blue);
-
-    Serial.print("green ");
-    Serial.println(green);
 }
 
 /*
