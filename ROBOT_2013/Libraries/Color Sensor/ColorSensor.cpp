@@ -2,10 +2,9 @@
 VT IEEE color sensor adapted from code found at reibot.org (Eecher's TCS3200 program)
 */
 struct colorID { 
-	float value;
+	double value;
 	int color; /* color = [0 is white] [1 is red] [2 is blue] [3 is green] */
-	colorID(int colorValue)	{color = colorValue;	value = 0;}
-};
+} sumWhite, sumRed, sumBlue, sumGreen, minimumColor;
 
 int S0 = 8;//pinB
 int S1 = 9;//pinA
@@ -15,10 +14,12 @@ int taosOutPin = 10;//pinC
 int LED = 13;//pinD
 
 int readCounter; //counter for looping colorReads
-colorID sumWhite(0);
-colorID sumRed(1);
-colorID sumBlue(2);
-colorID sumGreen(3);
+//colorID sumWhite; 
+//colorID sumRed; 
+//colorID sumBlue; 
+//colorID sumGreen; 
+
+//colorID minimumColor;
 
 void setup() {
 	TCS3200setup();
@@ -26,11 +27,21 @@ void setup() {
 	Serial.print("\n\n\nready\n\n\n\n\n\n");
 	
 	readCounter = 0; //sets iterator used for color sensing to 0
+	sumWhite.value = 0;
+	sumRed.value = 0;
+	sumBlue.value = 0;
+	sumGreen.value = 0;
+	
+	sumWhite.color = 0;
+	sumRed.color = 1;
+	sumBlue.color = 2;
+	sumGreen.color = 3;
 }
 
 void loop()	{
-	delay(300); //Pauses program for 100ms
+	//delay(150); //Pauses program for 100ms
 	detectColor(taosOutPin); //read pulse readings for each color W,R,G,B
+	delay(100);
 }
 
 void TCS3200setup()	{
@@ -49,6 +60,13 @@ void TCS3200setup()	{
     pinMode(S1,OUTPUT); //S1 pinA 
     
     return;
+}
+
+struct colorID minColor(colorID a, colorID b)
+{
+	if(a.value < b.value)	{
+		return a;
+	}
 }
 
 /* COMMENTED OUT FOR TESTING
@@ -75,7 +93,42 @@ void detectColor(int taosOutPin){
 	}
 	
 	else if(readCounter == 6)	{
-		Serial.print((std::min(std::min(std::min(sumWhite, sumRed), sumBlue), sumGreen)).color); //returns the lowest's pulse reading color (the dominant color)
+        
+        Serial.print("\n White: ");
+        Serial.print(sumWhite.value);
+        Serial.print("\n Red: ");
+        Serial.print(sumRed.value);
+        Serial.print("\n Blue: ");
+        Serial.print(sumBlue.value);
+        Serial.print("\n Green: ");
+        Serial.print(sumGreen.value);
+        Serial.print("\n \n \n \n \n \n");
+        
+        //minimumColor = minColor(sumWhite, sumRed);
+        //minimumColor = minColor(minimumColor, sumRed);
+        //minimumColor = minColor(minimumColor, sumBlue);
+        //minimumColor = minColor(minimumColor, sumGreen);
+        
+		//if(minimumColor.value == sumWhite.value)
+		//{
+			//Serial.print("White");
+		//}
+		
+		//else if(minimumColor.value == sumRed.value)
+		//{
+			//Serial.print("Red");
+		//}
+		
+		//else if(minimumColor.value == sumBlue.value)
+		//{
+			//Serial.print("Blue");
+		//}
+		
+		//else
+		//{
+			//Serial.print("Green");
+		//}
+		
 		readCounter = 0;	sumWhite.value = 0;	sumRed.value = 0;	sumBlue.value = 0;	sumGreen.value = 0;	//Reinitalize all sums and count to 0	
 	}
 	
@@ -84,6 +137,8 @@ void detectColor(int taosOutPin){
 	} 
 
 }
+
+
 
 /*
 This section will return the pulseIn reading of the selected color.  
