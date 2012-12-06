@@ -18,8 +18,11 @@
 //TODO define the functionality of the states
 class ColorSensor{
 	public:
-		void testing();
+		void setup();
+		void loop();
+
 	private:
+        struct colorID minColor(colorID a, colorID b);
 		void TCS3200setup();
 		int detectColor(int taosOutPin);
 		float colorRead(int taosOutPin, int color, boolean LEDstate);

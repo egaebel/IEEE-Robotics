@@ -1,5 +1,8 @@
 /*
-VT IEEE color sensor adapted from code found at reibot.org (Eecher's TCS3200 program)
+    VT IEEE color sensor adapted from code found at reibot.org (Eecher's TCS3200 program)
+
+    testColorSensor used for printing out pulse values (testing on colored objects)
+
 */
 struct colorID {
 	double value;
@@ -14,12 +17,7 @@ int taosOutPin = 10;//pinC
 int LED = 13;//pinD
 
 int readCounter; //counter for looping colorReads
-//colorID sumWhite;
-//colorID sumRed;
-//colorID sumBlue;
-//colorID sumGreen;
 
-//colorID minimumColor;
 
 void setup() {
 	TCS3200setup();
