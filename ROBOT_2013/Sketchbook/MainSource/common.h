@@ -8,8 +8,7 @@
 enum POSITION{	POS_START = 0,
 				POS_SEA_LOAD,
 				POS_RAIL_LOAD,
-				POS_PICK_UP_RIGHT,
-				POS_PICK_UP_LEFT,
+				POS_PICK_UP,
 				POS_AIR
 	      	};
 
@@ -27,7 +26,7 @@ typedef struct block_t {
 block LClaw; //Block held by the left claw.
 block RClaw; //Block held by the right claw.
 
-block LoadingZone[14]; // Blocks in the loading zone, listed west to east.
+block loadingZone[14]; // Blocks in the loading zone, listed west to east.
 COLOR seaZone[6]; //Sea zone colors, listed south to north.
 COLOR railZone[6]; //Rail zone colors, listed west to east. 
 
