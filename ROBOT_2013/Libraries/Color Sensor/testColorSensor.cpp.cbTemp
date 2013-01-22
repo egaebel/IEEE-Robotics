@@ -36,7 +36,11 @@ void setup() {
 	sumGreen.color = 3;
 }
 
-
+void loop()	{
+	//delay(150); //Pauses program for 100ms
+	detectColor(taosOutPin); //read pulse readings for each color W,R,G,B
+	delay(100);
+}
 
 void TCS3200setup()	{
     //initialize pins
