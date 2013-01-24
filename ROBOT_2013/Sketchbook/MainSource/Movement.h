@@ -18,24 +18,28 @@ public:
 private:
 	Servo leftMotor;
 	Servo rightMotor;
-	Servo rearMotor;
+	Servo rearLeftMotor;
+        Servo rearRightMotor;
 	void setSpeed(Servo motor, float speed, bool inverted);
 };
 
 void Movement::init(){
 	leftMotor.attach(LEFT_MOTOR);
 	rightMotor.attach(RIGHT_MOTOR);
-	rearMotor.attach(REAR_MOTOR);
+	rearLeftMotor.attach(REAR_MOTOR_L);
+        rearRightMotor.attach(REAR_MOTOR_R);
 }
 
 void Movement::slideLeft(float speed){
 	//set rear motor left by speed
-	setSpeed(REAR_MOTOR,-speed);
+	setSpeed(REAR_MOTOR_L,-speed);
+        setSpeed(REAR_MOTOR_R,-speed);
 }
 
 void Movement::slideRight(float speed){
 	//set rear motor right by speed
-	setSpeed(REAR_MOTOR,speed);
+	setSpeed(REAR_MOTOR_L,speed);
+	setSpeed(REAR_MOTOR_R,speed);
 }
 
 void Movement::turnLeft(float speed){
@@ -68,7 +72,8 @@ void Movement::stop(){
 	//stop all motors
 	setSpeed(LEFT_MOTOR,0);
 	setSpeed(RIGHT_MOTOR,0);
-        setSpeed(REAR_MOTOR,0);
+        setSpeed(REAR_MOTOR_L,0);
+        setSpeed(REAR_MOTOR_R,0);
 }
 
 bool Movement::setSpeed(int servo, float speed){
@@ -79,8 +84,10 @@ bool Movement::setSpeed(int servo, float speed){
 		case RIGHT_MOTOR:
 			setSpeed(rightMotor,speed,true);
 			break;
-		case REAR_MOTOR:
-			setSpeed(rearMotor,speed,false);
+                case REAR_MOTOR_L:
+                case REAR_MOTOR_R:
+                	setSpeed(rearLeftMotor,speed,false);
+                        setSpeed(rearRightMotor,speed,false);
 			break;
 		default:
 			//opps

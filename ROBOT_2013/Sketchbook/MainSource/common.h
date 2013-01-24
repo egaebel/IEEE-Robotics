@@ -35,13 +35,15 @@ COLOR railZone[6]; //Rail zone colors, listed west to east.
 	//Motors (Servos)
 #define LEFT_MOTOR 13
 #define RIGHT_MOTOR 12
-#define REAR_MOTOR 11
+#define REAR_MOTOR 11 //Used for setSpeed
+#define REAR_MOTOR_L 11
+#define REAR_MOTOR_R 10
 	//Claw Servos
-#define LCLAW_SERVO 10
-#define RCLAW_SERVO 9
-#define LCLAW_EXTEND_SERVO 8
-#define RCLAW_EXTEND_SERVO 7
+#define LCLAW_SERVO 9
+#define RCLAW_SERVO 8
+#define LCLAW_EXTEND_SERVO 7
+#define RCLAW_EXTEND_SERVO 6
 	//Wallfolloer servos
-#define WALL_FOLLOW_SERVO 6
+#define WALL_FOLLOW_SERVO 5
 
 #endif

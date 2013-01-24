@@ -7,7 +7,7 @@
 #include "Movement.h"
 
 Movement move;
-/*
+
 void setup(){
   move.init();
 }
@@ -27,4 +27,3 @@ void loop(){
   move.slideRight(1);
   delay(5000);
 }
-*/
