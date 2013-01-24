@@ -4,6 +4,7 @@
 Movement move;
 
 int internalState; //a sub-state used in each state, state-ception
+int *zone;
 static int blockPos; //used to keep track where we are in a zone (ie 2 would be 3rd block in a loading zone)
 
 //*****START State Functions*****//
@@ -48,7 +49,6 @@ void initExit() {
 void scanEnter() {
     internalState = 0;
     blockPos = 0;
-    int zone[6];
     //change zone array based off the position
     if(curPos==POS_SEA_LOAD){
         zone = seaZone;
@@ -67,7 +67,7 @@ void scanUpdate() {
     switch(internalState){
         //Move until hitting a color
         case 0:
-            move.slideRight();
+            move.slideLeft();
             if(sensor.line != WHITE && sensor.line != BLACK){
                 zone[blockPos] = sensor.line;
                 blockPos++;
@@ -80,18 +80,19 @@ void scanUpdate() {
                 }
             }
         break;
+
         //We already read this color, so just keep moving until white
         case 1:
-            move.slightRight();
+            move.slightLeft();
             if(sensor.line == WHITE){
                 internalState = 0:
             }
-        //done
+        break;
+
         case 2:
             //our nextPos and curPos should be handled for us
             fsm->transitionTo(moveToState);
         break;
-
     }
 }
 
@@ -269,10 +270,22 @@ void moveToUpdate() {
     }
 }
 
-void moveToExit() {
-    
-    //stop listening to sensors
+void moveToExit() {}
+
+//Handles centering the robot on a particular space, so we can properly pickup/drop the block
+//mostly just reads the line array
+void centerEnter() {
+
+    //Figure out where you are in the pick up zone
+    //initialize necessary variables & sensors
 }
+
+void centerUpdate() {
+
+    //Perform the drop actions
+}
+
+void centerExit() {}
 
 //pickUpState
 void pickUpEnter() {
@@ -286,10 +299,7 @@ void pickUpUpdate() {
     //Perform the pick up actions
 }
 
-void pickUpExit() {
-    
-    //stop listening to sensors
-}
+void pickUpExit() {}
 
 //dropState
 void dropEnter() {
@@ -303,10 +313,7 @@ void dropUpdate() {
     //Perform the drop actions
 }
 
-void dropExit() {
-    
-    //stop listening to sensors
-}
+void dropExit() {}
 //*****END State Functions*****//
 
 //State objects
@@ -316,4 +323,5 @@ State scanState = State(scanEnter, scanUpdate, scanExit);
 State moveToState = State(moveToEnter, moveToUpdate, moveToExit);
 State pickUpState = State(pickUpEnter, pickUpUpdate, pickUpExit);
 State dropState = State(dropEnter, dropUpdate, dropExit);
+State centerState = State(centerEnter, centerUpdate, centerExit);
 //End State objects
