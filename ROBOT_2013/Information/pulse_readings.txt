@@ -1,0 +1,99 @@
+Blue card
+
+White:  24080.00  Blue:  30726.00  Red:  27063.00  Green:  29456.00
+White:  32183.00  Blue:  35615.00  Red:  29580.00  Green:  29453.00
+White:  28536.00  Blue:  34908.00  Red:  27619.00  Green:  27291.00
+White:  27028.00  Blue:  34359.00  Red:  28278.00  Green:  30678.00
+White:  31970.00  Blue:  42960.00  Red:  33208.00  Green:  33690.00
+White:  36832.00  Blue:  46642.00  Red:  34450.00  Green:  36824.00
+White:  35773.00  Blue:  45493.00  Red:  37933.00  Green:  39343.00
+White:  42235.00  Blue:  50109.00  Red:  38210.00  Green:  39184.00
+White:  39948.00  Blue:  48583.00  Red:  37458.00  Green:  38163.00
+White:  37265.00  Blue:  47970.00  Red:  38444.00  Green:  39184.00
+White:  38431.00  Blue:  46669.00  Red:  38020.00  Green:  37961.00
+
+Blue Block
+
+
+White:  29515.00  Blue:  36815.00  Red:  26991.00  Green:  27003.00
+White:  26831.00  Blue:  35164.00  Red:  26509.00  Green:  26958.00
+White:  26485.00  Blue:  34875.00  Red:  26953.00  Green:  25874.00
+White:  29389.00  Blue:  35559.00  Red:  27192.00  Green:  30229.00
+White:  35811.00  Blue:  54518.00  Red:  45032.00  Green:  51559.00
+White:  42161.00  Blue:  55168.00  Red:  41834.00  Green:  40549.00
+White:  40554.00  Blue:  59886.00  Red:  44291.00  Green:  45514.00
+White:  44137.00  Blue:  60610.00  Red:  40852.00  Green:  40402.00
+White:  40880.00  Blue:  55233.00  Red:  42984.00  Green:  41788.00
+White:  44324.00  Blue:  60918.00  Red:  45443.00  Green:  45274.00
+White:  45454.00  Blue:  80000.00  Red:  46678.00  Green:  46621.00
+White:  44238.00  Blue:  80000.00  Red:  46708.00  Green:  46703.00
+White:  45417.00  Blue:  80000.00  Red:  80000.00  Green:  80000.00
+White:  41733.00  Blue:  55211.00  Red:  41787.00  Green:  45980.00
+White:  40596.00  Blue:  54062.00  Red:  39167.00  Green:  38125.00
+
+Purple card
+
+White:  44921.00  Blue:  25754.00  Red:  46674.00  Green:  45399.00
+White:  47940.00  Blue:  28280.00  Red:  49114.00  Green:  48684.00
+White:  80000.00  Blue:  29454.00  Red:  47965.00  Green:  49227.00
+White:  80000.00  Blue:  28898.00  Red:  49026.00  Green:  46724.00
+White:  47904.00  Blue:  27958.00  Red:  46550.00  Green:  46758.00
+White:  47894.00  Blue:  27067.00  Red:  48104.00  Green:  47915.00
+White:  80000.00  Blue:  29485.00  Red:  51107.00  Green:  49851.00
+White:  52817.00  Blue:  30700.00  Red:  53278.00  Green:  52745.00
+White:  56477.00  Blue:  33166.00  Red:  55291.00  Green:  54205.00
+White:  80000.00  Blue:  29457.00  Red:  54066.00  Green:  54009.00
+White:  53943.00  Blue:  31506.00  Red:  54691.00  Green:  54030.00
+White:  52825.00  Blue:  29905.00  Red:  54045.00  Green:  52850.00
+White:  80000.00  Blue:  34485.00  Red:  57715.00  Green:  55307.00
+
+purple block
+
+White:  42923.00  Blue:  24581.00  Red:  42459.00  Green:  42888.00
+White:  44679.00  Blue:  26471.00  Red:  43285.00  Green:  40378.00
+White:  41699.00  Blue:  24536.00  Red:  41729.00  Green:  38551.00
+White:  38053.00  Blue:  22418.00  Red:  36250.00  Green:  36841.00
+White:  35624.00  Blue:  22016.00  Red:  34602.00  Green:  34401.00
+White:  34196.00  Blue:  18509.00  Red:  33023.00  Green:  35479.00
+
+Brown block
+
+hite:  80000.00  Blue:  49143.00  Red:  80000.00  Green:  80000.00
+White:  80000.00  Blue:  80000.00  Red:  80000.00  Green:  80000.00
+White:  80000.00  Blue:  52823.00  Red:  80000.00  Green:  80000.00
+White:  80000.00  Blue:  80000.00  Red:  80000.00  Green:  80000.00
+White:  80000.00  Blue:  47875.00  Red:  80000.00  Green:  80000.00
+White:  80000.00  Blue:  45884.00  Red:  80000.00  Green:  80000.00
+White:  80000.00  Blue:  50395.00  Red:  80000.00  Green:  80000.00
+White:  80000.00  Blue:  47916.00  Red:  80000.00  Green:  80000.00
+White:  80000.00  Blue:  47265.00  Red:  80000.00  Green:  80000.00
+White:  80000.00  Blue:  45448.00  Red:  80000.00  Green:  80000.00
+White:  80000.00  Blue:  43544.00  Red:  80000.00  Green:  80000.00
+White:  80000.00  Blue:  41798.00  Red:  80000.00  Green:  80000.00
+White:  80000.00  Blue:  41326.00  Red:  80000.00  Green:  80000.00
+
+Red block
+
+White:  48777.00  Blue:  6228.00  Red:  49200.00  Green:  50397.00
+White:  49024.00  Blue:  6144.00  Red:  50811.00  Green:  44963.00
+White:  46967.00  Blue:  6066.00  Red:  49144.00  Green:  47609.00
+White:  47884.00  Blue:  5480.00  Red:  47783.00  Green:  47877.00
+White:  47933.00  Blue:  5161.00  Red:  48873.00  Green:  48627.00
+White:  80000.00  Blue:  6076.00  Red:  50343.00  Green:  49223.00
+White:  50394.00  Blue:  6470.00  Red:  51756.00  Green:  52756.00
+White:  50296.00  Blue:  5609.00  Red:  50146.00  Green:  49076.00
+White:  49108.00  Blue:  6156.00  Red:  50983.00  Green:  50352.00
+White:  80000.00  Blue:  5971.00  Red:  47950.00  Green:  47942.00
+
+yellow block
+
+White:  4996.00  Blue:  2866.00  Red:  4925.00  Green:  4996.00
+White:  4908.00  Blue:  2713.00  Red:  4937.00  Green:  4922.00
+White:  5370.00  Blue:  2713.00  Red:  5164.00  Green:  5055.00
+White:  5243.00  Blue:  3015.00  Red:  5081.00  Green:  4894.00
+White:  4883.00  Blue:  2503.00  Red:  4737.00  Green:  4817.00
+White:  4628.00  Blue:  2657.00  Red:  4664.00  Green:  4867.00
+White:  4845.00  Blue:  2731.00  Red:  4736.00  Green:  4622.00
+White:  4921.00  Blue:  2736.00  Red:  4917.00  Green:  5060.00
+White:  5228.00  Blue:  2883.00  Red:  5236.00  Green:  5060.00
+

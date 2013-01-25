@@ -1,11 +1,11 @@
 #include "BackEndColorSensor.h"
 /*Pin Constants */
-int S0 = 8;//pinB
-int S1 = 9;//pinA
-int S2 = 12;//pinE
-int S3 = 11;//pinF
-int taosOutPin = 10;//pinC
-int LED = 13;//pinD
+int S0 = 22;//pinB
+int S1 = 24;//pinA
+int S2 = 26;//pinE
+int S3 = 28;//pinF
+int taosOutPin = 30;//pinC
+int LED = 32;//pinD
 
 
 //------------------------------TESTING ONLY ------------------------------------------------
@@ -50,7 +50,7 @@ BackEndColorSensor::BackEndColorSensor()    {
  * @returns the pulse of the desired color
  */
 float BackEndColorSensor::detectColor(int color)    {
-    return colorRead(taosOutPin,color,1);
+    return colorRead(taosOutPin,color,0);
 }
 
 /**
@@ -70,6 +70,9 @@ void BackEndColorSensor::TCS3200setup()   {
     //communication freq (sensitivity) selection
     pinMode(S0,OUTPUT); //S0 pinB
     pinMode(S1,OUTPUT); //S1 pinA
+    
+    digitalWrite(S0,HIGH);
+    digitalWrite(S1,HIGH);
 
     return;
 }

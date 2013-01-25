@@ -6,8 +6,8 @@ class BackEndColorSensor
     public:
         BackEndColorSensor(); //Nescessary color sensor setup called in constructor
         float detectColor(int color);
-    private:
         void TCS3200setup();
+    private:
         float colorRead(int taosOutPin, int color, boolean LEDstate);
 };
 
