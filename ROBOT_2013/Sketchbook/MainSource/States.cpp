@@ -304,13 +304,52 @@ void pickUpExit() {}
 //dropState
 void dropEnter() {
 
+    internal state = 0;
     //Figure out where you are in the pick up zone
     //initialize necessary variables & sensors
 }
 
 void dropUpdate() {
+    
+    //we aren't at air (phew!)
+    if (curPos != POS_AIR) {    
+        //scan and move until the second color is encountered (main case)
+        switch (internalState) {
+            case 0:
+                move.slideLeft();
+                if (lBlock == colorSensor.detectColor()) {
+                    internalState++;            
+                }
+                break;
+            case 1:
+                //drop left
+                lClaw.extend();
+                lClaw.drop();
+                lClaw.retract();
+                
+                //drop right
+                rClaw.extend();
+                rClaw.drop();
+                rClaw.retract();
 
-    //Perform the drop actions
+                internalState++;
+                break;
+            case 2:
+                //transition to move
+                fsm->transitionTo(moveToState);
+                nextPos = POS_PICK_UP;
+                break;
+        }
+    }
+    //we are at air
+    else {
+        //scan both spaces in air
+        //....
+        switch (internalState) {
+            case 0:
+                
+        }
+    }
 }
 
 void dropExit() {}
