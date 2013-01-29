@@ -25,6 +25,12 @@ ColorSensor::ColorSensor()
  */
 ColorSensor::detectColor(int numberOfPulseReadings) {
 
+    for(; numberOfPulseReadings > 0; numberOfPulseReadings--)  {
+        whitePulseValueTotal += backEnd.colorRead(0);
+        bluePulseValueTotal += backEnd.colorRead(1);
+        redPulseValueTotal += backEnd.colorRead(2);
+        greenPulseValueTotal += backEnd.colorRead(3);
+    }
 
 //TODO Look at results of color sensor pulse readings in the lab
 }
@@ -33,5 +39,18 @@ ColorSensor::detectColor(int numberOfPulseReadings) {
  * See detectColor(int numberOfPulseReadings) documentation
  */
 ColorSensor::detectColor()   {
+
+    for(int readCounter = 0; readCounter < 5; readCounter++)  {
+        whitePulseValueTotal += backEnd.colorRead(0);
+        bluePulseValueTotal += backEnd.colorRead(1);
+        redPulseValueTotal += backEnd.colorRead(2);
+        greenPulseValueTotal += backEnd.colorRead(3);
+    }
+
+
+
 //TODO Look at results of color sensor pulse readings in the lab
 }
+
+
+
