@@ -71,6 +71,10 @@ void BackEndColorSensor::TCS3200setup()   {
     pinMode(S0,OUTPUT); //S0 pinB
     pinMode(S1,OUTPUT); //S1 pinA
 
+    //this will put in 1:1, highest sensitivity
+    digitalWrite(S0, HIGH); //S0
+    digitalWrite(S1, HIGH); //S1
+
     return;
 }
 
