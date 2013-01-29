@@ -5,10 +5,18 @@
 extern State initState;
 FiniteStateMachine fsm(initState);
 //BackEndColorSensor colorSensor;
+Claw lClaw;
+Claw rClaw;
 
 void setup()
 {
   //colorSensor = new BackEndColorSensor();
+  
+  //setup claws
+  lClaw  = new Claw();
+  rClaw = new Claw();
+  lClaw.init(LCLAW_EXTEND_SERVO, LCLAW_SERVO);
+  rClaw.init(RCLAW_EXTEND_SERVO, RCLAW_SERVO);
   Serial.begin(9600);
 }
 

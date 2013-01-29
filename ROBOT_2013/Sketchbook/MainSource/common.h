@@ -12,19 +12,24 @@ enum POSITION{	POS_START = 0,
 				POS_AIR
 	      	};
 
-enum COLOR{}; //TODO: Colors Should be defined.
+enum COLOR{
+    WHITE = 0;
+    BLUE = 1;
+    RED = 2;
+    GREEN = 3;
+}; //TODO: Colors Should be defined.
 enum SIZE{}; //TODO: Sizes of the blocks.
 
-POSITION curPos = (POSITION)0;
-POSITION nextPos = (POSITION)0;
+POSITION curPos = POS_START;
+POSITION nextPos = NULL;
 
 typedef struct block_t {
 	COLOR color; 
 	SIZE size; 
 } block;
 
-block LClaw; //Block held by the left claw.
-block RClaw; //Block held by the right claw.
+block lBlock; //Block held by the left claw.
+block rBlock; //Block held by the right claw.
 
 block loadingZone[14]; // Blocks in the loading zone, listed west to east.
 COLOR seaZone[6]; //Sea zone colors, listed south to north.
