@@ -7,7 +7,7 @@ int S3 = 11;//pinF
 int taosOutPin = 10;//pinC
 int LED = 13;//pinD
 
-boolean LEDstate = 1; //LED is turned on
+bool LEDstate = 1; //LED is turned on
 
 
 //------------------------------TESTING ONLY ------------------------------------------------

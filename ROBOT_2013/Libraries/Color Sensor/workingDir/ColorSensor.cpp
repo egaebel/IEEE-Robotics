@@ -2,10 +2,11 @@
 
 //Feild Variables
 BackEndColorSensor backEnd;
-int whitePulseValueTotal;
-int bluePulseValueTotal;
-int redPulseValueTotal;
-int greenPulseValueTotal;
+//int whitePulseValueTotal;
+//int bluePulseValueTotal;
+//int redPulseValueTotal;
+//int greenPulseValueTotal;
+
 
 ColorSensor::ColorSensor()
 {
@@ -25,12 +26,29 @@ ColorSensor::ColorSensor()
  */
 ColorSensor::detectColor(int numberOfPulseReadings) {
 
+    int certaintyOfColor;
+    int [4] colorPulseValues = {0, 0, 0, 0};
+
     for(; numberOfPulseReadings > 0; numberOfPulseReadings--)  {
-        whitePulseValueTotal += backEnd.colorRead(0);
-        bluePulseValueTotal += backEnd.colorRead(1);
-        redPulseValueTotal += backEnd.colorRead(2);
-        greenPulseValueTotal += backEnd.colorRead(3);
+        pulseValues[0] += backEnd.colorRead(0);
+        pulseValues[1] += backEnd.colorRead(1);
+        pulseValues[2] += backEnd.colorRead(2);
+        pulseValues[3] += backEnd.colorRead(3);
     }
+
+    isBlue();
+    isYellow();
+    isBrown();
+    isRed();
+    isPurple();
+
+    //Clean-Up
+    pulseValues = {0, 0 , 0, 0};
+
+    //OR:
+//    for(i = 0; i < 4; i++)  {
+//        pulseValues[i] = 0;
+//    }
 
 //TODO Look at results of color sensor pulse readings in the lab
 }
@@ -39,18 +57,18 @@ ColorSensor::detectColor(int numberOfPulseReadings) {
  * See detectColor(int numberOfPulseReadings) documentation
  */
 ColorSensor::detectColor()   {
-
-    for(int readCounter = 0; readCounter < 5; readCounter++)  {
-        whitePulseValueTotal += backEnd.colorRead(0);
-        bluePulseValueTotal += backEnd.colorRead(1);
-        redPulseValueTotal += backEnd.colorRead(2);
-        greenPulseValueTotal += backEnd.colorRead(3);
-    }
-
-
-
-//TODO Look at results of color sensor pulse readings in the lab
+    detectColor(6);
 }
+
+/**
+ * Checks whether pusle values signify color blue.
+ */
+bool ColorSensor::isBlue()   {
+
+}
+
+
+
 
 
 
