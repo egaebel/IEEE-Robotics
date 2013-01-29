@@ -26,21 +26,21 @@ ColorSensor::ColorSensor()
  */
 ColorSensor::detectColor(int numberOfPulseReadings) {
 
-    int certaintyOfColor;
+    int certaintyBLUE, certaintyYELLOW, certaintyBROWN, certaintyRED, certaintyPURPLE;
+
     int [4] colorPulseValues = {0, 0, 0, 0};
 
     for(; numberOfPulseReadings > 0; numberOfPulseReadings--)  {
-        pulseValues[0] += backEnd.colorRead(0);
-        pulseValues[1] += backEnd.colorRead(1);
-        pulseValues[2] += backEnd.colorRead(2);
-        pulseValues[3] += backEnd.colorRead(3);
+        colorPulseValues[0] += backEnd.colorRead(0);
+        colorPulseValues[1] += backEnd.colorRead(1);
+        colorPulseValues[2] += backEnd.colorRead(2);
+        colorPulseValues[3] += backEnd.colorRead(3);
     }
 
-    isBlue();
-    isYellow();
-    isBrown();
-    isRed();
-    isPurple();
+    certaintyBLUE = isBlue(colorPulseValues); certaintyYELLOW = isYellow(colorPulseValues); certaintyBROWN = isBrown(colorPulseValues);
+    certaintyRED = isRed(colorPulseValues); certaintyPURPLE = isPurple(colorPulseValues);
+
+
 
     //Clean-Up
     pulseValues = {0, 0 , 0, 0};
@@ -61,9 +61,37 @@ ColorSensor::detectColor()   {
 }
 
 /**
- * Checks whether pusle values signify color blue.
+ * Returns certainty of being blue (scale 0-5)
  */
-bool ColorSensor::isBlue()   {
+int ColorSensor::isBlue(int *colorPulseValues)  {
+    *ColorPulseValues =
+
+}
+
+/**
+ * Returns certainty of being yellow (scale 0-5)
+ */
+int ColorSensor::isYellow(int *colorPulseValues[4])  {
+}
+
+/**
+ * Returns certainty of being brown (scale 0-5)
+ */
+int ColorSensor::isBrown(int *colorPulseValues[4])  {
+
+}
+
+/**
+ * Returns certainty of being red (scale 0-5)
+ */
+int ColorSensor::isRed(int *colorPulseValues[4])  {
+
+}
+
+/**
+ * Returns certainty of being purple (scale 0-5)
+ */
+int ColorSensor::isPurple(int *colorPulseValues[4])  {
 
 }
 

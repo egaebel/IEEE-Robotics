@@ -10,11 +10,11 @@ class ColorSensor
         int detectColor();
     protected:
     private:
-        int ColorSensor::isBlue(int *colorPulseValues);
-        int ColorSensor::isYellow(int *colorPulseValues);
-        int ColorSensor::isBrown(int *colorPulseValues);
-        int ColorSensor::isRed(int *colorPulseValues);
-        int ColorSensor::isPurple(int *colorPulseValues);
+        int ColorSensor::isBlue(int* colorPulseValues[4]);
+        int ColorSensor::isYellow(int *colorPulseValues[4]);
+        int ColorSensor::isBrown(int *colorPulseValues[4]);
+        int ColorSensor::isRed(int *colorPulseValues[4]);
+        int ColorSensor::isPurple(int *colorPulseValues[4]);
 };
 
 #endif // COLORSENSOR_H
