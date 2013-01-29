@@ -1,3 +1,4 @@
+#include "BackEndColorSensor.h"
 /*Pin Constants */
 int S0 = 8;//pinB
 int S1 = 9;//pinA
@@ -11,20 +12,23 @@ int LED = 13;//pinD
 /**
  * FOR TESTING SERIAL OUTPUT READ PULSE
  */
+ /*
 void loop()	{
 	//delay(150); //Pauses program for 100ms
 	detectColor(taosOutPin); //read pulse readings for each color W,R,G,B
 	delay(100); //100ms delay between pulse reads
 }
-
+*/
 /**
  * FOR TESTING SERIAL OUTPUT READ PULSE
  */
+ /*
 void setup() {
 	TCS3200setup();
 	Serial.begin(115200); //Sets the data transfer rate at 115.2 Kbps
 	Serial.print("\n\n\nready\n\n\n\n\n\n");
 }
+*/
 //--------------------------------END OF TESTING ONLY --------------------------------------------
 
 
@@ -45,14 +49,14 @@ BackEndColorSensor::BackEndColorSensor()    {
  *
  * @returns the pulse of the desired color
  */
-BackEndColorSensor::readPulse(int color)    {
+float BackEndColorSensor::detectColor(int color)    {
     return colorRead(taosOutPin,color,1);
 }
 
 /**
 * Setup for the Sensor
 */
-BackEndColorSensor::void TCS3200setup()   {
+void BackEndColorSensor::TCS3200setup()   {
     //initialize pins
     pinMode(LED,OUTPUT); //LED pinD
 
@@ -67,6 +71,10 @@ BackEndColorSensor::void TCS3200setup()   {
     pinMode(S0,OUTPUT); //S0 pinB
     pinMode(S1,OUTPUT); //S1 pinA
 
+    //this will put in 1:1, highest sensitivity
+    digitalWrite(S0, HIGH); //S0
+    digitalWrite(S1, HIGH); //S1
+
     return;
 }
 
@@ -74,9 +82,7 @@ BackEndColorSensor::void TCS3200setup()   {
  * Returns the pulse value for the desired color
  *
  */
-BackEndColorSensor::float colorRead(int taosOutPin, int color, boolean LEDstate)    {
-    //turn on sensor and use highest frequency/sensitivity setting
-    taosMode(1);
+float BackEndColorSensor::colorRead(int taosOutPin, int color, boolean LEDstate)    {
 
     //set the S2 and S3 pins to select the color to be sensed
     if(color == 0){//white
