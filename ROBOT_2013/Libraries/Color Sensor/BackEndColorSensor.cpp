@@ -7,6 +7,8 @@ int S3 = 11;//pinF
 int taosOutPin = 10;//pinC
 int LED = 13;//pinD
 
+boolean LEDstate = 1; //LED is turned on
+
 
 //------------------------------TESTING ONLY ------------------------------------------------
 /**
@@ -27,6 +29,20 @@ void setup() {
 	TCS3200setup();
 	Serial.begin(115200); //Sets the data transfer rate at 115.2 Kbps
 	Serial.print("\n\n\nready\n\n\n\n\n\n");
+
+	Serial.print("White: ");
+	Serial.print(colorRead(0));
+
+	Serial.print("\n\nBlue: ");
+	Serial.print(colorRead(1));
+
+	Serial.print("\n\nRed: ");
+	Serial.print(colorRead(2));
+
+	Serial.print("\n\nGreen: ");
+	Serial.print(colorRead(3));
+
+	Serial.print("\n\n\n\n");
 }
 */
 //--------------------------------END OF TESTING ONLY --------------------------------------------
@@ -49,40 +65,7 @@ BackEndColorSensor::BackEndColorSensor()    {
  *
  * @returns the pulse of the desired color
  */
-float BackEndColorSensor::detectColor(int color)    {
-    return colorRead(taosOutPin,color,1);
-}
-
-/**
-* Setup for the Sensor
-*/
-void BackEndColorSensor::TCS3200setup()   {
-    //initialize pins
-    pinMode(LED,OUTPUT); //LED pinD
-
-    //color mode selection
-    pinMode(S2,OUTPUT); //S2 pinE
-    pinMode(S3,OUTPUT); //s3 pinF
-
-    //color response pin (only actual input from taos)
-    pinMode(taosOutPin, INPUT); //taosOutPin pinC
-
-    //communication freq (sensitivity) selection
-    pinMode(S0,OUTPUT); //S0 pinB
-    pinMode(S1,OUTPUT); //S1 pinA
-
-    //this will put in 1:1, highest sensitivity
-    digitalWrite(S0, HIGH); //S0
-    digitalWrite(S1, HIGH); //S1
-
-    return;
-}
-
-/**
- * Returns the pulse value for the desired color
- *
- */
-float BackEndColorSensor::colorRead(int taosOutPin, int color, boolean LEDstate)    {
+float BackEndColorSensor::colorRead(int color)    {
 
     //set the S2 and S3 pins to select the color to be sensed
     if(color == 0){//white
@@ -132,4 +115,35 @@ float BackEndColorSensor::colorRead(int taosOutPin, int color, boolean LEDstate)
     // return the pulse value back to whatever called for it...
     return readPulse;
 }
+
+/**
+* Setup for the Sensor
+*/
+void BackEndColorSensor::TCS3200setup()   {
+    //initialize pins
+    pinMode(LED,OUTPUT); //LED pinD
+
+    //color mode selection
+    pinMode(S2,OUTPUT); //S2 pinE
+    pinMode(S3,OUTPUT); //s3 pinF
+
+    //color response pin (only actual input from taos)
+    pinMode(taosOutPin, INPUT); //taosOutPin pinC
+
+    //communication freq (sensitivity) selection
+    pinMode(S0,OUTPUT); //S0 pinB
+    pinMode(S1,OUTPUT); //S1 pinA
+
+    //this will put in 1:1, highest sensitivity
+    digitalWrite(S0, HIGH); //S0
+    digitalWrite(S1, HIGH); //S1
+
+    return;
+}
+
+/**
+ * Returns the pulse value for the desired color
+ *
+ */
+
 

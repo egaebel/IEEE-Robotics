@@ -24,6 +24,8 @@ ColorSensor::ColorSensor()
                     3 = green
  */
 ColorSensor::detectColor(int numberOfPulseReadings) {
+
+
 //TODO Look at results of color sensor pulse readings in the lab
 }
 
