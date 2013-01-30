@@ -87,19 +87,65 @@ int ColorSensor::isBlue(int colorPulseValues[4])  {
  * Returns certainty of being yellow (scale 0-5)
  */
 int ColorSensor::isYellow(int colorPulseValues[4])  {
+    int total = colorPulseValues[0] + colorPulseValues[1] + colorPulseValues[2] + colorPulseValues[3]
+    if(total < 75000)   {
+       if(abs(colorPulseValues[0] - colorPulseValues[2]) < colorPulseValues[2]/3
+          && abs(colorPulseValues[0] - colorPulseValues[3]) < colorPulseValues[3]/3)  {
+              return 5;
+
+       }
+       else if(abs(colorPulseValues[0] - colorPulseValues[2]) < colorPulseValues[2]/2
+          && abs(colorPulseValues[0] - colorPulseValues[3]) < colorPulseValues[3]/2) {
+              return 4;
+
+       }
+    }
+
+    else    {
+        return 0;
+    }
+
+
+
 }
 
 /**
  * Returns certainty of being brown (scale 0-5)
  */
 int ColorSensor::isBrown(int colorPulseValues[4])  {
+    difference = colorPulseValues[0] + colorPulseValues[2] + colorPulseValues[3] - colorPulseValues[1];
+    if(difference > colorPulseValues[1] * 4)    {
+        return 4;
+    }
 
+    else if(difference > (colorPulseValues[1] * 3 + colorPulseValues[1]/2)) {
+        return 3;
+    }
+
+    else    {
+        return 0;
+
+    }
 }
 
 /**
  * Returns certainty of being red (scale 0-5)
  */
 int ColorSensor::isRed(int colorPulseValues[4])  {
+    int difference = abs(colorPulseValues[3] - colorPulseValues[2]);
+    if(colorPulseValues[1]*8 < colorPulseValues[2] && difference < colorPulseValues[3]/8) {
+        return 5;
+    }
+
+    else if(colorPulseValues[1]*6 < colorPulseValues[2] && difference < colorPulseValues[3]/6)
+    {
+        return 4;
+    }
+
+    else
+    {
+        return 0;
+    }
 
 }
 
@@ -107,7 +153,18 @@ int ColorSensor::isRed(int colorPulseValues[4])  {
  * Returns certainty of being purple (scale 0-5)
  */
 int ColorSensor::isPurple(int colorPulseValues[4])  {
+    if(colorPulseValues[0]*4 > colorPulseValues[1]*7)   {
 
+        if(abs(colorPulseValues[2] - colorPulseValues[3]) < colorPulseValues[2]/5) {
+            return 5;
+        }
+        else {
+            return 3;
+        }
+    }
+    else {
+        return 0;
+    }
 }
 
 
