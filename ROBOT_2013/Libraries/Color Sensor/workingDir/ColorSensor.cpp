@@ -1,4 +1,5 @@
 #include "ColorSensor.h"
+#include <cmath>
 
 //Feild Variables
 BackEndColorSensor backEnd;
@@ -24,11 +25,18 @@ ColorSensor::ColorSensor()
                     2 = red
                     3 = green
  */
-ColorSensor::detectColor(int numberOfPulseReadings) {
+int ColorSensor::detectColor(int numberOfPulseReadings) {
 
     int certaintyBLUE, certaintyYELLOW, certaintyBROWN, certaintyRED, certaintyPURPLE;
 
     int [4] colorPulseValues = {0, 0, 0, 0};
+
+    for(int i = 0; i < 4; i++)  {
+        int throwAway = backEnd.colorRead(0); //Declared and destryoed at each run.
+        throwAway = backEnd.colorRead(1);
+        throwAway = backEnd.colorRead(2);
+        throwAway = backEnd.colorRead(3);
+    }
 
     for(; numberOfPulseReadings > 0; numberOfPulseReadings--)  {
         colorPulseValues[0] += backEnd.colorRead(0);
@@ -56,42 +64,49 @@ ColorSensor::detectColor(int numberOfPulseReadings) {
 /**
  * See detectColor(int numberOfPulseReadings) documentation
  */
-ColorSensor::detectColor()   {
+int ColorSensor::detectColor()   {
     detectColor(6);
 }
 
 /**
  * Returns certainty of being blue (scale 0-5)
  */
-int ColorSensor::isBlue(int *colorPulseValues)  {
-    *ColorPulseValues =
+int ColorSensor::isBlue(int colorPulseValues[4])  {
+    int difference = abs(cmath.a colorPulseValues[1] * 3 - (colorPulseValues[0] + colorPulseValues[2] + colorPulseValues[3]));
+    if(difference > 120000) {
+        return 5;
+    }
+    else if (difference > 80000)    {
+        return 3;
+    }
 
+    return 0;
 }
 
 /**
  * Returns certainty of being yellow (scale 0-5)
  */
-int ColorSensor::isYellow(int *colorPulseValues[4])  {
+int ColorSensor::isYellow(int colorPulseValues[4])  {
 }
 
 /**
  * Returns certainty of being brown (scale 0-5)
  */
-int ColorSensor::isBrown(int *colorPulseValues[4])  {
+int ColorSensor::isBrown(int colorPulseValues[4])  {
 
 }
 
 /**
  * Returns certainty of being red (scale 0-5)
  */
-int ColorSensor::isRed(int *colorPulseValues[4])  {
+int ColorSensor::isRed(int colorPulseValues[4])  {
 
 }
 
 /**
  * Returns certainty of being purple (scale 0-5)
  */
-int ColorSensor::isPurple(int *colorPulseValues[4])  {
+int ColorSensor::isPurple(int colorPulseValues[4])  {
 
 }
 
