@@ -31,7 +31,7 @@ void initUpdate() {
             move.foward();
             if(wallFollower.isTouching()){
                 curPos = POS_START;
-                nextPos = POS_SEA_LOAD;
+                nextPos = POS_SEA;
                 fsm->transitionTo(moveToState)
             }
         break;
@@ -50,10 +50,10 @@ void scanEnter() {
     internalState = 0;
     blockPos = 0;
     //change zone array based off the position
-    if(curPos==POS_SEA_LOAD){
+    if(curPos == POS_SEA){
         zone = seaZone;
     }
-    else if (curPos == POS_RAIL_LOAD) {
+    else if (curPos == POS_RAIL) {
         zone = railZone;
     }
     else if (cur == POS_PICK_UP) {
@@ -67,7 +67,13 @@ void scanUpdate() {
     switch(internalState){
         //Move until hitting a color
         case 0:
-            move.slideLeft();
+            if (curPos == POS_PICK_UP) {
+                move.slideLeft();
+            }
+            else {
+                move.slideRight();
+            }
+
             if(sensor.line != WHITE && sensor.line != BLACK){
                 zone[blockPos] = sensor.line;
                 blockPos++;
@@ -79,20 +85,25 @@ void scanUpdate() {
                     internalState = 1;
                 }
             }
-        break;
-
+            break;
         //We already read this color, so just keep moving until white
         case 1:
-            move.slightLeft();
+            if (curPos == POS_PICK_UP) {
+                move.slideLeft();
+            }
+            else {
+                move.slideRight();
+            }
+
             if(sensor.line == WHITE){
                 internalState = 0:
             }
-        break;
+            break;
 
         case 2:
             //our nextPos and curPos should be handled for us
             fsm->transitionTo(moveToState);
-        break;
+            break;
     }
 }
 
@@ -113,8 +124,8 @@ void moveToEnter() {
 //Seems messy to have seperate statements for each move, but allows us to tweak each move in case of issues
 void moveToUpdate() {
 
-    //Start to sea load    
-    if(curPos == POS_START && nextPos == POS_SEA_LOAD){
+    //Start to sea (1 in state diagram) 
+    if(curPos == POS_START && nextPos == POS_SEA){
         switch(internalState){
             case 0:
                 move.slideRight();
@@ -123,31 +134,54 @@ void moveToUpdate() {
                 }
                 break;
             case 1:
-                move.slideLeft();
+                move.slideRight();
                 if(sensor.line() == WHITE){
                     if (isScanning) {
-                        fsm->transitionTo(scanState); //start scanning
+                        fsm->transitionTo(scanState); 
                         curPos = nextPos;
-                        nextPos = POS_RAIL_LOAD; //we want to scan rail next
+                        nextPos = POS_START;
                     }
                     else{
-                        fsm->transitionTo(dropState); //start dropping
+                        //INSERT LINE SENSOR CODE TO DETERMINE WHERE TO DROP
+                        fsm->transitionTo(dropState);
                         curPos = nextPos;
-                        nextPos = POS_PICK_UP; //after drop off, go to pick up
+                        nextPos = POS_START;
                     }
                 }
                 break;
         }
     }
-    //Sea load to rail load
-    else if(curPos == POS_SEA_LOAD && nextPos == POS_RAIL_LOAD){
-        switch(internalState){
-            //turn and hit the wall
+    //sea to start (2 in state diagram)
+    else if (curPos == POS_SEA && nextPos == POS_START) {
+        switch(internalState) {
+            //go left until wall is close (sonar?)
             case 0:
+                //TODO: use sonar code somehow
+                internalState++;
+                break;
+            case 1:
+                curPos = nextPos;
+                nextPos = POS_RAIL;
+                fsm->transitionTo(moveTo);
+                break;
+        }
+    }
+    //start to rail (3 in state diagram)
+    else if(curPos == POS_START && nextPos == POS_RAIL){
+        switch(internalState){
+            
+            //move back and right
+            case 0:
+                move.backward();
+                move.right();
+                internalState++;
+                break;
+            //turn
+            case 1:
                 move.turnLeft();
                 internalState++;
                 break;
-
+            //and hit the wall
             case 1:
                 move.forward();
                 if(sensor.wall() == TRUE){
@@ -167,101 +201,89 @@ void moveToUpdate() {
                 move.slideRight();
                 if(sensor.line() == WHITE){
                     curPos = nextPos;
-                    nextPos = POS_PICK_UP; //after scanning, go to pick up
-                    fsm->transitionTo(scanState); //start scanning
+                    nextPos = POS_PICK_UP;
+                    fsm->transitionTo(scanState);
                 }
                 break;
         }
     }
-
-    else if(curPos == POS_RAIL_LOAD && nextPos == POS_PICK_UP){
+    //RAIL to PICK_UP (4 in state diagram)
+    else if(curPos == POS_RAIL && nextPos == POS_PICK_UP){
         switch(internalState){
-            //turn and hit the wall
+            //turn
             case 0:
                 move.turnAround();
                 internalState++;
                 break;
-
+            // and hit the wall
             case 1:
                 move.forward();
                 if(sensor.wall() == TRUE){
                     internalState++;
                 }
                 break;
-            //slide right until we hit a color
-            //don't care about white lines because the start position has white lines that will screw everything up
+            //slide left until we hit a color
             case 2:
                 move.slideLeft();
-                if(sensor.line() != WHITE && sensor.line() != BLACK){
-                    internalState++;
-                    fsm->transitionTo(pickUpState);
-                    curPos = nextPos;
-                    nextPos = POS_PICK_UP;
-                }
-                break;
-        }
-    }
-    //sea to pickup
-    else if(curPos == POS_SEA_LOAD && nextPos == POS_PICK_UP){
-        
-        switch (internalState) {
-        
-            case 0:
-                move.turnRight();
-                internalState++;
-                break;
-            case 1:
-                move.forward();
-                if(sensor.wall() == TRUE){
-                    internalState++;
-                }
-                break;
-            case 2:
-                move.slideRight();
-                if (sensor.line() == WHITE) {
-                    fsm->transitionTo(pickUpState);
-                    curPos = nextPos;
-                    nextPos = POS_PICK_UP;
-                }
-                break;
-        }
-    }
-    //pickup to sea
-    else if(curPos == POS_PICK_UP && nextPos == POS_SEA_LOAD){
+                if(sensor.line() != WHITE && sensor.line() != BLACK) {
 
-        switch(internalState) {
+                    if (/*the pickup position hasn't been filled*/) {
 
-            case 0:
-                move.turnLeft();
-                internalState++;
-                break;
-            case 1:
-                move.forward();
-                if(sensor.wall() == TRUE){
-                    fsm->transitionTo(dropState);
+                        fsm->transitionTo(scanState);
+                    }
+                    else {
+                        fsm->transitionTo(pickUpState);
+                    }
                     curPos = nextPos;
-                    nextPos = POS_SEA_LOAD;
+                    nextPos = POS_RAIL;
                 }
                 break;
         }
     }
-    //pickup to rail
-    else if(curPos == POS_PICK_UP && nextPos == POS_RAIL_LOAD){
+    //pickup to rail (5 in state diagram)
+    else if(curPos == POS_PICK_UP && nextPos == POS_RAIL){
         
         switch(internalState) {
 
+            //slide to end of pickup by ramp
             case 0:
+                //TODO slide to the "end" of the PICK_UP
+                break;
+            case 1:
                 move.turnAround();
                 internalState++;
                 break;
-            case 1:
+            case 2:
                 move.forward();
                 if(sensor.wall() == TRUE){
-                    fsm->transitionTo(dropState);
-                    curPos = nextPos;
-                    nextPos = POS_SEA_LOAD;
+                    
+                    if (/*RAIL ISN'T FULL*/) {
+                        curPos = nextPos;
+                        nextPos = POS_PICK_UP;
+                        fsm->transitionTo(dropState);
+                    }
+                    else if (/*SEA ISN'T FULL*/) {
+                        curPos = nextPos;
+                        nextPos = POS_START;
+                        fsm->transitionTo(moveTo);
+                    }
+                    else {
+                        //TODO: Kickstart the air states
+                    }
                 }
                 break;
+        }
+    }
+    //rail to start (6 in state diagram)
+    else if (curPos == POS_RAIL && nextPos == POS_START) {
+
+        switch (internalState) {
+            case 0:
+            break;
+            case 1:
+            break;
+            case 2:
+            break;
         }
     }
     else{
@@ -322,14 +344,14 @@ void dropUpdate() {
                 }
                 break;
             case 1:
-                //drop left
+                //drop blocks
                 lClaw.extend();
-                lClaw.drop();
-                lClaw.retract();
-                
-                //drop right
                 rClaw.extend();
+
+                lClaw.drop();
                 rClaw.drop();
+
+                lClaw.retract();
                 rClaw.retract();
 
                 internalState++;
