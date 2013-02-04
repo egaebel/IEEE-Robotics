@@ -4,7 +4,7 @@
 /*
  * This is where all globals and constants should be defined
 */
-
+//Enumerations
 enum POSITION{	POS_START = 0,
 				POS_SEA,
 				POS_RAIL,
@@ -23,6 +23,7 @@ enum SIZE{
 	SMALL, MEDIUM, LARGE
 };
 
+//Structs
 POSITION curPos = POS_START;
 POSITION nextPos = NULL;
 
