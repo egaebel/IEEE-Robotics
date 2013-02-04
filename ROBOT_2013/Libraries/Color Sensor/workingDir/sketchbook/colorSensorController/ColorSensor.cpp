@@ -1,8 +1,8 @@
 #include "ColorSensor.h"
-#include <cmath>
+#include "BackEndColorSensor.h"
 
 //Feild Variables
-BackEndColorSensor backEnd;
+BackEndColorSensor *backEnd;
 //int whitePulseValueTotal;
 //int bluePulseValueTotal;
 //int redPulseValueTotal;
@@ -11,7 +11,7 @@ BackEndColorSensor backEnd;
 
 ColorSensor::ColorSensor()
 {
-    backEnd = new BackEndColorSensor();
+    backEnd = &BackEndColorSensor();
 }
 
 /**
@@ -31,20 +31,20 @@ int ColorSensor::detectColor(int numberOfPulseReadings) {
     int certaintyBLUE, certaintyYELLOW, certaintyBROWN, certaintyRED, certaintyPURPLE;
 
     int certaintyFinalistOne, certaintyFinalistTwo;
-    int [4] colorPulseValues = {0, 0, 0, 0};
+    int colorPulseValues [4] = {0, 0, 0, 0};
 
     for(int i = 0; i < 4; i++)  {
-        int throwAway = backEnd.colorRead(0); //Declared and destryoed at each run.
-        throwAway = backEnd.colorRead(1);
-        throwAway = backEnd.colorRead(2);
-        throwAway = backEnd.colorRead(3);
+        int throwAway = backEnd->colorRead(0); //Declared and destryoed at each run.
+        throwAway = backEnd->colorRead(1);
+        throwAway = backEnd->colorRead(2);
+        throwAway = backEnd->colorRead(3);
     }
 
     for(; numberOfPulseReadings > 0; numberOfPulseReadings--)  {
-        colorPulseValues[0] += backEnd.colorRead(0);
-        colorPulseValues[1] += backEnd.colorRead(1);
-        colorPulseValues[2] += backEnd.colorRead(2);
-        colorPulseValues[3] += backEnd.colorRead(3);
+        colorPulseValues[0] += backEnd->colorRead(0);
+        colorPulseValues[1] += backEnd->colorRead(1);
+        colorPulseValues[2] += backEnd->colorRead(2);
+        colorPulseValues[3] += backEnd->colorRead(3);
     }
 
     certaintyBLUE = isBlue(colorPulseValues); certaintyYELLOW = isYellow(colorPulseValues); certaintyBROWN = isBrown(colorPulseValues);
@@ -85,64 +85,20 @@ int ColorSensor::detectColor(int numberOfPulseReadings) {
             certaintyFinalistTwo = 5;
         }
     }
+    
+    //Clean-Up
+    colorPulseValues = {0, 0 , 0, 0};
 
     return (certaintyFinalistOne + certaintyFinalistTwo);
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    if(certaintyBLUE == 5)  {
-        if(certaintyFinalistOne == 0)   {
-        certaintyFinalistOne = 200;
-        }
-        else
-    }
-
-    if(certaintyBLUE == 5)  {
-        certaintyFinalistOne = 1;
-    }
-
-    if(certaintyBLUE == 5)  {
-        certaintyFinalistOne = 1;
-    }
-
-    if(certaintyBLUE == 5)  {
-        certaintyFinalistOne = 1;
-    }
-
-
-
-    //Clean-Up
-    pulseValues = {0, 0 , 0, 0};
+    
 
     //OR:
 //    for(i = 0; i < 4; i++)  {
-//        pulseValues[i] = 0;
+//        colorPulseValues[i] = 0;
 //    }
 
-//TODO Look at results of color sensor pulse readings in the lab
-}
+
 
 /**
  * See detectColor(int numberOfPulseReadings) documentation
@@ -155,7 +111,7 @@ int ColorSensor::detectColor()   {
  * Returns certainty of being blue (scale 0-5)
  */
 int ColorSensor::isBlue(int colorPulseValues[4])  {
-    int difference = abs(cmath.a colorPulseValues[1] * 3 - (colorPulseValues[0] + colorPulseValues[2] + colorPulseValues[3]));
+    int difference = absoluteValue(colorPulseValues[1] * 3 - (colorPulseValues[0] + colorPulseValues[2] + colorPulseValues[3]));
     if(difference > 120000) {
         return 5;
     }
@@ -170,15 +126,15 @@ int ColorSensor::isBlue(int colorPulseValues[4])  {
  * Returns certainty of being yellow (scale 0-5)
  */
 int ColorSensor::isYellow(int colorPulseValues[4])  {
-    int total = colorPulseValues[0] + colorPulseValues[1] + colorPulseValues[2] + colorPulseValues[3]
+    int total = colorPulseValues[0] + colorPulseValues[1] + colorPulseValues[2] + colorPulseValues[3];
     if(total < 75000)   {
-       if(abs(colorPulseValues[0] - colorPulseValues[2]) < colorPulseValues[2]/3
-          && abs(colorPulseValues[0] - colorPulseValues[3]) < colorPulseValues[3]/3)  {
+       if(absoluteValue(colorPulseValues[0] - colorPulseValues[2]) < colorPulseValues[2]/3
+          && absoluteValue(colorPulseValues[0] - colorPulseValues[3]) < colorPulseValues[3]/3)  {
               return 5;
 
        }
-       else if(abs(colorPulseValues[0] - colorPulseValues[2]) < colorPulseValues[2]/2
-          && abs(colorPulseValues[0] - colorPulseValues[3]) < colorPulseValues[3]/2) {
+       else if(absoluteValue(colorPulseValues[0] - colorPulseValues[2]) < colorPulseValues[2]/2
+          && absoluteValue(colorPulseValues[0] - colorPulseValues[3]) < colorPulseValues[3]/2) {
               return 4;
 
        }
@@ -196,7 +152,7 @@ int ColorSensor::isYellow(int colorPulseValues[4])  {
  * Returns certainty of being brown (scale 0-5)
  */
 int ColorSensor::isBrown(int colorPulseValues[4])  {
-    difference = colorPulseValues[0] + colorPulseValues[2] + colorPulseValues[3] - colorPulseValues[1];
+    int difference = colorPulseValues[0] + colorPulseValues[2] + colorPulseValues[3] - colorPulseValues[1];
     if(difference > colorPulseValues[1] * 4)    {
         return 4;
     }
@@ -215,7 +171,7 @@ int ColorSensor::isBrown(int colorPulseValues[4])  {
  * Returns certainty of being red (scale 0-5)
  */
 int ColorSensor::isRed(int colorPulseValues[4])  {
-    int difference = abs(colorPulseValues[3] - colorPulseValues[2]);
+    int difference = absoluteValue(colorPulseValues[3] - colorPulseValues[2]);
     if(colorPulseValues[1]*8 < colorPulseValues[2] && difference < colorPulseValues[3]/8) {
         return 5;
     }
@@ -238,7 +194,7 @@ int ColorSensor::isRed(int colorPulseValues[4])  {
 int ColorSensor::isPurple(int colorPulseValues[4])  {
     if(colorPulseValues[0]*4 > colorPulseValues[1]*7)   {
 
-        if(abs(colorPulseValues[2] - colorPulseValues[3]) < colorPulseValues[2]/5) {
+        if(absoluteValue(colorPulseValues[2] - colorPulseValues[3]) < colorPulseValues[2]/5) {
             return 5;
         }
         else {
@@ -250,6 +206,10 @@ int ColorSensor::isPurple(int colorPulseValues[4])  {
     }
 }
 
+
+int ColorSensor::absoluteValue(int a)  {
+  return ((a*a)/a);
+}
 
 
 
