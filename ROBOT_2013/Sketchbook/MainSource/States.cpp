@@ -209,6 +209,7 @@ void moveToUpdate() {
     }
     //RAIL to PICK_UP (4 in state diagram)
     else if(curPos == POS_RAIL && nextPos == POS_PICK_UP){
+        
         switch(internalState){
             //turn
             case 0:
@@ -227,7 +228,7 @@ void moveToUpdate() {
                 move.slideLeft();
                 if(sensor.line() != WHITE && sensor.line() != BLACK) {
 
-                    if (/*the pickup position hasn't been filled*/) {
+                    if (/*the pickup position hasn't been scanned*/) {
 
                         fsm->transitionTo(scanState);
                     }
@@ -247,7 +248,10 @@ void moveToUpdate() {
 
             //slide to end of pickup by ramp
             case 0:
-                //TODO slide to the "end" of the PICK_UP
+                move.slideRight();
+                if (/*at last cell (rightmost if looking at stage with ramp in back) in pickup*/) {
+                    internalState++;
+                }
                 break;
             case 1:
                 move.turnAround();
@@ -279,10 +283,29 @@ void moveToUpdate() {
 
         switch (internalState) {
             case 0:
+                move.slideRight();
+                if (sensor.line() == WHITE) {
+                    internalState++;
+                }
             break;
             case 1:
+                //TODO: move backwards a certain amount (small amount)
+                move.backward();
+                internalState++;
             break;
             case 2:
+                move.turnRight();
+                internalState++;
+            break;
+            case 3:
+                move.forward();
+                if (sensor.wall() == TRUE) {
+                    internalState++;
+                }
+            break;
+            case 4:
+                curPos = nextPos;
+                nextPos = POS_START;
             break;
         }
     }
