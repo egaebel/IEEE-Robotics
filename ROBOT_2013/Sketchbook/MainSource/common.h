@@ -6,19 +6,22 @@
 */
 
 enum POSITION{	POS_START = 0,
-				POS_SEA_LOAD,
-				POS_RAIL_LOAD,
-				POS_PICK_UP,
+				POS_SEA,
+				POS_RAIL,
+				POS_LOAD,
 				POS_AIR
 	      	};
 
 enum COLOR{
-    WHITE = 0;
-    BLUE = 1;
-    RED = 2;
-    GREEN = 3;
-}; //TODO: Colors Should be defined.
-enum SIZE{}; //TODO: Sizes of the blocks.
+    WHITE = 0,
+    BLUE = 1,
+    RED = 2,
+    GREEN = 3
+}; //TODO: There are still some colors to be defined, waiting on color sensor defs
+
+enum SIZE{
+	SMALL, MEDIUM, LARGE
+};
 
 POSITION curPos = POS_START;
 POSITION nextPos = NULL;

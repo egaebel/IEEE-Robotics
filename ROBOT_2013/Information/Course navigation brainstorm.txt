@@ -1,0 +1,13 @@
+*Start pickup at the side closest to the ramp ALWAYS
+*Fill rail (loading bay opposite side of pickup) from the starting zone over
+*Dropoff at sea (side at right angle from pickup) by doing a 180 at *start* of pickup zone
+	going against the rail side wall, going down to the last line, and turning after the last line,
+	then going against the wall on the sea side and drop off
+
+*Order of actions (from a high point)
+	--scan sea
+	--scan rail
+	--scan loading
+	--fill rail (except for the two spaces closest to the ramp?)
+	--fill sea
+	--fill air
