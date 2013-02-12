@@ -19,7 +19,7 @@ private:
 	Servo leftMotor;
 	Servo rightMotor;
 	Servo rearLeftMotor;
-        Servo rearRightMotor;
+    Servo rearRightMotor;
 	void setSpeed(Servo motor, float speed, bool inverted);
 };
 

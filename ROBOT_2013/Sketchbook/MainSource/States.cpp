@@ -21,14 +21,14 @@ void initUpdate() {
 
     switch(internalState){
         case 0:
-            move.back();
+            move.back(0.25);
             if(sensor.line()==WHITE){
                 wallFollower.lower();
                 internalState++;
             }
             break;
         case 1:
-            move.foward();
+            move.foward(0.25);
             if(wallFollower.isTouching()){
                 curPos = POS_START;
                 nextPos = POS_SEA;
@@ -68,10 +68,10 @@ void scanUpdate() {
         //Move until hitting a color
         case 0:
             if (curPos == POS_PICK_UP) {
-                move.slideLeft();
+                move.slideLeft(0.25);
             }
             else {
-                move.slideRight();
+                move.slideRight(0.25);
             }
 
             if(sensor.line != WHITE && sensor.line != BLACK){
@@ -89,10 +89,10 @@ void scanUpdate() {
         //We already read this color, so just keep moving until white
         case 1:
             if (curPos == POS_PICK_UP) {
-                move.slideLeft();
+                move.slideLeft(0.25);
             }
             else {
-                move.slideRight();
+                move.slideRight(0.25);
             }
 
             if(sensor.line == WHITE){
@@ -128,14 +128,14 @@ void moveToUpdate() {
     if(curPos == POS_START && nextPos == POS_SEA){
         switch(internalState){
             case 0:
-                move.slideRight();
+                move.slideRight(0.25);
                 if(sensor.line() != WHITE && sensor.line() != BLACK){
                     internalState++;
                 }
                 break;
             case 1:
-                move.slideRight();
-                if(sensor.line() == WHITE){
+                move.slideRight(0.25);
+                if(line.detectRight()){
                     if (isScanning) {
                         fsm->transitionTo(scanState); 
                         curPos = nextPos;
@@ -154,16 +154,31 @@ void moveToUpdate() {
     //sea to start (2 in state diagram)
     else if (curPos == POS_SEA && nextPos == POS_START) {
         switch(internalState) {
-            //go left until wall is close (sonar?)
             case 0:
-                //TODO: use sonar code somehow
-                internalState++;
-                break;
+                move.slideLeft(0.25);
+                if (line.detectLeft()) {
+                    internalState++;
+                }
+            break;
             case 1:
+                //TODO: move backwards a certain amount (small amount)
+                move.backward(0.25);
+                internalState++;
+            break;
+            case 2:
+                move.turnLeft(0.25);
+                internalState++;
+            break;
+            case 3:
+                move.forward(0.1);
+                if (wallFollower.isTouching()) {
+                    internalState++;
+                }
+            break;
+            case 4:
                 curPos = nextPos;
                 nextPos = POS_RAIL;
-                fsm->transitionTo(moveTo);
-                break;
+            break;
         }
     }
     //start to rail (3 in state diagram)
@@ -172,34 +187,34 @@ void moveToUpdate() {
             
             //move back and right
             case 0:
-                move.backward();
-                move.right();
+                move.backward(0.25);
+                move.right(0.25);
                 internalState++;
                 break;
             //turn
             case 1:
-                move.turnLeft();
+                move.turnLeft(0.25);
                 internalState++;
                 break;
             //and hit the wall
             case 1:
-                move.forward();
-                if(sensor.wall() == TRUE){
+                move.forward(0.1);
+                if(wallFollower.isTouching()){
                     internalState++;
                 }
                 break;
             //slide left until we hit a color
             //don't care about white lines because the start position has white lines that will screw everything up
             case 2:
-                move.slideLeft();
+                move.slideLeft(0.25);
                 if(sensor.line() != WHITE && sensor.line() != BLACK){
                     internalState++;
                 }
                 break;
             //go back to the first white line then change state
             case 3:
-                move.slideRight();
-                if(sensor.line() == WHITE){
+                move.slideRight(0.25);
+                if(line.detectLeft()){
                     curPos = nextPos;
                     nextPos = POS_PICK_UP;
                     fsm->transitionTo(scanState);
@@ -213,22 +228,23 @@ void moveToUpdate() {
         switch(internalState){
             //turn
             case 0:
-                move.turnAround();
+                move.turnAround(0.25);
                 internalState++;
                 break;
             // and hit the wall
             case 1:
-                move.forward();
-                if(sensor.wall() == TRUE){
+                move.forward(0.1);
+                if(wallFollower.isTouching()){
                     internalState++;
                 }
                 break;
             //slide left until we hit a color
             case 2:
-                move.slideLeft();
+                move.slideLeft(0.25);
                 if(sensor.line() != WHITE && sensor.line() != BLACK) {
 
-                    if (/*the pickup position hasn't been scanned*/) {
+                    //loading area hasn't been scanned yet
+                    if (loadingZone[0] == NULL) {
 
                         fsm->transitionTo(scanState);
                     }
@@ -248,29 +264,32 @@ void moveToUpdate() {
 
             //slide to end of pickup by ramp
             case 0:
-                move.slideRight();
+                move.slideRight(0.25);
                 if (/*at last cell (rightmost if looking at stage with ramp in back) in pickup*/) {
                     internalState++;
                 }
                 break;
             case 1:
-                move.turnAround();
+                move.turnAround(0.25);
                 internalState++;
                 break;
             case 2:
-                move.forward();
-                if(sensor.wall() == TRUE){
+                move.forward(0.1);
+                if(wallFollower.isTouching()){
                     
-                    if (/*RAIL ISN'T FULL*/) {
+                    //if rail isn't full
+                    if (!fullOfBlocks(railZone, RAIL_SEA_SIZE)) {
                         curPos = nextPos;
                         nextPos = POS_PICK_UP;
                         fsm->transitionTo(dropState);
                     }
-                    else if (/*SEA ISN'T FULL*/) {
+                    //if sea isn't full
+                    else if (!fullOfBlocks(seaZone, RAIL_SEA_SIZE)) {
                         curPos = nextPos;
                         nextPos = POS_START;
                         fsm->transitionTo(moveTo);
                     }
+                    //if air isn't full
                     else {
                         //TODO: Kickstart the air states
                     }
@@ -283,29 +302,29 @@ void moveToUpdate() {
 
         switch (internalState) {
             case 0:
-                move.slideRight();
-                if (sensor.line() == WHITE) {
+                move.slideRight(0.25);
+                if (line.detectRight()) {
                     internalState++;
                 }
             break;
             case 1:
                 //TODO: move backwards a certain amount (small amount)
-                move.backward();
+                move.backward(0.2);
                 internalState++;
             break;
             case 2:
-                move.turnRight();
+                move.turnRight(0.25);
                 internalState++;
             break;
             case 3:
-                move.forward();
-                if (sensor.wall() == TRUE) {
+                move.forward(0.1);
+                if (wallFollower.isFollower()) {
                     internalState++;
                 }
             break;
             case 4:
                 curPos = nextPos;
-                nextPos = POS_START;
+                nextPos = POS_SEA;
             break;
         }
     }
@@ -361,7 +380,7 @@ void dropUpdate() {
         //scan and move until the second color is encountered (main case)
         switch (internalState) {
             case 0:
-                move.slideLeft();
+                move.slideLeft(0.25);
                 if (lBlock == colorSensor.detectColor()) {
                     internalState++;            
                 }
