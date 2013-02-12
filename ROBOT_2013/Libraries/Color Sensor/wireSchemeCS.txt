@@ -1,0 +1,10 @@
+pin #     arduinowire.TC3200 wire
+S0 = 22 = brown.brown
+s1 = 26 = blue.blue
+s2 = 30 = yellow.yellow
+s3 = 34 = orange.orange
+taosOutPin = 38 = green.green
+LED = 42 = white.white
+
+5v = red.red
+ground = orange.black

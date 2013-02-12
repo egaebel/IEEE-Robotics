@@ -5,6 +5,7 @@ BackEndColorSensor *backEnd;
 
 void setup() {
     backEnd = &BackEndColorSensor();
+    
 }
 
 void loop()	{
@@ -18,4 +19,5 @@ void loop()	{
         Serial.print(backEnd->colorRead(2));
         Serial.print("\n Green:");
         Serial.print(backEnd->colorRead(3));
+   delay(2000);
 }

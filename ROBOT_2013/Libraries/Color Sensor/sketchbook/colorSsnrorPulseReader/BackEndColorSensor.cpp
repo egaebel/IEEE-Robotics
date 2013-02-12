@@ -1,11 +1,11 @@
 #include "BackEndColorSensor.h"
 /*Pin Constants */
 int S0 = 22;//pinB
-int S1 = 24;//pinA
-int S2 = 26;//pinE
-int S3 = 28;//pinF
-int taosOutPin = 30;//pinC
-int LED = 32;//pinD
+int S1 = 24;//pinA //26 on other
+int S2 = 26;//pinE //30 on other
+int S3 = 28;//pinF //34 on other
+int taosOutPin = 30;//pinC //38 on other
+int LED = 32;//pinD //42 on other
 
 bool LEDstate = 1; //LED is turned on
 
@@ -94,13 +94,7 @@ float BackEndColorSensor::colorRead(int color)    {
 
     float readPulse; //where the pulse reading from sensor will go
 
-    //  turn LEDs on or off, as directed by the LEDstate var
-    if(LEDstate == 0){
-        digitalWrite(LED, LOW);
-    }
-    if(LEDstate == 1){
-        digitalWrite(LED, HIGH);
-    }
+    
 
     delay(100); //Delay for 100ms for before reading
 
@@ -109,7 +103,7 @@ float BackEndColorSensor::colorRead(int color)    {
 
     //if the pulseIn times out, it returns 0 and that throws off numbers. just cap it at 80k if it happens
     if(readPulse < .1){
-        readPulse = 80000;
+        readPulse = 1;
     }
 
     // return the pulse value back to whatever called for it...
@@ -137,7 +131,9 @@ void BackEndColorSensor::TCS3200setup()   {
     //this will put in 1:1, highest sensitivity
     digitalWrite(S0, HIGH); //S0
     digitalWrite(S1, HIGH); //S1
-
+    
+    digitalWrite(LED, HIGH);
+    
     return;
 }
 

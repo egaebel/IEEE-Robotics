@@ -1,0 +1,44 @@
+Brown vs Green
+Green has almost 80% all 1'
+
+red 5v 
+S0 yello
+s1 green 
+s2 blue
+s3 purple
+grey outpin
+
+22 is s0
+24 is s1
+26 is s2
+28 is s3
+30 is taosOut
+
+
+
+COLOR RED: Blue = 6500 -to- 7500 (Or lower w/ same ratio)
+	   White = 50,000 -to-60,000 || 1.00
+	   Green = ~40,000-50,000 || 1.00 FOR RED AND GREEN
+	   Red = ~~
+
+COLOR GREEN: Blue: ~ All 1.0 most of time with occasional 57,000+ (White and red wll ALWAYS pulse together at 55000-65000) (Blue and Green will always pulse together at 55000-65000)
+	     White: ~
+  	     Green: ~
+	     Red: ~
+COLOR BROWN: Blue: 1.0 with occaisonal ~35,000-to-45000 
+	     White: consistant 1.0
+	     Green: Will occaisionally pulse and with 90000+ 
+   	     Red: occaisonally pulse with 90000+
+COLOR YELLOW:Blue = often in  3700-to-4200 range   --CAN ALL GO DOWN A RATIO ALSO!! --(2400 - 2700)
+	     White = ~~
+	     Green = ~~ W, G, R all in 5800-to-6200 range often ~~  (4000 - 4500)
+	     Red = ~~
+COLOR BLUE: Blue =  35000 - 38000
+	    White = ~~ 25000-28000
+	    Green = ~~
+	    Red = ~~
+COLOR PURPLE: Blue = ofter 19000-to-21000
+	      White = ~ ~
+              Green = ~ ~ often 29000-to-33000 w/ some 1.0's (all of them except blue)
+	      Red = ~ ~
+	
