@@ -28,8 +28,8 @@ IRAverager::IRAverager(int inpin)
 void IRAverager::updateIR()
 {
 	sum -= valArray[slot];
-	valArray[slot] = analogRead(pin);
-	valArray[slot] = 27.3382*pow(.4464,valArray[slot]);
+        float volts = analogRead(pin)*0.0048828125;
+        valArray[slot] = (12.285/(volts - 0.097)) - 0.42;
 	sum += valArray[slot];
 	slot++;
 	if (slot > lengthArray-1)
@@ -47,7 +47,7 @@ float IRAverager::getIR()
 	float stdDev = sqrt((1.0/(lengthArray-1)*devsum));
 
 	int out = 0;
-	int newSum;
+	float newSum = 0;
 	for (int i = 0; i < lengthArray-1; i++)
 	{
 		if (valArray[i] > mean - (2*stdDev) && valArray[i] < mean + (2*stdDev))
