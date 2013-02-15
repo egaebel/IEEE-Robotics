@@ -1,12 +1,13 @@
 #include <Arduino.h>
 #include "FiniteStateMachine.h"
-//#include "States.h"
+#include "States.h"
 //#include "BackEndColorSensor.h"
 //extern State initState;
 //FiniteStateMachine fsm(initState);
 //BackEndColorSensor colorSensor;
 Claw lClaw;
 Claw rClaw;
+//LineSensor line;
 
 void setup()
 {

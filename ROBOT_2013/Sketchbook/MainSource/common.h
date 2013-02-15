@@ -4,13 +4,14 @@
 /*
  * This is where all globals and constants should be defined
 */
-
-enum POSITION{	POS_START = 0,
-				POS_SEA,
-				POS_RAIL,
-				POS_LOAD,
-				POS_AIR
-	      	};
+//Enumerations
+enum POSITION{	
+	POS_START = 0,
+	POS_SEA,
+	POS_RAIL,
+	POS_LOAD,
+	POS_AIR
+};
 
 enum COLOR{
     WHITE = 0,
@@ -20,23 +21,30 @@ enum COLOR{
 }; //TODO: There are still some colors to be defined, waiting on color sensor defs
 
 enum SIZE{
-	SMALL, MEDIUM, LARGE
+	SMALL, 
+	MEDIUM, 
+	LARGE
 };
 
+//Structs
 POSITION curPos = POS_START;
 POSITION nextPos = NULL;
 
 typedef struct block_t {
 	COLOR color; 
 	SIZE size; 
+	bool present;
 } block;
 
 block lBlock; //Block held by the left claw.
 block rBlock; //Block held by the right claw.
 
 block loadingZone[14]; // Blocks in the loading zone, listed west to east.
-COLOR seaZone[6]; //Sea zone colors, listed south to north.
-COLOR railZone[6]; //Rail zone colors, listed west to east. 
+block seaZone[6]; //Sea zone colors, listed south to north.
+block railZone[6]; //Rail zone colors, listed west to east. 
+
+int RAIL_SEA_SIZE = 6;
+int AIR_SIZE = 2;
 
 /* PIN DEFINITIONS */
 #define COLOR_SENSOR 0 //Pin for color sensor (pin 0 is fake) 
