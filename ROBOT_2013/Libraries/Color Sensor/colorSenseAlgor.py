@@ -31,7 +31,7 @@ def isBlue(L):
     if noOnes and L[1] > L[0] and L[1] > L[2] and L[1] > L[3]: #Only one where blue consistently greatest when no all_others_ones NEED NO ONES TO DIFFERENTIATE FROM BROWN CASE w/ 3 1's and high blue
         return 1;
 
-def isPurple(L):
+def isPurple(L): #OR IF ONE OF THEM IS 1.00
     if L[0] > 15000 and L[1] > 15000 and L[2] > 15000 and L[3] > 15000: #to differ frm yellow
         if noOnes and abs(L[0] - L[2]) < L[2]/12 and abs(L[0] - L[3]) < L[0]/12 and abs(L[2] - L[3]) < L[3]/12: #w, r, g very close in value
             if L[1] < L[0] and L[1] < L[2] and L[1] < L[3]: #Assure blue pulse smaller

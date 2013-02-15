@@ -6,8 +6,8 @@ class ColorSensor
 {
     public:
         ColorSensor();
-        void detectColor(int numberOfPulseReadings, int* ouputArray);
-        void detectColor(int* ouputArray);
+        int detectColor(int numberOfPulseReadings, int* ouputArray);
+        int detectColor(int* ouputArray);
     protected:
     private:
         int isBlue(int colorPulseValues[4]);
