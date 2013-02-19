@@ -36,6 +36,7 @@ typedef struct block_t {
 	bool present;
 } block;
 
+//Variables
 block lBlock; //Block held by the left claw.
 block rBlock; //Block held by the right claw.
 
@@ -43,11 +44,11 @@ block loadingZone[14]; // Blocks in the loading zone, listed west to east.
 block seaZone[6]; //Sea zone colors, listed south to north.
 block railZone[6]; //Rail zone colors, listed west to east. 
 
-int RAIL_SEA_SIZE = 6;
-int AIR_SIZE = 2;
+const int PICKUP_SIZE = 14;
+const int RAIL_SEA_SIZE = 6;
+const int AIR_SIZE = 2;
 
 /* PIN DEFINITIONS */
-#define COLOR_SENSOR 0 //Pin for color sensor (pin 0 is fake) 
 	//Motors (Servos)
 #define LEFT_MOTOR 13
 #define RIGHT_MOTOR 12
@@ -61,5 +62,8 @@ int AIR_SIZE = 2;
 #define RCLAW_EXTEND_SERVO 6
 	//Wallfolloer servos
 #define WALL_FOLLOW_SERVO 5
+#define BUMPER_2_PIN 4
+#define BUMPER_1_PIN 3
+#define COLOR_SENSOR 0 //Pin for color sensor (pin 0 is fake) 
 
 #endif

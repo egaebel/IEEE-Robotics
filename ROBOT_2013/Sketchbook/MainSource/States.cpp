@@ -6,6 +6,7 @@ Movement move;
 int internalState; //a sub-state used in each state, state-ception
 int *zone;
 static int blockPos; //used to keep track where we are in a zone (ie 2 would be 3rd block in a loading zone)
+extern LineSensor sensor;
 
 //*****START State Functions*****//
 //initState Functions
@@ -33,20 +34,17 @@ void initUpdate() {
                 curPos = POS_START;
                 nextPos = POS_SEA;
                 fsm->transitionTo(moveToState)
+                fsm->init();
             }
         break;
     }
 
 }
 
-void initExit() {
-
-    //stop listening to sensors
-    internalState = 0;
-}
+void initExit() {}
 
 //scanState
-void scanEnter() {
+void initScan() {
     internalState = 0;
     blockPos = 0;
     //change zone array based off the position
@@ -74,8 +72,8 @@ void scanUpdate() {
                 move.slideRight(0.25);
             }
 
-            if(sensor.line != WHITE && sensor.line != BLACK){
-                zone[blockPos] = sensor.line;
+            if(sensor.line() != WHITE && sensor.line() != BLACK){
+                zone[blockPos] = sensor.line();
                 blockPos++;
                 if(blockPos>5){
                     //we are done lets moveTo the next place
@@ -103,15 +101,12 @@ void scanUpdate() {
         case 2:
             //our nextPos and curPos should be handled for us
             fsm->transitionTo(moveToState);
+            fsm->init();
             break;
     }
 }
 
-void scanExit() {
-
-    //stop listening to sensors
-    internalState = 0;
-}
+void scanExit() {}
 
 //moveToState
 void moveToEnter() {
@@ -128,12 +123,19 @@ void moveToUpdate() {
     if(curPos == POS_START && nextPos == POS_SEA){
         switch(internalState){
             case 0:
+                //move to line surrounding start area
                 move.slideRight(0.25);
-                if(sensor.line() != WHITE && sensor.line() != BLACK){
+                if(line.detectRight()){
                     internalState++;
                 }
                 break;
             case 1:
+                //move to line at start 
+                move.slideRight(0.25);
+                if(line.detectRight()){
+                    internalState++;
+                }
+            case 2:
                 move.slideRight(0.25);
                 if(line.detectRight()){
                     if (isScanning) {
@@ -146,6 +148,7 @@ void moveToUpdate() {
                         fsm->transitionTo(dropState);
                         curPos = nextPos;
                         nextPos = POS_START;
+                        fsm->init();
                     }
                 }
                 break;
@@ -218,6 +221,7 @@ void moveToUpdate() {
                     curPos = nextPos;
                     nextPos = POS_PICK_UP;
                     fsm->transitionTo(scanState);
+                    fsm->init();
                 }
                 break;
         }
@@ -253,6 +257,7 @@ void moveToUpdate() {
                     }
                     curPos = nextPos;
                     nextPos = POS_RAIL;
+                    fsm->init();
                 }
                 break;
         }
@@ -293,6 +298,7 @@ void moveToUpdate() {
                     else {
                         //TODO: Kickstart the air states
                     }
+                    fsm->init();
                 }
                 break;
         }
@@ -356,6 +362,7 @@ void pickUpEnter() {
 
     //Figure out where you are in the pick up zone
     //initialize necessary variables & sensors
+    internalState = 0;
 }
 
 void pickUpUpdate() {
@@ -402,6 +409,7 @@ void dropUpdate() {
                 //transition to move
                 fsm->transitionTo(moveToState);
                 nextPos = POS_PICK_UP;
+                fsm->init();
                 break;
         }
     }

@@ -1,7 +1,6 @@
-/*
- * Class to handle queries about wall following (is touching wall is really it...)
- */
 class WallFollower {
 	public:
-	private:
+		bool WallFollower::isTouching() {
+			return digitalRead(BUMPER_1_PIN) && digitalRead(BUMPER_2_PIN);
+		}
 };
