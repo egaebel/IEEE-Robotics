@@ -3,8 +3,6 @@
 
 //Feild Variables
 BackEndColorSensor *backEnd;
-
-bool redBlock, blueBlock, brownBlock, yellowBlock, purpleBlock, greenBlock;
 int numberOfDeads; //The number of values that went out of the range and therefore were chaned to 1.00
 int pulseCount;
 
@@ -29,43 +27,83 @@ ColorSensor::ColorSensor()
 int ColorSensor::detectColor() {
 	throwAwayValues(); //Throws away intial 4 values
 	int result = 6; //6 signifies no color determined	
-	int whitePulseValue, bluePulseValue, redPulseValue, greenPulseValue;
+	float whitePulseValue, bluePulseValue, redPulseValue, greenPulseValue; //Pulse values
+	bool redBlock, blueBlock, brownBlock, yellowBlock, purpleBlock, greenBlock; //Holds result of each color block's tests
 	
 	while(result == 6)	{ //Possibility for infinite loop if no dominant color found after infinite pulse readings
+	
+		//Fill up array with color pulse values
 		whitePulseValue = backEnd->colorRead(0);
 		bluePulseValue = backEnd->colorRead(1);
 		redPulseValue = backEnd->colorRead(2);
 		greenPulseValue = backEnd->colorRead(3);
 		
-		numberOfZeros = numberZeros(); //determine num of zeros in pulseValues array
+		int numberOfOnes = numberZeros(whitePulseValue, bluePulseValue, redPulseValue, greenPulseValue); //determine num of zeros in pulseValues array
+		if(numberOfOnes < 3)	{
+			//Determining if test for each color pass; if <Color>Block == T then.. <color> test passed
+			redBlock = isRed(whitePulseValue, bluePulseValue, redPulseValue, greenPulseValue, numberOfOnes); 
+			blueBlock = isBlue(whitePulseValue, bluePulseValue, redPulseValue, greenPulseValue, numberOfOnes);
+			brownBlock = isBrown(whitePulseValue, bluePulseValue, redPulseValue, greenPulseValue, numberOfOnes);
+			yellowBlock = isYellow(whitePulseValue, bluePulseValue, redPulseValue, greenPulseValue, numberOfOnes);
+			purpleBlock = isPurple(whitePulseValue, bluePulseValue, redPulseValue, greenPulseValue, numberOfOnes); 
+			greenBlock = isGreen(whitePulseValue, bluePulseValue, redPulseValue, greenPulseValue, numberOfOnes);
 		
-		redBlock = isRed(); blueBlock = isBlue(); brownBlock = isBrown();
-		yellowBlock = isYellow(); purpleBlock = isPurple(); greenBlock = isGreen();
+			result = dominantColor(redBlock, blueBlock, brownBlock, yellowBlock, purpleBlock, greenBlock); 
+		}
 		
-		result = dominantColor();
+		else  {
+			result = 6; //While loop again (re-read pulse values)
+		}
 	}
 	
 	return result;
 }
 
-
-
-/**
- * Fills out pulseValues array with the pulse values
-*/
-void ColorSensor::pulseRead()	{
+void private throwAwayValues()	{
+	int throwAway;
 	for(int i = 0; i < 4; i++)  {
 		throwAway = backEnd->colorRead(0); //Declared and destryoed at each run.
 		throwAway = backEnd->colorRead(1);
 		throwAway = backEnd->colorRead(2);
 		throwAway = backEnd->colorRead(3);
 	}
-	pulseValues[0] = 
-	pulseValues[1] = 
-	pulseValues[2] = 
-	pulseValues[3] = 
-		
 }
+
+/** 
+ * Red block color check
+ */       
+private bool isRed(float whitePV, float bluePV, float redPV, float greenPV, int numOnes)	{
+	if(numOnes == 0)  {
+		if((whitePV > 15000.002) && (redPV > 15000.002) && (greenPV > 15000.002))	{
+			if(((bluePV * 5.00) < whitePV) && ((bluePV * 5.00) < redPV) && ((bluePV * 5.00) < greenPV))  {
+				return true;
+			}
+		}
+	}
+		
+	else if((absoluteValue(whitePV - 1.00) < 0.001) && (bluePV > 1.002) && (redPV > 1.002) && (greenPV > 1.002))  { //Case where just white is 1.00
+	 
+		if((redPV > 25000.002) && (greenPV > 25000.002) && (absoluteValue(redPV - greenPV) < (redPV/4.00)))	{
+			
+			if((redPV > whitePV*5.00) && (greenPV > whitePV*5.00))	{
+				return true;
+			}
+		}
+	}
+	
+	else if((whitePV - 1.00 < 0.001) && (redPV - 1.00 < 0.001) && (greenPV - 1.00 < 0.001) && (bluePV < 10000.00))  {
+		return true;
+	}
+}
+
+
+	
+
+
+
+
+
+
 
 /**
  * Determines the dominant from various color boolean results
@@ -122,7 +160,7 @@ private boolean isRed()	{
 /**
  * Finds absolute value of a
  */
-int ColorSensor::absoluteValue(int a)  {
+float ColorSensor::absoluteValue(float a)  {
   return ((a*a)/a);
 }
 

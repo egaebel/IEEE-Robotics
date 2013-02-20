@@ -10,12 +10,12 @@ class ColorSensor
         int detectColor(int* ouputArray);
     protected:
     private:
-        int isBlue(int colorPulseValues[4]);
-        int isYellow(int colorPulseValues[4]);
-        int isBrown(int colorPulseValues[4]);
-        int isRed(int colorPulseValues[4]);
-        int isPurple(int colorPulseValues[4]);
-        int absoluteValue(int a);
+        bool isBlue(float whitePV, float bluePV, float redPV, float greenPV, int numOnes);
+        bool isYellow(float whitePV, float bluePV, float redPV, float greenPV, int numOnes);
+        bool isBrown(float whitePV, float bluePV, float redPV, float greenPV, int numOnes);
+        bool isRed(float whitePV, float bluePV, float redPV, float greenPV, int numOnes);
+        bool isPurple(float whitePV, float bluePV, float redPV, float greenPV, int numOnes);
+        bool absoluteValue(float whitePV, float bluePV, float redPV, float greenPV, int numOnes);
 };
 
 #endif // COLORSENSOR_H
