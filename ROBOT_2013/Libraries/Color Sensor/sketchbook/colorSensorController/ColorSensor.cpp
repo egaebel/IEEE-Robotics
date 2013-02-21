@@ -69,32 +69,7 @@ void private throwAwayValues()	{
 	}
 }
 
-/** 
- * Red block color check
- */       
-private bool isRed(float whitePV, float bluePV, float redPV, float greenPV, int numOnes)	{
-	if(numOnes == 0)  {
-		if((whitePV > 15000.002) && (redPV > 15000.002) && (greenPV > 15000.002))	{
-			if(((bluePV * 5.00) < whitePV) && ((bluePV * 5.00) < redPV) && ((bluePV * 5.00) < greenPV))  {
-				return true;
-			}
-		}
-	}
-		
-	else if((absoluteValue(whitePV - 1.00) < 0.001) && (bluePV > 1.002) && (redPV > 1.002) && (greenPV > 1.002))  { //Case where just white is 1.00
-	 
-		if((redPV > 25000.002) && (greenPV > 25000.002) && (absoluteValue(redPV - greenPV) < (redPV/4.00)))	{
-			
-			if((redPV > whitePV*5.00) && (greenPV > whitePV*5.00))	{
-				return true;
-			}
-		}
-	}
-	
-	else if((whitePV - 1.00 < 0.001) && (redPV - 1.00 < 0.001) && (greenPV - 1.00 < 0.001) && (bluePV < 10000.00))  {
-		return true;
-	}
-}
+
 
 
 	
@@ -151,11 +126,88 @@ int dominantColor()	{
 
 /** ---------Color Tests using color Pulse array -------------*/ 
 
-private boolean isRed()	{
+/** 
+ * Red block color check
+ */       
+private bool isRed(float whitePV, float bluePV, float redPV, float greenPV, int numOnes)	{
+	if(numOnes == 0)  {
+		if((whitePV > 15000.002) && (redPV > 15000.002) && (greenPV > 15000.002))	{
+			if(((bluePV * 5.00) < whitePV) && ((bluePV * 5.00) < redPV) && ((bluePV * 5.00) < greenPV))  {
+				return true;
+			}
+		}
+	}
+		
+	else if((absoluteValue(whitePV - 1.00) < 0.001) && (bluePV > 1.002) && (redPV > 1.002) && (greenPV > 1.002))  { //Case where just white is 1.00
+	 
+		if((redPV > 25000.002) && (greenPV > 25000.002) && (absoluteValue(redPV - greenPV) < (redPV/4.00)))	{
+			
+			if((redPV > whitePV*5.00) && (greenPV > whitePV*5.00))	{
+				return true;
+			}
+		}
+	}
 	
+	else if((whitePV - 1.00 < 0.001) && (redPV - 1.00 < 0.001) && (greenPV - 1.00 < 0.001) && (bluePV < 10000.00))  {
+		return true;
+	}
+}
+
+/**
+ * Blue block check
+ */
+private boolean isBlue()	{
+	if((numOnes == 0) && (bluePV > 15000.00) && (redPV > 15000.00) && (greenPV > 15000.00))	{
+		return true;
+	}
 }
 
 
+/**
+ * Brown block check
+ */
+private boolean isBrown()	{
+	if((greenPV > 80000.00) || (redPV > 80000.00))	{
+		if(bluePV > 35000.00)  {
+			return true;
+		}
+	}
+}
+
+/**
+ * Yellow block check
+ */
+private boolean isYellow()	{
+	if((whitePV < 10000.00) && (bluePV < 10000.00) && (redPV < 10000.00) && (greenPV < 10000.00) && (numOnes == 0))	{
+		if((absoluteValue(whitePV - redPV) < whitePV/3.00) && (absoluteValue(greenPV - redPV) < greenPV/3.00) && (absoluteValue(whitePV - greenPV) < greenPV/3.00))	{
+			return true;
+		}
+	}
+}
+
+/**
+ * Purple block check
+ */
+private boolean isPurple()	{
+	if ((whitePV > 15000.00) && (bluePV > 15000.00) && (redPV > 15000.00) && (greenPV > 15000.00))	{
+		if((absoluteValue(whitePV - redPV) < redPV/12.00) && (absoluteValue(whitePV - greenPV) < whitePV/12.00) 
+			&& (absoluteValue(redPV - greenPV) < greenPV/12.00))  {
+				if((bluePV < whitePV) && (bluePV < redPV) && (bluePV < greenPV))  {
+					if((bluePV*2.00 > whitePV) && (bluePV*2.00 > greenPV) && (bluePV*2.00 > redPV))	{
+						return true;
+					}
+				}
+		}
+	}
+}
+
+
+/**
+ * Green block check
+ */
+private boolean isGreen()	{
+	
+}
 
 /**
  * Finds absolute value of a
