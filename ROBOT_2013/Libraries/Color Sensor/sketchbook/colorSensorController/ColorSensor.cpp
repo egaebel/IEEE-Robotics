@@ -1,10 +1,7 @@
 #include "ColorSensor.h"
 #include "BackEndColorSensor.h"
 
-//Feild Variables
-BackEndColorSensor *backEnd;
-int numberOfDeads; //The number of values that went out of the range and therefore were chaned to 1.00
-int pulseCount;
+BackEndColorSensor *backEnd; //BackendColorSensor (used in pulseRead function)
 
 ColorSensor::ColorSensor()
 {
@@ -38,7 +35,7 @@ int ColorSensor::detectColor() {
 		redPulseValue = backEnd->colorRead(2);
 		greenPulseValue = backEnd->colorRead(3);
 		
-		int numberOfOnes = numberZeros(whitePulseValue, bluePulseValue, redPulseValue, greenPulseValue); //determine num of zeros in pulseValues array
+		int numberOfOnes = calculateNumberOnes(whitePulseValue, bluePulseValue, redPulseValue, greenPulseValue); //determine num of zeros in pulseValues array
 		if(numberOfOnes < 3)	{
 			//Determining if test for each color pass; if <Color>Block == T then.. <color> test passed
 			redBlock = isRed(whitePulseValue, bluePulseValue, redPulseValue, greenPulseValue, numberOfOnes); 
@@ -59,7 +56,10 @@ int ColorSensor::detectColor() {
 	return result;
 }
 
-void private throwAwayValues()	{
+/**
+ * Reads 4 pulse values from the sensor and throws them away.
+ */
+void throwAwayValues()	{
 	int throwAway;
 	for(int i = 0; i < 4; i++)  {
 		throwAway = backEnd->colorRead(0); //Declared and destryoed at each run.
@@ -69,67 +69,15 @@ void private throwAwayValues()	{
 	}
 }
 
+calculateNumberOnes(whitePulseValue, bluePulseValue, redPulseValue, greenPulseValue);
 
-
-
-	
-
-
-
-
-
-
-
-/**
- * Determines the dominant from various color boolean results
- */
-int dominantColor()	{
-	int returnResult; //result to return to call in detectColor. 6 means no dominant color
-	int numTrue = 0;
-		
-		if(redBlock)	{
-			returnResult = 0;
-			numTrue++;
-		}
-		
-		if(blueBlock)	{
-			returnResult = 1;
-			numTrue++;
-		}
-		
-		if(brownBlock)	{
-			returnResult = 2;
-			numTrue++;
-		}
-		
-		if(yellowBlock)	{
-			returnResult = 3;
-			numTrue++;
-		}
-		
-		if(purpleBlock)	{
-			returnResult = 4;
-			numTrue++;
-		}
-		
-		if(greenBlock)	{
-			returnResult = 5;
-			numTrue++;
-		}
-		
-		if(numTrue != 1)	{
-			returnResult = 6;
-		}
-		
-		return returnResult;
-}
 
 /** ---------Color Tests using color Pulse array -------------*/ 
 
 /** 
  * Red block color check
  */       
-private bool isRed(float whitePV, float bluePV, float redPV, float greenPV, int numOnes)	{
+bool isRed(float whitePV, float bluePV, float redPV, float greenPV, int numOnes)	{
 	if(numOnes == 0)  {
 		if((whitePV > 15000.002) && (redPV > 15000.002) && (greenPV > 15000.002))	{
 			if(((bluePV * 5.00) < whitePV) && ((bluePV * 5.00) < redPV) && ((bluePV * 5.00) < greenPV))  {
@@ -139,25 +87,24 @@ private bool isRed(float whitePV, float bluePV, float redPV, float greenPV, int 
 	}
 		
 	else if((absoluteValue(whitePV - 1.00) < 0.001) && (bluePV > 1.002) && (redPV > 1.002) && (greenPV > 1.002))  { //Case where just white is 1.00
-	 
 		if((redPV > 25000.002) && (greenPV > 25000.002) && (absoluteValue(redPV - greenPV) < (redPV/4.00)))	{
-			
-			if((redPV > whitePV*5.00) && (greenPV > whitePV*5.00))	{
+			if(((whitePV*5.00) < redPV) && ((whitePV*5.00) < greenPV))	{
 				return true;
 			}
 		}
 	}
 	
-	else if((whitePV - 1.00 < 0.001) && (redPV - 1.00 < 0.001) && (greenPV - 1.00 < 0.001) && (bluePV < 10000.00))  {
+	else if((absoluteValue(whitePV - 1.00) < 0.001) && (absoluteValue(redPV - 1.00) < 0.001) && (absoluteValue(greenPV - 1.00) < 0.001) && (bluePV < 10000.00))  {
 		return true;
 	}
 }
 
 /**
  * Blue block check
+ * set_aside_logic: (numOnes == 0) && (bluePV > 15000.00) && (redPV > 15000.00) && (greenPV > 15000.00)
  */
-private boolean isBlue()	{
-	if((numOnes == 0) && (bluePV > 15000.00) && (redPV > 15000.00) && (greenPV > 15000.00))	{
+bool isBlue(float whitePV, float bluePV, float redPV, float greenPV, int numOnes)	{
+	if(numOnes == 0 && (bluePV > whitePV) && (bluePV > redPV) && (bluePV > greenPV))	{
 		return true;
 	}
 }
@@ -166,20 +113,24 @@ private boolean isBlue()	{
 /**
  * Brown block check
  */
-private boolean isBrown()	{
-	if((greenPV > 80000.00) || (redPV > 80000.00))	{
-		if(bluePV > 35000.00)  {
+bool isBrown(float whitePV, float bluePV, float redPV, float greenPV, int numOnes)	{
+	if((greenPV > 80000.00) || (redPV > 80000.00))	{ //only color with constistant higher than 90k red/green values
+		if((bluePV > 35000.00) && (bluePV < 55000.00))  {
 			return true;
 		}
+	}
+	
+	else if(((whitePV - 1.00) < 0.001) && ((redPV - 1.00) < 0.001) && ((greenPV - 1.00) < 0.001) && (bluePV > 35000.00))  { //Special case of 3 1.00's and blue (becasue really dark color)
+		return true;
 	}
 }
 
 /**
  * Yellow block check
  */
-private boolean isYellow()	{
+bool isYellow(float whitePV, float bluePV, float redPV, float greenPV, int numOnes)	{
 	if((whitePV < 10000.00) && (bluePV < 10000.00) && (redPV < 10000.00) && (greenPV < 10000.00) && (numOnes == 0))	{
-		if((absoluteValue(whitePV - redPV) < whitePV/3.00) && (absoluteValue(greenPV - redPV) < greenPV/3.00) && (absoluteValue(whitePV - greenPV) < greenPV/3.00))	{
+		if((absoluteValue(whitePV - redPV) < whitePV/3.00) && (absoluteValue(greenPV - redPV) < greenPV/3.00) && (absoluteValue(whitePV - greenPV) < greenPV/3.00))	{ //white, red, and green values all fairly close
 			return true;
 		}
 	}
@@ -188,15 +139,14 @@ private boolean isYellow()	{
 /**
  * Purple block check
  */
-private boolean isPurple()	{
+bool isPurple(float whitePV, float bluePV, float redPV, float greenPV, int numOnes)	{
 	if ((whitePV > 15000.00) && (bluePV > 15000.00) && (redPV > 15000.00) && (greenPV > 15000.00))	{
-		if((absoluteValue(whitePV - redPV) < redPV/12.00) && (absoluteValue(whitePV - greenPV) < whitePV/12.00) 
-			&& (absoluteValue(redPV - greenPV) < greenPV/12.00))  {
-				if((bluePV < whitePV) && (bluePV < redPV) && (bluePV < greenPV))  {
-					if((bluePV*2.00 > whitePV) && (bluePV*2.00 > greenPV) && (bluePV*2.00 > redPV))	{
-						return true;
-					}
+		if((absoluteValue(whitePV - redPV) < (redPV/12.00)) && (absoluteValue(whitePV - greenPV) < (whitePV/12.00))) && (absoluteValue(redPV - greenPV) < greenPV/12.00))  {
+			if((bluePV < whitePV) && (bluePV < redPV) && (bluePV < greenPV))  {
+				if(((bluePV*2.00) > whitePV) && ((bluePV*2.00) > greenPV) && ((bluePV*2.00) > redPV))	{
+					return true;
 				}
+			}
 		}
 	}
 }
@@ -205,15 +155,73 @@ private boolean isPurple()	{
 /**
  * Green block check
  */
-private boolean isGreen()	{
+bool isGreen(float whitePV, float bluePV, float redPV, float greenPV, int numOnes)  {
+	if((absoluteValue(bluePV - 1.00) < 0.001) && (absoluteValue(greenPV - 1.00) < 0.001))  {
+		if((whitePV > 55000.00) && (redPV > 55000.00))  {
+			return true;
+		}
+		
+		else if((absoluteValue(whitePV - 1.00) < 0.001) && redPV > 50000.00)  {
+			return true;
+		}
+	}
 	
+	if((absoluteValue(whitePV - 1.00) < 0.001) && (whitePV > 55000.00) && ((redPV - 1.00) < 0.001) && greenPV > 55.00)  {
+		return true;
+	}
 }
 
 /**
- * Finds absolute value of a
+ * Determines the dominant from various color boolean results
+ */
+int dominantColor()	{
+	int returnResult = 6; //result to return to call in detectColor. 6 means no dominant color
+	int numTrue = 0; //Number of clor tests these set of pulse values passed
+		
+	if(redBlock)	{
+		returnResult = 0;
+		numTrue++;
+	}
+	
+	if(blueBlock)	{
+		returnResult = 1;
+		numTrue++;
+	}
+	
+	if(brownBlock)	{
+		returnResult = 2;
+		numTrue++;
+	}
+	
+	if(yellowBlock)	{
+		returnResult = 3;
+		numTrue++;
+	}
+	
+	if(purpleBlock)	{
+		returnResult = 4;
+		numTrue++;
+	}
+	
+	if(greenBlock)	{
+		returnResult = 5;
+		numTrue++;
+	}
+	
+	if(numTrue != 1)	{
+		returnResult = 6;
+	}
+	
+	return returnResult;
+}
+
+/**
+ * Finds absolute value of parameter a
  */
 float ColorSensor::absoluteValue(float a)  {
   return ((a*a)/a);
 }
+
+
 
 
