@@ -2,6 +2,7 @@
 #include "Arduino.h"
 
 ColorSensor *sensor;
+int result;
 
 
 void setup() {
@@ -10,30 +11,30 @@ void setup() {
 }
 
 void loop()	{
+    result = sensor->detectColor();
     
-    Serial.print("\n\n ANOTHER:  ");
+    Serial.print("\n\n\n\n\n\n");
+    if(result == 0)  {
+      Serial.println("RED");
+    }
     
-    int result[5];
-    sensor->detectColor(result);
-    int blue = result[0];
-    int yellow = result[1];
-    int brown = result[2];
-    int red = result[3];
-    int purple = result[4];
+    else if(result == 1)  {
+      Serial.println("BLUE");
+    }
     
-    Serial.print("result: ");
-      //Result 
-      Serial.println(blue);
-      Serial.println(yellow);
-      Serial.println(brown);
-      Serial.println(red);
-      Serial.println(purple);
-      Serial.println("Blue value");
-      
-      if(blue==1){
-        Serial.println("its 1");
-      }
-      if(blue == 0) {
-        Serial.println("its 0");
-      }
+    else if(result == 2)  {
+      Serial.println("BROWN");
+    }
+    
+    else if(result == 3)  {
+      Serial.println("YELLOW");
+    }
+    
+    else if(result == 4)  {
+      Serial.println("PURPLE");
+    }
+    
+    else if(result == 5)  {
+      Serial.println("GREEN");
+    }
 }
