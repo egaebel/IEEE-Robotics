@@ -49,17 +49,35 @@ int ColorSensor::detectColor() {
 		}
 		
 		else  {
-			result = 6; //While loop again (re-read pulse values)
+			result = 6; //More than 3 ones --> while loop again (re-read pulse values)
 		}
 	}
 	
 	return result;
 }
 
+int ColorSensor::calculateNumberOnes(int firstPV, int secondPV, int thirdPV, int fourthPV)  {
+  int count = 0;
+  if((firstPV - 1.00) < 0.001)  {
+    count++;
+  }
+  if((secondPV - 1.00) < 0.001)  {
+    count++;
+  }
+  if((thirdPV - 1.00) < 0.001)  {
+    count++;
+  }
+  if((fourthPV - 1.00) < 0.001)  {
+    count++;
+  }
+  
+  return count;
+}
+
 /**
  * Reads 4 pulse values from the sensor and throws them away.
  */
-void throwAwayValues()	{
+void ColorSensor::throwAwayValues()	{
 	int throwAway;
 	for(int i = 0; i < 4; i++)  {
 		throwAway = backEnd->colorRead(0); //Declared and destryoed at each run.
@@ -69,15 +87,12 @@ void throwAwayValues()	{
 	}
 }
 
-calculateNumberOnes(whitePulseValue, bluePulseValue, redPulseValue, greenPulseValue);
-
-
 /** ---------Color Tests using color Pulse array -------------*/ 
 
 /** 
  * Red block color check
  */       
-bool isRed(float whitePV, float bluePV, float redPV, float greenPV, int numOnes)	{
+bool ColorSensor::isRed(float whitePV, float bluePV, float redPV, float greenPV, int numOnes)	{
 	if(numOnes == 0)  {
 		if((whitePV > 15000.002) && (redPV > 15000.002) && (greenPV > 15000.002))	{
 			if(((bluePV * 5.00) < whitePV) && ((bluePV * 5.00) < redPV) && ((bluePV * 5.00) < greenPV))  {
@@ -86,7 +101,7 @@ bool isRed(float whitePV, float bluePV, float redPV, float greenPV, int numOnes)
 		}
 	}
 		
-	else if((absoluteValue(whitePV - 1.00) < 0.001) && (bluePV > 1.002) && (redPV > 1.002) && (greenPV > 1.002))  { //Case where just white is 1.00
+	else if((absoluteValue(whitePV - 1.00f) < 0.001f) && (bluePV > 1.002) && (redPV > 1.002) && (greenPV > 1.002))  { //Case where just white is 1.00
 		if((redPV > 25000.002) && (greenPV > 25000.002) && (absoluteValue(redPV - greenPV) < (redPV/4.00)))	{
 			if(((whitePV*5.00) < redPV) && ((whitePV*5.00) < greenPV))	{
 				return true;
@@ -103,7 +118,7 @@ bool isRed(float whitePV, float bluePV, float redPV, float greenPV, int numOnes)
  * Blue block check
  * set_aside_logic: (numOnes == 0) && (bluePV > 15000.00) && (redPV > 15000.00) && (greenPV > 15000.00)
  */
-bool isBlue(float whitePV, float bluePV, float redPV, float greenPV, int numOnes)	{
+bool ColorSensor::isBlue(float whitePV, float bluePV, float redPV, float greenPV, int numOnes)	{
 	if(numOnes == 0 && (bluePV > whitePV) && (bluePV > redPV) && (bluePV > greenPV))	{
 		return true;
 	}
@@ -113,7 +128,7 @@ bool isBlue(float whitePV, float bluePV, float redPV, float greenPV, int numOnes
 /**
  * Brown block check
  */
-bool isBrown(float whitePV, float bluePV, float redPV, float greenPV, int numOnes)	{
+bool ColorSensor::isBrown(float whitePV, float bluePV, float redPV, float greenPV, int numOnes)	{
 	if((greenPV > 80000.00) || (redPV > 80000.00))	{ //only color with constistant higher than 90k red/green values
 		if((bluePV > 35000.00) && (bluePV < 55000.00))  {
 			return true;
@@ -128,7 +143,7 @@ bool isBrown(float whitePV, float bluePV, float redPV, float greenPV, int numOne
 /**
  * Yellow block check
  */
-bool isYellow(float whitePV, float bluePV, float redPV, float greenPV, int numOnes)	{
+bool ColorSensor::isYellow(float whitePV, float bluePV, float redPV, float greenPV, int numOnes)	{
 	if((whitePV < 10000.00) && (bluePV < 10000.00) && (redPV < 10000.00) && (greenPV < 10000.00) && (numOnes == 0))	{
 		if((absoluteValue(whitePV - redPV) < whitePV/3.00) && (absoluteValue(greenPV - redPV) < greenPV/3.00) && (absoluteValue(whitePV - greenPV) < greenPV/3.00))	{ //white, red, and green values all fairly close
 			return true;
@@ -139,9 +154,9 @@ bool isYellow(float whitePV, float bluePV, float redPV, float greenPV, int numOn
 /**
  * Purple block check
  */
-bool isPurple(float whitePV, float bluePV, float redPV, float greenPV, int numOnes)	{
+bool ColorSensor::isPurple(float whitePV, float bluePV, float redPV, float greenPV, int numOnes)	{
 	if ((whitePV > 15000.00) && (bluePV > 15000.00) && (redPV > 15000.00) && (greenPV > 15000.00))	{
-		if((absoluteValue(whitePV - redPV) < (redPV/12.00)) && (absoluteValue(whitePV - greenPV) < (whitePV/12.00))) && (absoluteValue(redPV - greenPV) < greenPV/12.00))  {
+		if((absoluteValue(whitePV - redPV) < (redPV/12.00)) && (absoluteValue(whitePV - greenPV) < (whitePV/12.00)) && (absoluteValue(redPV - greenPV) < greenPV/12.00))  {
 			if((bluePV < whitePV) && (bluePV < redPV) && (bluePV < greenPV))  {
 				if(((bluePV*2.00) > whitePV) && ((bluePV*2.00) > greenPV) && ((bluePV*2.00) > redPV))	{
 					return true;
@@ -155,7 +170,7 @@ bool isPurple(float whitePV, float bluePV, float redPV, float greenPV, int numOn
 /**
  * Green block check
  */
-bool isGreen(float whitePV, float bluePV, float redPV, float greenPV, int numOnes)  {
+bool ColorSensor::isGreen(float whitePV, float bluePV, float redPV, float greenPV, int numOnes)  {
 	if((absoluteValue(bluePV - 1.00) < 0.001) && (absoluteValue(greenPV - 1.00) < 0.001))  {
 		if((whitePV > 55000.00) && (redPV > 55000.00))  {
 			return true;
@@ -174,7 +189,7 @@ bool isGreen(float whitePV, float bluePV, float redPV, float greenPV, int numOne
 /**
  * Determines the dominant from various color boolean results
  */
-int dominantColor()	{
+int ColorSensor::dominantColor(bool redBlock, bool blueBlock, bool brownBlock, bool yellowBlock, bool purpleBlock, bool greenBlock)	{
 	int returnResult = 6; //result to return to call in detectColor. 6 means no dominant color
 	int numTrue = 0; //Number of clor tests these set of pulse values passed
 		
@@ -199,7 +214,7 @@ int dominantColor()	{
 	}
 	
 	if(purpleBlock)	{
-		returnResult = 4;
+	        returnResult = 4;
 		numTrue++;
 	}
 	
