@@ -74,16 +74,16 @@ float BackEndColorSensor::colorRead(int color)    {
         // Serial.print(" w");
     }
 
-    else if(color == 1){//red
-        digitalWrite(S3, LOW); //S3
-        digitalWrite(S2, LOW); //S2
-        // Serial.print(" r");
-    }
-
-    else if(color == 2){//blue
+    else if(color == 1){ //blue
         digitalWrite(S3, HIGH); //S3
         digitalWrite(S2, LOW); //S2
         // Serial.print(" b");
+    }
+
+    else if(color == 2){//red
+        digitalWrite(S3, LOW); //S3
+        digitalWrite(S2, LOW); //S2
+        // Serial.print(" r");
     }
 
     else if(color == 3){//green

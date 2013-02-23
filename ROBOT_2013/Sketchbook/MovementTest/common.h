@@ -45,5 +45,7 @@ COLOR railZone[6]; //Rail zone colors, listed west to east.
 #define RCLAW_EXTEND_SERVO 6
 	//Wallfolloer servos
 #define WALL_FOLLOW_SERVO 5
+        //Top Motor
+#define TOP_MOTO 2
 
 #endif

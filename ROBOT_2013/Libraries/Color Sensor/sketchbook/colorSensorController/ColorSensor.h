@@ -6,16 +6,19 @@ class ColorSensor
 {
     public:
         ColorSensor();
-        int detectColor(int numberOfPulseReadings, int* ouputArray);
-        int detectColor(int* ouputArray);
+        int detectColor();
     protected:
     private:
-        int isBlue(int colorPulseValues[4]);
-        int isYellow(int colorPulseValues[4]);
-        int isBrown(int colorPulseValues[4]);
-        int isRed(int colorPulseValues[4]);
-        int isPurple(int colorPulseValues[4]);
-        int absoluteValue(int a);
+	void throwAwayValues(); //Reads 4 pulse values from sensor and throws them away.	
+        bool isBlue(float whitePV, float bluePV, float redPV, float greenPV, int numOnes);
+        bool isYellow(float whitePV, float bluePV, float redPV, float greenPV, int numOnes);
+        bool isBrown(float whitePV, float bluePV, float redPV, float greenPV, int numOnes);
+        bool isRed(float whitePV, float bluePV, float redPV, float greenPV, int numOnes);
+        bool isPurple(float whitePV, float bluePV, float redPV, float greenPV, int numOnes);
+        bool isGreen(float whitePV, float bluePV, float redPV, float greenPV, int numOnes);
+        int dominantColor(bool redBlock, bool blueBlock, bool brownBlock, bool yellowBlock, bool purpleBlock, bool greenBlock); //Determines the dominant color (color decided the block is)
+        float absoluteValue(float a);
+        int calculateNumberOnes(int firstPV, int secondPV, int thirdPV, int fourthPV); //returns number of pulse values with value 1.00
 };
 
 #endif // COLORSENSOR_H

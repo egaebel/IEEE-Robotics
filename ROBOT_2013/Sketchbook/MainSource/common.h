@@ -64,6 +64,8 @@ const int AIR_SIZE = 2;
 #define WALL_FOLLOW_SERVO 5
 #define BUMPER_2_PIN 4
 #define BUMPER_1_PIN 3
+	//Top Motor
+#define TOP_MOTOR 2
 #define COLOR_SENSOR 0 //Pin for color sensor (pin 0 is fake) 
 
 #endif
