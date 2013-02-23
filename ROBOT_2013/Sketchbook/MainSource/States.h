@@ -1,6 +1,30 @@
 #ifndef STATES_H_
 #define STATES_H_
 
-//We don't need anything here yet
+//Prototypes
+void initEnter();
+void initUpdate();
+void initExit();
+
+void scanEnter();
+void scanUpdate();
+void scanExit();
+
+void moveToEnter();
+void moveToUpdate();
+void moveToExit();
+
+void pickUpEnter();
+void pickUpUpdate();
+void pickUpExit();
+
+void dropEnter();
+void dropUpdate();
+void dropExit();
+
+void centerEnter();
+void centerUpdate();
+void centerExit();
+//end prototpyes
 
 #endif
