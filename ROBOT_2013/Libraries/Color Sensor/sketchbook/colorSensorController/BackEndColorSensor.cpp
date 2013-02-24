@@ -65,7 +65,7 @@ BackEndColorSensor::BackEndColorSensor()    {
  *
  * @returns the pulse of the desired color
  */
-float BackEndColorSensor::colorRead(int color)    {
+int BackEndColorSensor::colorRead(int color)    {
 
     //set the S2 and S3 pins to select the color to be sensed
     if(color == 0){//white
@@ -92,7 +92,7 @@ float BackEndColorSensor::colorRead(int color)    {
         // Serial.print(" g");
     }
 
-    float readPulse; //where the pulse reading from sensor will go
+    int readPulse; //where the pulse reading from sensor will go
 
     //  turn LEDs on or off, as directed by the LEDstate var
     if(LEDstate == 0){
@@ -105,7 +105,7 @@ float BackEndColorSensor::colorRead(int color)    {
     delay(100); //Delay for 100ms for before reading
 
     // now take a measurement from the sensor, timing a low pulse on the sensor's "out" pin
-    readPulse = pulseIn(taosOutPin, LOW, 80000);
+    readPulse = int(pulseIn(taosOutPin, LOW, 80000));
 
     //if the pulseIn times out, it returns 0 and that throws off numbers. just cap it at 80k if it happens
     if(readPulse < .1){

@@ -6,7 +6,7 @@ class BackEndColorSensor
 {
     public:
         BackEndColorSensor(); //Nescessary color sensor setup called in constructor
-        float colorRead(int color);
+        int colorRead(int color);
     private:
         void TCS3200setup();
 };

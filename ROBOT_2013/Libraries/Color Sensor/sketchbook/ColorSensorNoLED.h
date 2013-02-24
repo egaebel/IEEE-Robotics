@@ -26,7 +26,7 @@ ColorSensor::ColorSensor()
 int ColorSensor::detectColor() {
 	throwAwayValues(); //Throws away intial 4 values
 	int result = 6; //6 signifies no color determined
-	int whitePulseValue, bluePulseValue, redPulseValue, greenPulseValue; //Pulse values
+	float whitePulseValue, bluePulseValue, redPulseValue, greenPulseValue; //Pulse values
 	int count = 0;	
         
 	while(result == 6)	{ //Possibility for infinite loop if no dominant color found after infinite pulse readings
@@ -88,16 +88,16 @@ int ColorSensor::detectColor() {
 
 int ColorSensor::calculateNumberOnes(int firstPV, int secondPV, int thirdPV, int fourthPV)  {
   int count = 0;
-  if(firstPV == 1)  {
+  if((firstPV - 1.00) < 0.001)  {
     count++;
   }
-  if(secondPV == 1) {
+  if((secondPV - 1.00) < 0.001)  {
     count++;
   }
-  if(thirdPV == 1) {
+  if((thirdPV - 1.00) < 0.001)  {
     count++;
   }
-  if(fourthPV == 1) {
+  if((fourthPV - 1.00) < 0.001)  {
     count++;
   }
   
@@ -122,74 +122,77 @@ void ColorSensor::throwAwayValues()	{
 /** 
  * Red block color check
  */       
-bool ColorSensor::isRed(int whitePV, int bluePV, int redPV, int greenPV, int numOnes)	{
-	return false;
+bool ColorSensor::isRed(float whitePV, float bluePV, float redPV, float greenPV, int numOnes)	{
+	if(greaterThan(whitePV, bluePV, whitePV, 0.00f, redPV*6.00f)) {
+		return true;
+	}
 }
 
 /**
  * Blue block check
  * set_aside_logic: (numOnes == 0) && (bluePV > 15000.00) && (redPV > 15000.00) && (greenPV > 15000.00)
  */
-bool ColorSensor::isBlue(int whitePV, int bluePV, int redPV, int greenPV, int numOnes)	{
-	return false;
+bool ColorSensor::isBlue(float whitePV, float bluePV, float redPV, float greenPV, int numOnes)	{
+	if(lessThan(whitePV, bluePV, greenPV, 0.00f, redPV) //Check that red is largest value (to differntiate from purple)
+	&& lessThan(absoluteValue(whitePV - bluePV), absoluteValue(whitePV - greenPV), absoluteValue(bluePV - greenPV), 0.00f, 1500.00f) //Check that white, blue, and green close in value
+	&& greaterThan(absoluteValue(redPV - greenPV), absoluteValue(redPV - bluePV), absoluteValue(redPV - whitePV), 0.00f, 1500.00f) //check that red is not close to green, blue, white
+	&& lessThan(whitePV, bluePV, whitePV, 0.00f, redPV*6.00f) //checks not red block's pattern of really small redPV value
+	&& lessThan(whitePV, bluePV, redPV, greenPV, 20000.00f)) { //check that all value less 20000
+		return true;
+	}
 }
 
 /**
  * Brown block check
  */
-bool ColorSensor::isBrown(int whitePV, int bluePV, int redPV, int greenPV, int numOnes)	{
-	const int whiteAveragePV_BROWN =  3300.0f;
-	const int blueAveragePV_BROWN =  3350.0f;
- 	const int redAveragePV_BROWN =  2500.00f;
- 	const int greenAveragePV_BROWN =  3350.00f;
-	const int acceptedRange_BROWN= 100.00f;
-	
-	return (withinRange(whitePV, whiteAveragePV_BROWN, acceptedRange_BROWN) && withinRange(bluePV, blueAveragePV_BROWN, acceptedRange_BROWN) 
-	&& withinRange(redPV, redAveragePV_BROWN, acceptedRange_BROWN) && withinRange(greenPV, greenAveragePV_BROWN, acceptedRange_BROWN));
+bool ColorSensor::isBrown(float whitePV, float bluePV, float redPV, float greenPV, int numOnes)	{
+	if((greenPV > 80000.00f || redPV > 80000.00f) && bluePV > 35000.00f && bluePV < 55000.00f)	{ 
+		return true;
+	}
+	else if(lessThan(whitePV - 1.00f, redPV - 1.00f, greenPV - 1.00f, 0.00f, 1.01f) && bluePV > 35000.00f) { //Special case of 3 1.00's and blue (becasue really dark color)
+		return true;
+	}
+	else if((lessThan(whitePV, bluePV, greenPV, redPV, 40000.00f) || (whitePV > 70000.00f && lessThan(bluePV, greenPV, redPV, 0.00f, 40000.00f)))
+	&& greaterThan(whitePV, bluePV, greenPV, 0.00f, redPV*2) && lessThan(whitePV, bluePV, greenPV, 0.00f, redPV*3))  { //Stops case being true with green block
+	  //held, don't know if need it for htis case
+			return true;
+	}
 }
 
 /**
  * Yellow block check
  */
-bool ColorSensor::isYellow(int whitePV, int bluePV, int redPV, int greenPV, int numOnes)	{
-	const int whiteAveragePV_YELLOW =  700.0f;
-	const int blueAveragePV_YELLOW =  700.0f;
- 	const int redAveragePV_YELLOW =  470.00f;
- 	const int greenAveragePV_YELLOW =  700.00f;
-	const int acceptedRange_YELLOW= 50.00f;
-	
-	return (withinRange(whitePV, whiteAveragePV_YELLOW, acceptedRange_YELLOW) && withinRange(bluePV, blueAveragePV_YELLOW, acceptedRange_YELLOW) 
-		   && withinRange(redPV, redAveragePV_YELLOW, acceptedRange_YELLOW) && withinRange(greenPV, greenAveragePV_YELLOW, acceptedRange_YELLOW));
+bool ColorSensor::isYellow(float whitePV, float bluePV, float redPV, float greenPV, int numOnes)	{
+	if(greaterThan(whitePV, bluePV, greenPV, 0.00f, redPV)
+	&& lessThan(whitePV, bluePV, greenPV, redPV, 5000)
+	&& numOnes == 0)  {
+		return true;
+	}
 }
 
 /**
  * Purple block check
  */
-bool ColorSensor::isPurple(int whitePV, int bluePV, int redPV, int greenPV, int numOnes)	{
-	const int whiteAveragePV_PURPLE = 10000.0f;
-	const int blueAveragePV_PURPLE = 10000.0f;
- 	const int redAveragePV_PURPLE = 10000.00f;
- 	const int greenAveragePV_PURPLE = 10000.00f;
-	const int acceptedRange_PURPLE = 100.00f;
-	
-	return (withinRange(whitePV, whiteAveragePV_PURPLE, acceptedRange_PURPLE) && withinRange(bluePV, blueAveragePV_PURPLE, acceptedRange_PURPLE) 
-	&& withinRange(redPV, redAveragePV_PURPLE, acceptedRange_PURPLE) && withinRange(greenPV, greenAveragePV_PURPLE, acceptedRange_PURPLE));  
-		
+bool ColorSensor::isPurple(float whitePV, float bluePV, float redPV, float greenPV, int numOnes)	{
+	if(greaterThan(whitePV, bluePV, greenPV, 0.00f, redPV) //red is smallest value(differentiates from blue
+	&& lessThan(whitePV, bluePV, whitePV, 0.00f, redPV*6.00f) //checks not red block's pattern of really small redPV value
+	&& greaterThan(whitePV, bluePV, greenPV, 0.00f, 10000)  //checks that larger values than yellow
+	&& lessThan(absoluteValue(whitePV - bluePV), absoluteValue(whitePV - greenPV), absoluteValue(bluePV - greenPV), 0.00f, 1500.00f) //Check that white, blue, and green close in value
+	&& greaterThan(absoluteValue(redPV - greenPV), absoluteValue(redPV - bluePV), absoluteValue(redPV - whitePV), 0.00f, 1500.00f) //check that red is not close to green, blue, white
+	&& lessThan(whitePV, bluePV, redPV, greenPV, 20000.00f)) {
+		return true;
+	}
 }
 
 
 /**
  * Green block check
  */
-bool ColorSensor::isGreen(int whitePV, int bluePV, int redPV, int greenPV, int numOnes)  {
-	const int whiteAveragePV_GREEN =  3100.0f;
-	const int blueAveragePV_GREEN =  3100.0f;
- 	const int redAveragePV_GREEN =  3000.00f;
- 	const int greenAveragePV_GREEN =  3100.00f;
-	const int acceptedRange_GREEN = 50.00f;
-	
-	return (withinRange(whitePV, whiteAveragePV_GREEN, acceptedRange_GREEN) && withinRange(bluePV, blueAveragePV_GREEN, acceptedRange_GREEN) 
-	&& withinRange(redPV, redAveragePV_GREEN, acceptedRange_GREEN) && withinRange(greenPV, greenAveragePV_GREEN, acceptedRange_GREEN));
+bool ColorSensor::isGreen(float whitePV, float bluePV, float redPV, float greenPV, int numOnes)  {
+	if(lessThan(absoluteValue(whitePV - bluePV), absoluteValue(greenPV - bluePV), absoluteValue(whitePV - greenPV), 0.00f, 2000.00f)
+	&& lessThan(whitePV, bluePV, redPV, greenPV, 35000.00f) && greaterThan(whitePV, bluePV, redPV, greenPV, 19000.00f))  {
+		return true;
+	}
 }
 
 /**
@@ -237,16 +240,53 @@ int ColorSensor::dominantColor(bool redBlock, bool blueBlock, bool brownBlock, b
 }
 
 /**
- * Checks whether <float> canidate value is within <float> range (inclusive) of the <float> comparisonValue
- */
-bool ColorSensor::withinRange(int canidateValue, const int comparisonValue, const int range)  {
-	return (absoluteValue(canidateValue - comparisonValue) <= range);
+  * returns whether a, b, c, d less than specified number (exclusive)
+  * If want only n params -> set other (4-n) params to 0.
+  * All params MUST be type Float!
+  */
+bool ColorSensor::lessThan(float a, float b, float c, float d, float valueToBeLessThan)  {
+	
+	if(a > valueToBeLessThan && !(absoluteValue(a - 1.00f) < 0.01f))  {
+		return false;
+	}
+	else if(b > valueToBeLessThan && !(absoluteValue(b - 1.00f) < 0.01f))  {
+		return false;
+	}
+	else if(c > valueToBeLessThan && !(absoluteValue(c - 1.00f) < 0.01f))  {
+		return false;
+	}
+	else if(d > valueToBeLessThan && !(absoluteValue(d - 1.00f) < 0.01f))  {
+		return false;
+	}
+	return true;
+}
+
+/**
+  * returns whether a, b, c, d GREATER than specified number (exclusive)
+  * If want only n params -> set other (4-n) params to 0.
+  * All params MUST be type Float!
+  */
+bool ColorSensor::greaterThan(float a, float b, float c, float d, float valueToBeGREATERThan)  {
+	
+	if(a < valueToBeGREATERThan && !(absoluteValue(a - 1.00f) < 0.01f))  {
+		return false;
+	}
+	else if(b < valueToBeGREATERThan && !(absoluteValue(b - 1.00f) < 0.01f))  {
+		return false;
+	}
+	else if(c < valueToBeGREATERThan && !(absoluteValue(c - 1.00f) < 0.01f))  {
+		return false;
+	}
+	else if(d < valueToBeGREATERThan && !(absoluteValue(d - 1.00f) < 0.01f))  {
+		return false;
+	}
+	return true;
 }
 
 /**
  * Finds absolute value of parameter a
  */
-int ColorSensor::absoluteValue(int a)  {
+float ColorSensor::absoluteValue(float a)  {
   return ((a*a)/a);
 }
 
