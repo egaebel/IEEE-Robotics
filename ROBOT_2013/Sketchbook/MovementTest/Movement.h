@@ -8,7 +8,8 @@ class Movement {
 public:
 	void init(); //Setup all motors
         void liftUp();
-        void dropDown();
+        void liftStop();
+        void liftDown();
 	void slideLeft(float speed);
 	void slideRight(float speed);
 	void turnLeft(float speed);
@@ -31,14 +32,21 @@ void Movement::init(){
 	rightMotor.attach(RIGHT_MOTOR);
 	rearLeftMotor.attach(REAR_MOTOR_L);
         rearRightMotor.attach(REAR_MOTOR_R);
-        topMotor.attach(TOP_MOTOR):
+        topMotor.attach(TOP_MOTOR);
 }
+
 void Movement::liftUp(){
-	topMotor.write(180);
+	topMotor.writeMicroseconds(2000);
 }
-void Movement::dropDown(){
-	topMotor.write(0);
+
+void Movement::liftStop(){
+         topMotor.writeMicroseconds(1500); 
 }
+
+void Movement::liftDown(){
+	topMotor.writeMicroseconds(1000);
+}
+
 void Movement::slideLeft(float speed){
 	//set rear motor left by speed
 	setSpeed(REAR_MOTOR_L,-speed);

@@ -46,6 +46,6 @@ COLOR railZone[6]; //Rail zone colors, listed west to east.
 	//Wallfolloer servos
 #define WALL_FOLLOW_SERVO 5
         //Top Motor
-#define TOP_MOTO 2
+#define TOP_MOTOR 2
 
 #endif

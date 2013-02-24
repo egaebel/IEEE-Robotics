@@ -28,8 +28,10 @@ void loop(){
   move.slideRight(1);
   delay(5000);
   */
-  move.lift();
+  move.liftUp();
   delay(5000);
-  move.drop();
+  move.liftStop();
+  delay(5000);
+  move.liftDown();
   delay(5000);
 }
