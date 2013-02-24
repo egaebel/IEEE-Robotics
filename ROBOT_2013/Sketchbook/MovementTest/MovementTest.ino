@@ -13,6 +13,7 @@ void setup(){
 }
 
 void loop(){
+  /*
   move.forward(1);
   delay(5000);
   move.backward(1);
@@ -25,5 +26,10 @@ void loop(){
   move.slideLeft(1);
   delay(5000);
   move.slideRight(1);
+  delay(5000);
+  */
+  move.lift();
+  delay(5000);
+  move.drop();
   delay(5000);
 }

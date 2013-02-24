@@ -14,7 +14,7 @@ enum POSITION{
 	POS_START = 0,
 	POS_SEA,
 	POS_RAIL,
-	POS_LOAD,
+	POS_PICK_UP,
 	POS_AIR
 };
 
@@ -45,6 +45,7 @@ typedef struct block_t {
 Block lBlock; //Block held by the left claw.
 Block rBlock; //Block held by the right claw.
 
+//array of pointers to Blocks
 Block *loadingZone[14]; // Blocks in the loading zone, listed west to east.
 Block *seaZone[6]; //Sea zone colors, listed south to north.
 Block *railZone[6]; //Rail zone colors, listed west to east. 
@@ -53,7 +54,7 @@ const int PICKUP_SIZE = 14;
 const int RAIL_SEA_SIZE = 6;
 const int AIR_SIZE = 2;
 
-/* PIN DEFINITIONS */
+/* PIN DEFINITIONS */ //max pin is 53!
 	//Motors (Servos)
 #define LEFT_MOTOR 13
 #define RIGHT_MOTOR 12
@@ -70,7 +71,6 @@ const int AIR_SIZE = 2;
 #define WALL_FOLLOW_SERVO 5
 #define BUMPER_2_PIN 4
 #define BUMPER_1_PIN 3
-	//Top Motor
 #define COLOR_SENSOR 0 //Pin for color sensor (pin 0 is fake) 
 
 #endif

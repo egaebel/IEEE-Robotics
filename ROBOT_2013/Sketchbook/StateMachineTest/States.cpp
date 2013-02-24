@@ -2,6 +2,9 @@
 #include "States.h"
 #include "Movement.h"
 #include "WallFollower.h"
+#include "common.h"
+#include "SimpleFunctions.h"
+#include "EmptyColorSensor.h"
 
 extern LineSensor line;
 extern Movement move;
@@ -100,11 +103,15 @@ void scanUpdate() {
             //scanning rail
             else if (curPos == POS_RAIL) {
                 move.slideLeft(0.25);
+
                 if (line.detectLeft()) {
+
                     //put color read code here!
                     //--------------------------
                     //--------------------------
+
                     blockPos++;
+
                     if(blockPos > 5){
                         //we are done lets moveTo the next place
                         internalState = 2;
@@ -116,12 +123,17 @@ void scanUpdate() {
             }
             //scanning pickup
             else {
+
                 move.slideLeft(0.25);
+
                 if (line.detectLeft()) {
+
                     //put color read code here!
                     //--------------------------
                     //--------------------------
+
                     blockPos++;
+
                     if(blockPos > 13){
                         //we are done lets moveTo the next place
                         internalState = 2;
@@ -135,16 +147,16 @@ void scanUpdate() {
             break;
         //We already read this color, so just keep moving until white
         case 1:
-            if (curPos == POS_PICK_SEA) {
+            if (curPos == POS_SEA) {
                 move.slideRight(0.25);
                 if(line.detectRight()){
-                   internalState = 0:
+                   internalState = 0;
                 }
             }
             else {
                 move.slideLeft(0.25);
                 if(line.detectLeft()){
-                   internalState = 0:
+                   internalState = 0;
                 }
             }
             break;
@@ -155,7 +167,7 @@ void scanUpdate() {
                 isScanning = false;
             //our nextPos and curPos should be handled for us
             fsm.transitionTo(moveToState);
-            fsm.init();
+            
             break;
     }
 }
@@ -192,7 +204,7 @@ void moveToUpdate() {
             case 2:
                 move.slideRight(0.25);
                 if(line.detectRight()){
-                    //if we're currently scanning stuff
+                    //if we're scanning currently
                     if (isScanning) {
                         fsm.transitionTo(scanState); 
                         curPos = nextPos;
@@ -203,6 +215,7 @@ void moveToUpdate() {
                         fsm.transitionTo(dropState);
                         curPos = nextPos;
                         nextPos = POS_START;
+                        
                     }
                 }
                 break;
@@ -242,7 +255,7 @@ void moveToUpdate() {
     else if(curPos == POS_START && nextPos == POS_RAIL){
         switch(internalState){
             
-            //move back and right
+            //move backward and right
             case 0:
                 move.backward(0.25);
                 move.slideRight(0.25);
@@ -268,13 +281,13 @@ void moveToUpdate() {
                     internalState++;
                 }
                 break;
-            //go back to the first white line then change state
+            //go backward to the first white line then change state
             case 4:
                 move.slideRight(0.25);
                 if(line.detectLeft()){
                     curPos = nextPos;
                     nextPos = POS_PICK_UP;
-                    fsm->transitionTo(scanState);;
+                    fsm.transitionTo(scanState);
                 }
                 break;
         }
@@ -285,6 +298,8 @@ void moveToUpdate() {
         switch(internalState){
             //turn
             case 0:
+                //SHOULD TURN ALL THE WAY AROUND
+                    //need to do physical testing to figure out speeds
                 move.turnAround();
                 internalState++;
                 break;
@@ -328,7 +343,7 @@ void moveToUpdate() {
                 }
                 break;
             case 1:
-                move.turnAround(0.25);
+                move.turnAround();
                 internalState++;
                 break;
             case 2:
@@ -345,13 +360,13 @@ void moveToUpdate() {
                     else if (!fullOfBlocks(seaZone, RAIL_SEA_SIZE)) {
                         curPos = nextPos;
                         nextPos = POS_START;
-                        fsm.transitionTo(moveTo);
+                        fsm.transitionTo(moveToState);
                     }
                     //if air isn't full
                     else {
                         //TODO: Kickstart the air states
                     }
-                    fsm->init();
+                    
                 }
                 break;
         }
@@ -471,8 +486,8 @@ void dropUpdate() {
         //....
         /*switch (internalState) {
             case 0:
-        */      
-        }
+                
+        }*/
     }
 }
 
