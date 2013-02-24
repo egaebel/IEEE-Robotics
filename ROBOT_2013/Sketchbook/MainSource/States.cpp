@@ -1,12 +1,32 @@
 #include "FiniteStateMachine.h"
 #include "States.h"
+#include "Movement.h"
+#include "WallFollower.h"
 
-Movement move;
+extern LineSensor line;
+extern Movement move;
+extern WallFollower wallFollower;
+extern Claw lClaw;
+extern Claw rClaw;
+extern FiniteStateMachine fsm;
+extern ColorSensor colorSensor;
 
-int internalState; //a sub-state used in each state, state-ception
-int *zone;
-static int blockPos; //used to keep track where we are in a zone (ie 2 would be 3rd block in a loading zone)
-extern LineSensor sensor;
+//used to keep track where we are in a zone 
+    //(ie 2 would be 3rd block in a loading zone)
+static int blockPos; 
+//a sub-state used in each state, state-ception
+int internalState; 
+bool isScanning;
+
+//State objects
+//Put it here since it needs to know that the functions exist
+State initState = State(initEnter, initUpdate, initExit);
+State scanState = State(scanEnter, scanUpdate, scanExit);
+State moveToState = State(moveToEnter, moveToUpdate, moveToExit);
+State pickUpState = State(pickUpEnter, pickUpUpdate, pickUpExit);
+State dropState = State(dropEnter, dropUpdate, dropExit);
+State centerState = State(centerEnter, centerUpdate, centerExit);
+//End State objects
 
 //*****START State Functions*****//
 //initState Functions
@@ -15,6 +35,7 @@ void initEnter() {
     //initialize necessary variables & sensors
     internalState = 0;
     move.init();
+    isScanning = true;
 }
 
 void initUpdate() {
@@ -22,23 +43,22 @@ void initUpdate() {
 
     switch(internalState){
         case 0:
-            move.back(0.25);
-            if(sensor.line()==WHITE){
-                wallFollower.lower();
+            move.backward(0.25);
+            if(line.detectFront()){
+                move.dropDown();
                 internalState++;
             }
             break;
         case 1:
-            move.foward(0.25);
+            move.forward(0.25);
             if(wallFollower.isTouching()){
                 curPos = POS_START;
                 nextPos = POS_SEA;
-                fsm->transitionTo(moveToState)
-                fsm->init();
+                fsm.transitionTo(moveToState);
+                    
             }
-        break;
+            break;
     }
-
 }
 
 void initExit() {}
@@ -47,16 +67,6 @@ void initExit() {}
 void initScan() {
     internalState = 0;
     blockPos = 0;
-    //change zone array based off the position
-    if(curPos == POS_SEA){
-        zone = seaZone;
-    }
-    else if (curPos == POS_RAIL) {
-        zone = railZone;
-    }
-    else if (cur == POS_PICK_UP) {
-        zone = loadingZone;
-    }
 }
 
 void scanUpdate() {
@@ -65,43 +75,87 @@ void scanUpdate() {
     switch(internalState){
         //Move until hitting a color
         case 0:
-            if (curPos == POS_PICK_UP) {
-                move.slideLeft(0.25);
-            }
-            else {
+            //scanning sea
+            if (curPos == POS_SEA) {
                 move.slideRight(0.25);
+
+                //hit a line! start reading color!
+                if(line.detectRight()){
+             
+                    //put color read code here!
+                    //--------------------------
+                    //--------------------------
+
+                    blockPos++;
+
+                    if(blockPos > 5){
+                        //we are done lets moveTo the next place
+                        internalState = 2;
+                    }
+                    else{
+                        internalState = 1;
+                    }
+                }
+            }
+            //scanning rail
+            else if (curPos == POS_RAIL) {
+                move.slideLeft(0.25);
+                if (line.detectLeft()) {
+                    //put color read code here!
+                    //--------------------------
+                    //--------------------------
+                    blockPos++;
+                    if(blockPos > 5){
+                        //we are done lets moveTo the next place
+                        internalState = 2;
+                    }
+                    else{
+                        internalState = 1;
+                    }
+                }
+            }
+            //scanning pickup
+            else {
+                move.slideLeft(0.25);
+                if (line.detectLeft()) {
+                    //put color read code here!
+                    //--------------------------
+                    //--------------------------
+                    blockPos++;
+                    if(blockPos > 13){
+                        //we are done lets moveTo the next place
+                        internalState = 2;
+                    }
+                    else{
+                        internalState = 1;
+                    }
+                }
             }
 
-            if(sensor.line() != WHITE && sensor.line() != BLACK){
-                zone[blockPos] = sensor.line();
-                blockPos++;
-                if(blockPos>5){
-                    //we are done lets moveTo the next place
-                    internalState = 2;
-                }
-                else{
-                    internalState = 1;
-                }
-            }
             break;
         //We already read this color, so just keep moving until white
         case 1:
-            if (curPos == POS_PICK_UP) {
-                move.slideLeft(0.25);
+            if (curPos == POS_PICK_SEA) {
+                move.slideRight(0.25);
+                if(line.detectRight()){
+                   internalState = 0:
+                }
             }
             else {
-                move.slideRight(0.25);
-            }
-
-            if(sensor.line == WHITE){
-                internalState = 0:
+                move.slideLeft(0.25);
+                if(line.detectLeft()){
+                   internalState = 0:
+                }
             }
             break;
-
         case 2:
+
+            //if we're leaving the POS_PICK_UP position, then we are done scanning
+            if (curPos == POS_PICK_UP)
+                isScanning = false;
             //our nextPos and curPos should be handled for us
-            fsm->transitionTo(moveToState);
-            fsm->init();
+            fsm.transitionTo(moveToState);
+            fsm.init();
             break;
     }
 }
@@ -138,17 +192,17 @@ void moveToUpdate() {
             case 2:
                 move.slideRight(0.25);
                 if(line.detectRight()){
+                    //if we're currently scanning stuff
                     if (isScanning) {
-                        fsm->transitionTo(scanState); 
+                        fsm.transitionTo(scanState); 
                         curPos = nextPos;
                         nextPos = POS_START;
                     }
                     else{
                         //INSERT LINE SENSOR CODE TO DETERMINE WHERE TO DROP
-                        fsm->transitionTo(dropState);
+                        fsm.transitionTo(dropState);
                         curPos = nextPos;
                         nextPos = POS_START;
-                        fsm->init();
                     }
                 }
                 break;
@@ -191,7 +245,7 @@ void moveToUpdate() {
             //move back and right
             case 0:
                 move.backward(0.25);
-                move.right(0.25);
+                move.slideRight(0.25);
                 internalState++;
                 break;
             //turn
@@ -200,7 +254,7 @@ void moveToUpdate() {
                 internalState++;
                 break;
             //and hit the wall
-            case 1:
+            case 2:
                 move.forward(0.1);
                 if(wallFollower.isTouching()){
                     internalState++;
@@ -208,20 +262,19 @@ void moveToUpdate() {
                 break;
             //slide left until we hit a color
             //don't care about white lines because the start position has white lines that will screw everything up
-            case 2:
+            case 3:
                 move.slideLeft(0.25);
-                if(sensor.line() != WHITE && sensor.line() != BLACK){
+                if(line.detectLeft()){
                     internalState++;
                 }
                 break;
             //go back to the first white line then change state
-            case 3:
+            case 4:
                 move.slideRight(0.25);
                 if(line.detectLeft()){
                     curPos = nextPos;
                     nextPos = POS_PICK_UP;
-                    fsm->transitionTo(scanState);
-                    fsm->init();
+                    fsm->transitionTo(scanState);;
                 }
                 break;
         }
@@ -232,7 +285,7 @@ void moveToUpdate() {
         switch(internalState){
             //turn
             case 0:
-                move.turnAround(0.25);
+                move.turnAround();
                 internalState++;
                 break;
             // and hit the wall
@@ -245,19 +298,18 @@ void moveToUpdate() {
             //slide left until we hit a color
             case 2:
                 move.slideLeft(0.25);
-                if(sensor.line() != WHITE && sensor.line() != BLACK) {
+                if(line.detectLeft()) {
 
                     //loading area hasn't been scanned yet
                     if (loadingZone[0] == NULL) {
 
-                        fsm->transitionTo(scanState);
+                        fsm.transitionTo(scanState);
                     }
                     else {
-                        fsm->transitionTo(pickUpState);
+                        fsm.transitionTo(pickUpState);
                     }
                     curPos = nextPos;
                     nextPos = POS_RAIL;
-                    fsm->init();
                 }
                 break;
         }
@@ -270,7 +322,8 @@ void moveToUpdate() {
             //slide to end of pickup by ramp
             case 0:
                 move.slideRight(0.25);
-                if (/*at last cell (rightmost if looking at stage with ramp in back) in pickup*/) {
+                //if we are at the FIRST cell in the pickup
+                if (blockPos == 0) {
                     internalState++;
                 }
                 break;
@@ -286,13 +339,13 @@ void moveToUpdate() {
                     if (!fullOfBlocks(railZone, RAIL_SEA_SIZE)) {
                         curPos = nextPos;
                         nextPos = POS_PICK_UP;
-                        fsm->transitionTo(dropState);
+                        fsm.transitionTo(dropState);
                     }
                     //if sea isn't full
                     else if (!fullOfBlocks(seaZone, RAIL_SEA_SIZE)) {
                         curPos = nextPos;
                         nextPos = POS_START;
-                        fsm->transitionTo(moveTo);
+                        fsm.transitionTo(moveTo);
                     }
                     //if air isn't full
                     else {
@@ -324,7 +377,7 @@ void moveToUpdate() {
             break;
             case 3:
                 move.forward(0.1);
-                if (wallFollower.isFollower()) {
+                if (wallFollower.isTouching()) {
                     internalState++;
                 }
             break;
@@ -336,7 +389,7 @@ void moveToUpdate() {
     }
     else{
         //shouldn't be here, maybe make another case?
-        assert(0);
+        //assert(0);
     }
 }
 
@@ -375,7 +428,7 @@ void pickUpExit() {}
 //dropState
 void dropEnter() {
 
-    internal state = 0;
+    internalState = 0;
     //Figure out where you are in the pick up zone
     //initialize necessary variables & sensors
 }
@@ -388,7 +441,7 @@ void dropUpdate() {
         switch (internalState) {
             case 0:
                 move.slideLeft(0.25);
-                if (lBlock == colorSensor.detectColor()) {
+                if (lBlock.color == colorSensor.detectColor()) {
                     internalState++;            
                 }
                 break;
@@ -407,9 +460,8 @@ void dropUpdate() {
                 break;
             case 2:
                 //transition to move
-                fsm->transitionTo(moveToState);
+                fsm.transitionTo(moveToState);
                 nextPos = POS_PICK_UP;
-                fsm->init();
                 break;
         }
     }
@@ -417,22 +469,12 @@ void dropUpdate() {
     else {
         //scan both spaces in air
         //....
-        switch (internalState) {
+        /*switch (internalState) {
             case 0:
-                
+        */      
         }
     }
 }
 
 void dropExit() {}
 //*****END State Functions*****//
-
-//State objects
-//Put it here since it needs to know that the functions exist
-State initState = State(initEnter, initUpdate, initExit);
-State scanState = State(scanEnter, scanUpdate, scanExit);
-State moveToState = State(moveToEnter, moveToUpdate, moveToExit);
-State pickUpState = State(pickUpEnter, pickUpUpdate, pickUpExit);
-State dropState = State(dropEnter, dropUpdate, dropExit);
-State centerState = State(centerEnter, centerUpdate, centerExit);
-//End State objects

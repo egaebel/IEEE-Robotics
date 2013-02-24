@@ -1,6 +1,11 @@
 #ifndef _COMMON_H_
 #define _COMMON_H_
 
+#include <Arduino.h>
+#include <Servo.h>
+#include "LineSensor.h"
+#include "Claw.h"
+
 /*
  * This is where all globals and constants should be defined
 */
@@ -9,7 +14,7 @@ enum POSITION{
 	POS_START = 0,
 	POS_SEA,
 	POS_RAIL,
-	POS_LOAD,
+	POS_PICK_UP,
 	POS_AIR
 };
 
@@ -28,33 +33,35 @@ enum SIZE{
 
 //Structs
 POSITION curPos = POS_START;
-POSITION nextPos = NULL;
+POSITION nextPos;
 
 typedef struct block_t {
 	COLOR color; 
 	SIZE size; 
 	bool present;
-} block;
+} Block;
 
 //Variables
-block lBlock; //Block held by the left claw.
-block rBlock; //Block held by the right claw.
+Block lBlock; //Block held by the left claw.
+Block rBlock; //Block held by the right claw.
 
-block loadingZone[14]; // Blocks in the loading zone, listed west to east.
-block seaZone[6]; //Sea zone colors, listed south to north.
-block railZone[6]; //Rail zone colors, listed west to east. 
+//array of pointers to Blocks
+Block *loadingZone[14]; // Blocks in the loading zone, listed west to east.
+Block *seaZone[6]; //Sea zone colors, listed south to north.
+Block *railZone[6]; //Rail zone colors, listed west to east. 
 
 const int PICKUP_SIZE = 14;
 const int RAIL_SEA_SIZE = 6;
 const int AIR_SIZE = 2;
 
-/* PIN DEFINITIONS */
+/* PIN DEFINITIONS */ //max pin is 53!
 	//Motors (Servos)
 #define LEFT_MOTOR 13
 #define RIGHT_MOTOR 12
 #define REAR_MOTOR 11 //Used for setSpeed
 #define REAR_MOTOR_L 11
 #define REAR_MOTOR_R 10
+#define TOP_MOTOR 2
 	//Claw Servos
 #define LCLAW_SERVO 9
 #define RCLAW_SERVO 8

@@ -1,22 +1,29 @@
-#include <Arduino.h>
 #include "FiniteStateMachine.h"
 #include "States.h"
 #include "common.h"
+#include "Movement.h"
+#include "Claw.h"
+#include "WallFollower.h"
+#include "LineSensor.h"
+#include <Servo.h>
+
 //#include "BackEndColorSensor.h"
-extern State initState;
-//FiniteStateMachine fsm(initState);
 //BackEndColorSensor colorSensor;
+extern State initState;
+
+Movement move;
+LineSensor line;
+WallFollower wallFollower;
+
 Claw lClaw;
 Claw rClaw;
+FiniteStateMachine fsm(initState);
 
 void setup() {
     Serial.begin(9600);
-    FiniteStateMachine fsm(initState);
-    LineSensor line;
-    WallFollower wallFollower;
 }
 
 //go through the entire state machine
 void loop() {
-    fsm->update();
+    fsm.update();
 }

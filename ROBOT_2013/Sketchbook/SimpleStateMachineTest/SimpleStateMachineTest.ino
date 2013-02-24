@@ -11,8 +11,8 @@ FiniteStateMachine fsm(state1);
 
 void setup() {
     Serial.begin(9600);
-    Serial1.begin(9600);
-    ET.begin(details(uart), &Serial1);
+    Serial.begin(9600);
+    ET.begin(details(uart), &Serial);
 }
 
 //go through the entire state machine

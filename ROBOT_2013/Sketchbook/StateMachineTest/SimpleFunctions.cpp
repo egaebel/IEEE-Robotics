@@ -1,8 +1,10 @@
-bool fullOfBlocks(block[] blocks, int numBlocks) {
+#include "SimpleFunctions.h"
+
+bool fullOfBlocks(Block *blocks[], int numBlocks) {
 
 	for (int i = 0; i < numBlocks; i++) {
 
-		if (blocks[i] == NULL) {
+		if (blocks[i] == 0) {
 
 			return false;
 		} 

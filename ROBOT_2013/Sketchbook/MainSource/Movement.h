@@ -1,7 +1,6 @@
 #ifndef _MOVEMENT_H_
 #define _MOVEMENT_H_
 
-#include "Servo.h"
 #include "common.h"
 
 class Movement {
@@ -13,9 +12,10 @@ public:
 	void slideRight(float speed);
 	void turnLeft(float speed);
 	void turnRight(float speed);
+	void turnAround();
 	void forward(float speed);
 	void backward(float speed);
-        void stop();
+    void stop();
 	bool setSpeed(int servo, float speed);
 private:
 	Servo leftMotor;
@@ -64,6 +64,15 @@ void Movement::turnRight(float speed){
 	setSpeed(LEFT_MOTOR,-speed);
 	//set right motor forward by speed
 	setSpeed(RIGHT_MOTOR,speed);
+}
+
+//TODO: we need to figure out what the speed should be
+	//such that the robot turns around 180 degrees
+void Movement::turnAround() {
+	//set left motor forward by speed
+	setSpeed(LEFT_MOTOR, 0.75);
+	//set right motor backward by speed
+	setSpeed(RIGHT_MOTOR, -0.75);
 }
 
 void Movement::forward(float speed){

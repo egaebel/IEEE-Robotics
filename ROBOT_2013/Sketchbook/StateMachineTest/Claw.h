@@ -2,7 +2,6 @@
 #define _CLAW_H_
 
 #include "common.h"
-#include "servo.h"
 
 class Claw{
 
@@ -13,11 +12,9 @@ public:
 	void grab();
 	void drop();
 private:
-	const Servo EXTEND_SERVO;
-	const Servo GRAB_SERVO;
+	Servo EXTEND_SERVO;
+	Servo GRAB_SERVO;
 };
-
-#endif
 
 void Claw::init(int extend_servo_pin, int grab_servo_pin){
 	EXTEND_SERVO.attach(extend_servo_pin);
@@ -39,3 +36,5 @@ void Claw::grab(){
 void Claw::drop(){
 	GRAB_SERVO.write(180);
 }
+
+#endif
