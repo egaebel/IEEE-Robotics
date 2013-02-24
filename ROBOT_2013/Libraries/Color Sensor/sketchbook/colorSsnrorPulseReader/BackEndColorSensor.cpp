@@ -65,7 +65,7 @@ BackEndColorSensor::BackEndColorSensor()    {
  *
  * @returns the pulse of the desired color
  */
-int BackEndColorSensor::colorRead(int color)    {
+float BackEndColorSensor::colorRead(int color)    {
 
     //set the S2 and S3 pins to select the color to be sensed
     if(color == 0){//white

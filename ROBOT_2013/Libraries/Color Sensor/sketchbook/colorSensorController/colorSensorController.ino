@@ -7,14 +7,16 @@ int result;
 
 void setup() {
     sensor = &ColorSensor();
-    Serial.begin(115200);
+    //Serial.begin(115200);
+	result = sensor->detectColor();
 }
 
 void loop()	{
-    result = sensor->detectColor();
+    //result = sensor->detectColor();
     
-    Serial.print("\n\n\n\n\n\n");
-    if(result == 0)  {
+    //Serial.print("\n\n\n\n\n\n");
+    
+    /*if(result == 0)  {
       Serial.println("RED");
     }
     
@@ -37,4 +39,9 @@ void loop()	{
     else if(result == 5)  {
       Serial.println("GREEN");
     }
+    
+    else {
+      Serial.println("dfsd");
+    }*/
+      
 }
