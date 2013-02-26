@@ -27,15 +27,17 @@ ColorSensor::ColorSensor()
 int ColorSensor::detectColor() {
 	throwAwayValues(); //Throws away intial 4 values
 	int result = 6; //6 signifies no color determined
-	int whitePulseValue, bluePulseValue, redPulseValue, greenPulseValue; //Pulse values
+	int whitePulseValue = 0, bluePulseValue = 0, redPulseValue = 0, greenPulseValue = 0; //Pulse values
 	int count = 0;	
         
 	while(result == 6)	{ //Possibility for infinite loop if no dominant color found after infinite pulse readings
 		//Fill up array with color pulse values
-		whitePulseValue = backEnd->colorRead(0);
-		bluePulseValue = backEnd->colorRead(1);
-		redPulseValue = backEnd->colorRead(2);
-		greenPulseValue = backEnd->colorRead(3);
+		while(whitePulseValue == 0 || (whitePulseValue => 32768 || bluePulseValue => 32768 || redPulseValue => 32768|| greenPulseValue => 32768))  {
+			whitePulseValue = backEnd->colorRead(0);
+			bluePulseValue = backEnd->colorRead(1);
+			redPulseValue = backEnd->colorRead(2);
+			greenPulseValue = backEnd->colorRead(3);
+		}
 		
 		int numberOfOnes = calculateNumberOnes(whitePulseValue, bluePulseValue, redPulseValue, greenPulseValue); //determine num of zeros in pulseValues array
 		if((numberOfOnes < 4) && (count < 10))	{
@@ -48,28 +50,13 @@ int ColorSensor::detectColor() {
 			Serial.print("\tgreen: ");
 			Serial.print(greenPulseValue);
 			Serial.println();
-
-			//Determining if test for each color pass; if <Color>Block == T then.. <color> test passed
-			bool redBlock = isRed(whitePulseValue, bluePulseValue, redPulseValue, greenPulseValue, numberOfOnes); 
-			bool blueBlock = isBlue(whitePulseValue, bluePulseValue, redPulseValue, greenPulseValue, numberOfOnes);
-			bool brownBlock = isBrown(whitePulseValue, bluePulseValue, redPulseValue, greenPulseValue, numberOfOnes);
-			bool yellowBlock = isYellow(whitePulseValue, bluePulseValue, redPulseValue, greenPulseValue, numberOfOnes);
-			bool purpleBlock = isPurple(whitePulseValue, bluePulseValue, redPulseValue, greenPulseValue, numberOfOnes); 
-			bool greenBlock = isGreen(whitePulseValue, bluePulseValue, redPulseValue, greenPulseValue, numberOfOnes);
 			
-			// Serial.println("RED:" + redBlock); delay(200);
-			// Serial.println("BLUE:" + blueBlock); delay(200);
-			// Serial.println("BROWN:" + brownBlock); delay(200);
-			// Serial.println("YELLOW:" + yellowBlock); delay(200);
-			// Serial.println("PURPLE:" + purpleBlock); delay(200);
-			// Serial.println("GREEN:" + greenBlock); delay(200);
-			
-			if(redBlock) {Serial.println("  red");}
-			if(blueBlock) {Serial.println("  blue");}
-			if(brownBlock) {Serial.println("  brown");}
-			if(yellowBlock) {Serial.println("  yellow");}
-			if(purpleBlock) {Serial.println("  purple");}
-			if(greenBlock) {Serial.println("  green");}
+			if(isRed(whitePulseValue, bluePulseValue, redPulseValue, greenPulseValue, numberOfOnes)) {Serial.println("  red");}
+			if(isBlue(whitePulseValue, bluePulseValue, redPulseValue, greenPulseValue, numberOfOnes)) {Serial.println("  blue");}
+			if(isBrown(whitePulseValue, bluePulseValue, redPulseValue, greenPulseValue, numberOfOnes)) {Serial.println("  brown");}
+			if(isYellow(whitePulseValue, bluePulseValue, redPulseValue, greenPulseValue, numberOfOnes)) {Serial.println("  yellow");}
+			if(isPurple(whitePulseValue, bluePulseValue, redPulseValue, greenPulseValue, numberOfOnes)) {Serial.println("  purple");}
+			if(isGreen(whitePulseValue, bluePulseValue, redPulseValue, greenPulseValue, numberOfOnes)) {Serial.println("  green");}
 			//result = dominantColor(redBlock, blueBlock, brownBlock, yellowBlock, purpleBlock, greenBlock);
 			count++;
 		}
