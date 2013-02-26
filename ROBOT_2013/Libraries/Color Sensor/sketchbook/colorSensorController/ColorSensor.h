@@ -19,7 +19,7 @@ class ColorSensor
         int dominantColor(bool redBlock, bool blueBlock, bool brownBlock, bool yellowBlock, bool purpleBlock, bool greenBlock); //Determines the dominant color (color decided the block is)
         int absoluteValue(int a);
         int calculateNumberOnes(int firstPV, int secondPV, int thirdPV, int fourthPV); //returns number of pulse values with value 1.00
-		bool withinRange(int canidateValue, const int comparisonValue, const int range); //check whether canidate value with range (inclusive) of comparison value
+		bool withinRange(int canidateValue, int comparisonValue, int range); //check whether canidate value with range (inclusive) of comparison value
 };
 
 #endif // COLORSENSOR_H

@@ -32,7 +32,7 @@ int ColorSensor::detectColor() {
         
 	while(result == 6)	{ //Possibility for infinite loop if no dominant color found after infinite pulse readings
 		//Fill up array with color pulse values
-		while(whitePulseValue == 0 || (whitePulseValue => 32768 || bluePulseValue => 32768 || redPulseValue => 32768|| greenPulseValue => 32768))  {
+		while(whitePulseValue == 0 || (whitePulseValue >= 32768 || bluePulseValue >= 32768 || redPulseValue >= 32768|| greenPulseValue >= 32768))  {
 			whitePulseValue = backEnd->colorRead(0);
 			bluePulseValue = backEnd->colorRead(1);
 			redPulseValue = backEnd->colorRead(2);
@@ -111,29 +111,31 @@ void ColorSensor::throwAwayValues()	{
  * Red block color check
  */       
 bool ColorSensor::isRed(int whitePV, int bluePV, int redPV, int greenPV, int numOnes)	{
-	return false;
+	return (withinRange(whitePV, white_AveragePV_RED, range_RED) && withinRange(bluePV, blue_AveragePV_RED, range_RED) 
+		   && withinRange(redPV, red_AveragePV_RED, range_RED) && withinRange(greenPV, green_AveragePV_RED, range_RED));
 }
 
 /**
  * Blue block check
  */
 bool ColorSensor::isBlue(int whitePV, int bluePV, int redPV, int greenPV, int numOnes)	{
-	return false;
+	return (withinRange(whitePV, white_AveragePV_BLUE, range_BLUE) && withinRange(bluePV, blue_AveragePV_BLUE, range_BLUE)
+           && withinRange(redPV, red_AveragePV_BLUE, range_BLUE) && withinRange(greenPV, green_AveragePV_BLUE, range_BLUE));
 }
 
 /**
  * Brown block check
  */
 bool ColorSensor::isBrown(int whitePV, int bluePV, int redPV, int greenPV, int numOnes)	{
-	// return (withinRange(whitePV, white_AveragePV_BROWN, range_BROWN) && withinRange(bluePV, blue_AveragePV_BROWN, range_BROWN) 
-		   // && withinRange(redPV, red_AveragePV_BROWN, range_BROWN) && withinRange(greenPV, green_AveragePV_BROWN, range_BROWN));
-	return false;
+	return (withinRange(whitePV, white_AveragePV_BROWN, range_BROWN) && withinRange(bluePV, blue_AveragePV_BROWN, range_BROWN) 
+		   && withinRange(redPV, red_AveragePV_BROWN, range_BROWN) && withinRange(greenPV, green_AveragePV_BROWN, range_BROWN));
 }
 
 /**
  * Yellow block check
  */
 bool ColorSensor::isYellow(int whitePV, int bluePV, int redPV, int greenPV, int numOnes)	{
+	
 	return (withinRange(whitePV, white_AveragePV_YELLOW, range_YELLOW) && withinRange(bluePV, blue_AveragePV_YELLOW, range_YELLOW)
            && withinRange(redPV, red_AveragePV_YELLOW, range_YELLOW) && withinRange(greenPV, green_AveragePV_YELLOW, range_YELLOW));
 }
@@ -142,7 +144,8 @@ bool ColorSensor::isYellow(int whitePV, int bluePV, int redPV, int greenPV, int 
  * Purple block check
  */
 bool ColorSensor::isPurple(int whitePV, int bluePV, int redPV, int greenPV, int numOnes)	{
-	return false;
+	return (withinRange(whitePV, white_AveragePV_PURPLE, range_PURPLE) && withinRange(bluePV, blue_AveragePV_PURPLE, range_PURPLE)
+           && withinRange(redPV, red_AveragePV_PURPLE, range_PURPLE) && withinRange(greenPV, green_AveragePV_PURPLE, range_PURPLE));
 }
 
 
@@ -199,7 +202,7 @@ int ColorSensor::dominantColor(bool redBlock, bool blueBlock, bool brownBlock, b
 }
 
 /**
- * Checks whether <float> canidate value is within <float> range (inclusive) of the <float> comparisonValue
+ * Checks whether <int> canidate value is within <int> range (inclusive) of the <int> comparisonValue
  */
 bool ColorSensor::withinRange(int canidateValue, int comparisonValue, int range)  {
 	return (absoluteValue(canidateValue - comparisonValue) <= range);
@@ -209,7 +212,9 @@ bool ColorSensor::withinRange(int canidateValue, int comparisonValue, int range)
  * Finds absolute value of parameter a
  */
 int ColorSensor::absoluteValue(int a)  {
-  return ((a*a)/a);
+	if(a <= 0) return (-1 * a);
+	
+	return a;
 }
 
 
