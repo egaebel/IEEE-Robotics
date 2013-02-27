@@ -9,45 +9,6 @@ int LED = 32;//pinD
 
 bool LEDstate = 1; //LED is turned on
 
-
-//------------------------------TESTING ONLY ------------------------------------------------
-/**
- * FOR TESTING SERIAL OUTPUT READ PULSE
- */
- /*
-void loop()	{
-	//delay(150); //Pauses program for 100ms
-	detectColor(taosOutPin); //read pulse readings for each color W,R,G,B
-	delay(100); //100ms delay between pulse reads
-}
-*/
-/**
- * FOR TESTING SERIAL OUTPUT READ PULSE
- */
- /*
-void setup() {
-	TCS3200setup();
-	Serial.begin(115200); //Sets the data transfer rate at 115.2 Kbps
-	Serial.print("\n\n\nready\n\n\n\n\n\n");
-
-	Serial.print("White: ");
-	Serial.print(colorRead(0));
-
-	Serial.print("\n\nBlue: ");
-	Serial.print(colorRead(1));
-
-	Serial.print("\n\nRed: ");
-	Serial.print(colorRead(2));
-
-	Serial.print("\n\nGreen: ");
-	Serial.print(colorRead(3));
-
-	Serial.print("\n\n\n\n");
-}
-*/
-//--------------------------------END OF TESTING ONLY --------------------------------------------
-
-
 /**
  * calls the setUp method for the TC3200 sensor
  */
@@ -63,7 +24,7 @@ BackEndColorSensor::BackEndColorSensor()    {
                     2 = red
                     3 = green
  *
- * @returns the pulse of the desired color
+ * Returns the pulse of the desired color
  */
 int BackEndColorSensor::colorRead(int color)    {
 
@@ -140,10 +101,5 @@ void BackEndColorSensor::TCS3200setup()   {
 
     return;
 }
-
-/**
- * Returns the pulse value for the desired color
- *
- */
 
 
