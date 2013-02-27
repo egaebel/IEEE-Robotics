@@ -1,11 +1,5 @@
 #include "BackEndColorSensor.h"
-/*Pin Constants */
-int S0 = 22;//pinB
-int S1 = 24;//pinA
-int S2 = 26;//pinE
-int S3 = 28;//pinF
-int taosOutPin = 30;//pinC
-int LED = 32;//pinD
+#include "common.h"
 
 bool LEDstate = 1; //LED is turned on
 
@@ -30,26 +24,26 @@ int BackEndColorSensor::colorRead(int color)    {
 
     //set the S2 and S3 pins to select the color to be sensed
     if(color == 0){//white
-        digitalWrite(S3, LOW); //S3
-        digitalWrite(S2, HIGH); //S2
+        digitalWrite(COLOR_SENSOR_PIN_S3, LOW); //S3
+        digitalWrite(COLOR_SENSOR_PIN_S2, HIGH); //S2
         // Serial.print(" w");
     }
 
     else if(color == 1){ //blue
-        digitalWrite(S3, HIGH); //S3
-        digitalWrite(S2, LOW); //S2
+        digitalWrite(COLOR_SENSOR_PIN_S3, HIGH); //S3
+        digitalWrite(COLOR_SENSOR_PIN_S2, LOW); //S2
         // Serial.print(" b");
     }
 
     else if(color == 2){//red
-        digitalWrite(S3, LOW); //S3
-        digitalWrite(S2, LOW); //S2
+        digitalWrite(COLOR_SENSOR_PIN_S3, LOW); //S3
+        digitalWrite(COLOR_SENSOR_PIN_S2, LOW); //S2
         // Serial.print(" r");
     }
 
     else if(color == 3){//green
-        digitalWrite(S3, HIGH); //S3
-        digitalWrite(S2, HIGH); //S2
+        digitalWrite(COLOR_SENSOR_PIN_S3, HIGH); //S3
+        digitalWrite(COLOR_SENSOR_PIN_S2, HIGH); //S2
         // Serial.print(" g");
     }
 
@@ -57,20 +51,20 @@ int BackEndColorSensor::colorRead(int color)    {
 
     //  turn LEDs on or off, as directed by the LEDstate var
     if(LEDstate == 0){
-        digitalWrite(LED, LOW);
+        digitalWrite(COLOR_SENSOR_PIN_LED, LOW);
     }
     if(LEDstate == 1){
-        digitalWrite(LED, HIGH);
+        digitalWrite(COLOR_SENSOR_PIN_LED, HIGH);
     }
 
     delay(100); //Delay for 100ms for before reading
 
     // now take a measurement from the sensor, timing a low pulse on the sensor's "out" pin
-    readPulse = int(pulseIn(taosOutPin, LOW, 80000));
+    readPulse = int(pulseIn(COLOR_SENSOR_PIN_OUT, LOW, 80000));
 
     //if the pulseIn times out, it returns 0 and that throws off numbers. just cap it at 80k if it happens
     if(readPulse < .1){
-        readPulse = 80000;
+        readPulse = 1;
     }
 
     // return the pulse value back to whatever called for it...
@@ -82,22 +76,22 @@ int BackEndColorSensor::colorRead(int color)    {
 */
 void BackEndColorSensor::TCS3200setup()   {
     //initialize pins
-    pinMode(LED,OUTPUT); //LED pinD
+    pinMode(COLOR_SENSOR_PIN_LED,OUTPUT); //LED pinD
 
     //color mode selection
-    pinMode(S2,OUTPUT); //S2 pinE
-    pinMode(S3,OUTPUT); //s3 pinF
+    pinMode(COLOR_SENSOR_PIN_S2,OUTPUT); //S2 pinE
+    pinMode(COLOR_SENSOR_PIN_S3,OUTPUT); //s3 pinF
 
     //color response pin (only actual input from taos)
-    pinMode(taosOutPin, INPUT); //taosOutPin pinC
+    pinMode(COLOR_SENSOR_PIN_OUT, INPUT); //taosOutPin pinC
 
     //communication freq (sensitivity) selection
-    pinMode(S0,OUTPUT); //S0 pinB
-    pinMode(S1,OUTPUT); //S1 pinA
+    pinMode(COLOR_SENSOR_PIN_S0,OUTPUT); //S0 pinB
+    pinMode(COLOR_SENSOR_PIN_S1,OUTPUT); //S1 pinA
 
     //this will put in 1:1, highest sensitivity
-    digitalWrite(S0, HIGH); //S0
-    digitalWrite(S1, HIGH); //S1
+    digitalWrite(COLOR_SENSOR_PIN_S0, HIGH); //S0
+    digitalWrite(COLOR_SENSOR_PIN_S1, HIGH); //S1
 
     return;
 }

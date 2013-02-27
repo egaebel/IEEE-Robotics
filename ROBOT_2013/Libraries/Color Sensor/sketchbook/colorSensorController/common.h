@@ -1,3 +1,12 @@
+  //Color Sensor Pins
+#define COLOR_SENSOR_PIN_S0 22
+#define COLOR_SENSOR_PIN_S1 24 
+#define COLOR_SENSOR_PIN_S2 26
+#define COLOR_SENSOR_PIN_S3 28
+#define COLOR_SENSOR_PIN_OUT 30
+#define COLOR_SENSOR_PIN_LED 32
+
+
 #define white_AveragePV_RED	2900
 #define blue_AveragePV_RED 2900
 #define red_AveragePV_RED 890
