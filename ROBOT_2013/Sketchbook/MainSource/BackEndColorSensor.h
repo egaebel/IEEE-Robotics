@@ -1,7 +1,8 @@
 #ifndef BACKENDCOLORSENSOR_H
 #define BACKENDCOLORSENSOR_H
 
-#include <Arduino.h>
+#include arduino.h
+
 class BackEndColorSensor
 {
     public:

@@ -75,7 +75,7 @@ const int AIR_SIZE = 2;
 #define COLOR_SENSOR_PIN_S1 24 //Pin for color sensor (pin 0 is fake) 
 #define COLOR_SENSOR_PIN_S2 26
 #define COLOR_SENSOR_PIN_S3 28
-#define COLOR_SENSOR_PIN_Out 30
+#define COLOR_SENSOR_PIN_OUT 30
 #define COLOR_SENSOR_PIN_LED 32 
 
 //Color Sensor Values

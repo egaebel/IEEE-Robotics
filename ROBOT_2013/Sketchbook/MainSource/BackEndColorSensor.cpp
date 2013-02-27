@@ -1,4 +1,5 @@
 #include "BackEndColorSensor.h"
+#include "common.h"
 /*Pin Constants */
 int S0 = 22;//pinB
 int S1 = 24;//pinA
