@@ -44,12 +44,6 @@ boolean updatePosition(int* cur,boolean line[16],boolean dir){
 	return 0;
 }
 
-
-
-
-
-
-
 //Prototypes
 void state1Enter();
 void state1Update();
@@ -59,11 +53,12 @@ void state2Enter();
 void state2Update();
 void state2Exit();
 //
+bool buttonPushed = false;
 
 State state1 = State(state1Enter, state1Update, state1Exit);
 State state2 = State(state2Enter, state2Update, state2Exit);
 
-extern FiniteStateMachine * fsm;
+FiniteStateMachine fsm(state1);
 int internalState;
 int curBayPos;
 //enter the state1 state
@@ -71,19 +66,21 @@ void state1Enter() {
 
 	internalState = 0;
 	Serial.print("Entering state1\n");
-	pinMode(53, INPUT);
 }
 
 void state1Update() {
 
-	move.forward(1);
-	if(digitalRead(53)){
-		move.stop();
-		fsm->transitionTo(state2);
+	//move.forward(1);
+	if(buttonPushed){
+		Serial.print("digitalREAD in 1\n");
+		//move.stop();
+		fsm.transitionTo(state2);
+		buttonPushed = false;
 	}
 }
 
 void state1Exit() {
+	Serial.print("exiting state1\n");
 }
 
 //enter the state2 state
@@ -97,7 +94,9 @@ void state2Enter() {
 void state2Update() {
 
 	move.slideRight(1);
+	Serial.print("state2UPDATE\n");
 	if(updatePosition(&curBayPos,uart.line,1)){
+		Serial.print("updatePosition?2????\n");
 		move.stop();
 		delay(2000);
 	}

@@ -4,20 +4,24 @@
 #include <Servo.h>
 extern UART_STRUCT uart;
 extern State state1;
+extern bool buttonPushed;
 
 EasyTransfer ET;
 
-FiniteStateMachine fsm(state1);
+extern FiniteStateMachine fsm;
 
 void setup() {
     Serial.begin(9600);
-    Serial.begin(9600);
-    ET.begin(details(uart), &Serial);
+    pinMode(53, INPUT);
+    //Serial.begin(9600);
+    //ET.begin(details(uart), &Serial);
 }
 
 //go through the entire state machine
 void loop() {
     fsm.update();
-    if(ET.receiveData());
-       Serial.print("Rec'vd data");
+    buttonPushed = digitalRead(53);
+
+    //if(ET.receiveData());
+       //Serial.print("Rec'vd data");
 }
