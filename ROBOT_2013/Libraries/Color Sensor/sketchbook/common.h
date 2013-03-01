@@ -71,8 +71,10 @@ const int AIR_SIZE = 2;
 #define BUMPER_2_PIN 4
 #define BUMPER_1_PIN 3
 	//Top Motor
+	
+	//Color Sensor Pins
 #define COLOR_SENSOR_PIN_S0 22
-#define COLOR_SENSOR_PIN_S1 24 //Pin for color sensor (pin 0 is fake) 
+#define COLOR_SENSOR_PIN_S1 24 
 #define COLOR_SENSOR_PIN_S2 26
 #define COLOR_SENSOR_PIN_S3 28
 #define COLOR_SENSOR_PIN_OUT 30

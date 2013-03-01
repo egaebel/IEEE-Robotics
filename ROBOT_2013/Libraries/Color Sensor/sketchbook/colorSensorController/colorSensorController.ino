@@ -1,14 +1,14 @@
 #include "ColorSensor.h"
 #include "Arduino.h"
 
-ColorSensor *sensor;
+ColorSensor sensor;
 int result;
 
 
 void setup() {
-    sensor = &ColorSensor();
+    sensor = ColorSensor();
     //Serial.begin(115200);
-	result = sensor->detectColor();
+	result = sensor.detectColor();
 }
 
 void loop()	{

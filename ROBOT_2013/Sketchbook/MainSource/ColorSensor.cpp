@@ -2,12 +2,12 @@
 #include "BackEndColorSensor.h"
 #include "common.h"
 
-BackEndColorSensor backEnd; //BackendColorSensor (used in pulseRead function)
+BackEndColorSensor *backEnd; //BackendColorSensor (used in pulseRead function)
 
 ColorSensor::ColorSensor()
 {
-    backEnd = BackEndColorSensor();
-    Serial.begin(115200);
+    backEnd = &BackEndColorSensor();
+	Serial.begin(115200);
     
 }
 
@@ -33,10 +33,10 @@ int ColorSensor::detectColor() {
 	while(result == 6)	{ //Possibility for infinite loop if no dominant color found after infinite pulse readings
 		//Fill up array with color pulse values
 		while(whitePulseValue == 0 || (whitePulseValue >= 32768 || bluePulseValue >= 32768 || redPulseValue >= 32768|| greenPulseValue >= 32768))  {
-			whitePulseValue = backEnd.colorRead(0);
-			bluePulseValue = backEnd.colorRead(1);
-			redPulseValue = backEnd.colorRead(2);
-			greenPulseValue = backEnd.colorRead(3);
+			whitePulseValue = backEnd->colorRead(0);
+			bluePulseValue = backEnd->colorRead(1);
+			redPulseValue = backEnd->colorRead(2);
+			greenPulseValue = backEnd->colorRead(3);
 		}
 		
 		int numberOfOnes = calculateNumberOnes(whitePulseValue, bluePulseValue, redPulseValue, greenPulseValue); //determine num of zeros in pulseValues array
@@ -98,10 +98,10 @@ int ColorSensor::calculateNumberOnes(int firstPV, int secondPV, int thirdPV, int
 void ColorSensor::throwAwayValues()	{
 	int throwAway;
 	for(int i = 0; i < 4; i++)  {
-		throwAway = backEnd.colorRead(0); //Declared and destryoed at each run.
-		throwAway = backEnd.colorRead(1);
-		throwAway = backEnd.colorRead(2);
-		throwAway = backEnd.colorRead(3);
+		throwAway = backEnd->colorRead(0); //Declared and destryoed at each run.
+		throwAway = backEnd->colorRead(1);
+		throwAway = backEnd->colorRead(2);
+		throwAway = backEnd->colorRead(3);
 	}
 }
 
