@@ -10,7 +10,6 @@ int DistanceSensor::findDistance()  {
 	long duration;
 	int distanceCM;
  
- 
 	pinMode(DISTANCE_SENSOR_PIN_OUT, OUTPUT); 
   
 	digitalWrite(DISTANCE_SENSOR_PIN_OUT, LOW);
