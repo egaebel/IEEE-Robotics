@@ -5,15 +5,15 @@
 
 class Claw{
 
-public:
-	void init(int extend_servo_pin, int grab_servo_pin);
-	void extend();
-	void retract();
-	void grab();
-	void drop();
-private:
-	Servo EXTEND_SERVO;
-	Servo GRAB_SERVO;
+	public:
+		void init(int extend_servo_pin, int grab_servo_pin);
+		void extend();
+		void retract();
+		void grab();
+		void drop();
+	private:
+		Servo EXTEND_SERVO;
+		Servo GRAB_SERVO;
 };
 
 void Claw::init(int extend_servo_pin, int grab_servo_pin){

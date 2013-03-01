@@ -2,7 +2,6 @@
 #include "States.h"
 #include "common.h"
 #include "Movement.h"
-#include "Claw.h"
 #include "WallFollower.h"
 #include "LineSensor.h"
 #include <Servo.h>

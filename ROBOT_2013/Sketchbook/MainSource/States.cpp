@@ -8,15 +8,14 @@ extern Movement move;
 extern WallFollower wallFollower;
 extern Claw lClaw;
 extern Claw rClaw;
-extern FiniteStateMachine fsm;
 extern ColorSensor colorSensor;
-
 //used to keep track where we are in a zone 
     //(ie 2 would be 3rd block in a loading zone)
 static int blockPos; 
 //a sub-state used in each state, state-ception
 int internalState; 
 bool isScanning;
+FiniteStateMachine fsm(state1);
 
 //State objects
 //Put it here since it needs to know that the functions exist
