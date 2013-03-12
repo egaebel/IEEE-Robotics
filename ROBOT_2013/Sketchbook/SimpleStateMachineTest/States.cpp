@@ -57,30 +57,44 @@ bool buttonPushed = false;
 
 State state1 = State(state1Enter, state1Update, state1Exit);
 State state2 = State(state2Enter, state2Update, state2Exit);
+State state3 = State(state2Enter, state2Update, state2Exit);
 
 FiniteStateMachine fsm(state1);
+
 int internalState;
 int curBayPos;
 //enter the state1 state
 void state1Enter() {
 
 	internalState = 0;
-	Serial.print("Entering state1\n");
+	pinMode(53, INPUT);
+	move.init();
 }
 
-void state1Update() {
 
-	//move.forward(1);
-	if(buttonPushed){
-		Serial.print("digitalREAD in 1\n");
-		//move.stop();
-		fsm.transitionTo(state2);
-		buttonPushed = false;
+void state1Update() {
+	switch(internalState){
+		case 0:
+			move.forward(1);
+			if(digitalRead(53)){
+				//fsm->immediateTransitionTo(state3);
+				Serial.print("button press!\n");
+				move.stop();
+				internalState++;
+			}
+		break;
+		case 1:
+			move.slideRight(1);
+		if(updatePosition(&curBayPos,uart.line,1)){
+			move.stop();
+			delay(2000);
+		}
+		break;
 	}
 }
 
 void state1Exit() {
-	Serial.print("exiting state1\n");
+	Serial.print("Exiting state1\n");
 }
 
 //enter the state2 state

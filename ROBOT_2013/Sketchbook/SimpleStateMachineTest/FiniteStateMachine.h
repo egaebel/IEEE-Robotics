@@ -74,10 +74,10 @@ class FiniteStateMachine {
 		
 		unsigned long timeInCurrentState();
 		
+				State* 	nextState;
 	private:
 		bool 	needToTriggerEnter;
 		State* 	currentState;
-		State* 	nextState;
 		unsigned long stateChangeTime;
 };
 

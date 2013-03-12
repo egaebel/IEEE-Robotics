@@ -29,20 +29,21 @@ void Movement::init(){
 	rightMotor.attach(RIGHT_MOTOR);
 	rearLeftMotor.attach(REAR_MOTOR_L);
         rearRightMotor.attach(REAR_MOTOR_R);
+    stop();
 }
 void Movement::dropDown(){
 	topMotor.write(0);
 }
 void Movement::slideLeft(float speed){
 	//set rear motor left by speed
-	setSpeed(REAR_MOTOR_L,-speed);
-        setSpeed(REAR_MOTOR_R,-speed);
+		setSpeed(REAR_MOTOR_L,speed);
+	setSpeed(REAR_MOTOR_R,speed);
 }
 
 void Movement::slideRight(float speed){
 	//set rear motor right by speed
-	setSpeed(REAR_MOTOR_L,speed);
-	setSpeed(REAR_MOTOR_R,speed);
+	setSpeed(REAR_MOTOR_L,-speed);
+        setSpeed(REAR_MOTOR_R,-speed);
 }
 
 void Movement::turnLeft(float speed){
@@ -75,8 +76,8 @@ void Movement::stop(){
 	//stop all motors
 	setSpeed(LEFT_MOTOR,0);
 	setSpeed(RIGHT_MOTOR,0);
-        setSpeed(REAR_MOTOR_L,0);
-        setSpeed(REAR_MOTOR_R,0);
+    setSpeed(REAR_MOTOR_L,0);
+    setSpeed(REAR_MOTOR_R,0);
 }
 
 bool Movement::setSpeed(int servo, float speed){
@@ -87,10 +88,11 @@ bool Movement::setSpeed(int servo, float speed){
 		case RIGHT_MOTOR:
 			setSpeed(rightMotor,speed,true);
 			break;
-                case REAR_MOTOR_L:
-                case REAR_MOTOR_R:
-                	setSpeed(rearLeftMotor,speed,false);
-                        setSpeed(rearRightMotor,speed,false);
+        case REAR_MOTOR_L:
+            setSpeed(rearLeftMotor,speed,false);
+            break;
+        case REAR_MOTOR_R:
+            setSpeed(rearRightMotor,speed,false);
 			break;
 		default:
 			//opps

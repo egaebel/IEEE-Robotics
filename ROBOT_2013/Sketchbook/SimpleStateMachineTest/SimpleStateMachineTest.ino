@@ -13,15 +13,14 @@ extern FiniteStateMachine fsm;
 void setup() {
     Serial.begin(9600);
     pinMode(53, INPUT);
-    //Serial.begin(9600);
-    //ET.begin(details(uart), &Serial);
+    Serial1.begin(9600);
+    ET.begin(details(uart), &Serial);
 }
 
 //go through the entire state machine
 void loop() {
     fsm.update();
-    buttonPushed = digitalRead(53);
-
-    //if(ET.receiveData());
-       //Serial.print("Rec'vd data");
+    if(ET.receiveData())
+       Serial.print("Rec'vd data");
+    delay(100);
 }

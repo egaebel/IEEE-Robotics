@@ -81,6 +81,7 @@ FiniteStateMachine& FiniteStateMachine::update() {
 		needToTriggerEnter = false;
 	} else {
 		if (currentState != nextState){
+			Serial.print("transitionto");
 			immediateTransitionTo(*nextState);
 		}
 		currentState->update();

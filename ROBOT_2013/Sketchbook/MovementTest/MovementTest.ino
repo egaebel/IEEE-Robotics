@@ -13,20 +13,25 @@ void setup(){
 }
 
 void loop(){
-  /*
+  
   move.forward(1);
   delay(5000);
+  move.stop();
   move.backward(1);
   delay(5000);
+    move.stop();
   move.turnLeft(1);
   delay(5000);
+    move.stop();
   move.turnRight(1);
-  move.stop();
   delay(5000);
+    move.stop();
   move.slideLeft(1);
   delay(5000);
+    move.stop();
   move.slideRight(1);
   delay(5000);
+<<<<<<< Updated upstream
   */
   move.liftUp();
   delay(5000);
@@ -34,4 +39,7 @@ void loop(){
   delay(5000);
   move.liftDown();
   delay(5000);
+=======
+    move.stop();
+>>>>>>> Stashed changes
 }

@@ -32,7 +32,10 @@ void Movement::init(){
 	rightMotor.attach(RIGHT_MOTOR);
 	rearLeftMotor.attach(REAR_MOTOR_L);
         rearRightMotor.attach(REAR_MOTOR_R);
+<<<<<<< Updated upstream
         topMotor.attach(TOP_MOTOR);
+=======
+>>>>>>> Stashed changes
 }
 
 void Movement::liftUp(){
