@@ -1,18 +1,10 @@
-#include "FiniteStateMachine.h"
 #include "States.h"
-#include "Movement.h"
-#include "WallFollower.h"
-#include "common.h"
-#include "SimpleFunctions.h"
-#include "EmptyColorSensor.h"
 
-extern LineSensor line;
-extern Movement move;
-extern WallFollower wallFollower;
-extern Claw lClaw;
-extern Claw rClaw;
-extern FiniteStateMachine fsm;
-extern ColorSensor colorSensor;
+LineSensor line;
+Movement move;
+WallFollower wallFollower;
+FiniteStateMachine fsm;
+ColorSensor colorSensor;
 
 //used to keep track where we are in a zone 
     //(ie 2 would be 3rd block in a loading zone)

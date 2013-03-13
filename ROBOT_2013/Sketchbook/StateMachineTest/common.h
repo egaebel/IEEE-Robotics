@@ -3,8 +3,8 @@
 
 #include <Arduino.h>
 #include <Servo.h>
-#include "LineSensor.h"
-#include "Claw.h"
+//#include "LineSensor.h"
+//#include "Claw.h"
 
 /*
  * This is where all globals and constants should be defined

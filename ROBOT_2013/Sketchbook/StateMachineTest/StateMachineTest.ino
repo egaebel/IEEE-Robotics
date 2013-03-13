@@ -1,22 +1,21 @@
 #include "FiniteStateMachine.h"
 #include "States.h"
-#include "common.h"
-#include "Movement.h"
-#include "Claw.h"
-#include "WallFollower.h"
-#include "LineSensor.h"
-#include <Servo.h>
+//#include "common.h"
+//#include "Movement.h"
+//#include "Claw.h"
+//#include "WallFollower.h"
+//#include "LineSensor.h"
+//#include <Servo.h>
 
 //#include "BackEndColorSensor.h"
 //BackEndColorSensor colorSensor;
 extern State initState;
 
-Movement move;
-LineSensor line;
-WallFollower wallFollower;
+//Movement move;
+//LineSensor line;
+//WallFollower wallFollower;
 
-Claw lClaw;
-Claw rClaw;
+
 FiniteStateMachine fsm(initState);
 
 void setup() {
