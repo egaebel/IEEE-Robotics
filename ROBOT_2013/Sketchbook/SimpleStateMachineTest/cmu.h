@@ -3,6 +3,8 @@
 
 #include "CMUcam4.h"
 #include "CMUcom4.h"
+#include "common.h"
+
 
 #define WHITE_R_MIN 200
 #define WHITE_R_MAX 255
@@ -38,6 +40,10 @@ class cam{
 		cam(int pin);
 		void init();
 		bool inZone();
+		bColour getBlockColor();
+		bColour getBayColor();
+		bSize getBlockSize();
+	
 	private:
 		void getTrackingData();
 		void trackBlue();

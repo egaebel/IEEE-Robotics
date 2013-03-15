@@ -1,6 +1,5 @@
 #include "cmu.h"
 
-
 cam::cam(int pin){
 	cmuCam = new CMUcam4(pin);
 }
@@ -52,4 +51,16 @@ void cam::getTrackingData(){
 	//cmuCam->trackColor(RED_MIN, RED_MAX, GREEN_MIN, GREEN_MAX, BLUE_MIN, BLUE_MAX);
     //cmuCam->trackColor(100,180,100,180,200,255);
     cmuCam->getTypeTDataPacket(&tData); // Get a tracking packet
+}
+
+bColour cam::getBlockColor(){
+
+}
+
+bColour cam::getBayColor(){
+
+}
+
+bSize cam::getBlockSize(){
+
 }
