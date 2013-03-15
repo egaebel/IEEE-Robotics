@@ -24,11 +24,8 @@ void cam::init(){
   	cmuCam->noiseFilter(NOISE_FILTER);	
 }
 
-void cam::trackBlue(){
-	cmuCam->trackColor(BLUE_R_MIN,BLUE_R_MAX,BLUE_G_MIN,BLUE_G_MAX,BLUE_B_MIN,BLUE_B_MAX);
-}
 bool cam::inZone(){
-	getTrackingData();
+	getTrackingData(WHITE);
 	#define CENTROID_X_MIN 75
 	#define CENTROID_X_MAX 90
 	#define CENTROID_Y_MIN 50
@@ -46,21 +43,55 @@ bool cam::inZone(){
     return 0;
 }
 
-void cam::getTrackingData(){
-	trackBlue();
-	//cmuCam->trackColor(RED_MIN, RED_MAX, GREEN_MIN, GREEN_MAX, BLUE_MIN, BLUE_MAX);
-    //cmuCam->trackColor(100,180,100,180,200,255);
-    cmuCam->getTypeTDataPacket(&tData); // Get a tracking packet
+void cam::getTrackingData(bColour colour){
+  trackColour(colour);
+  cmuCam->getTypeTDataPacket(&tData); // Get a tracking packet
 }
 
-bColour cam::getBlockColor(){
+bColour cam::getBlockColour(){
+  int i;
+  //loop through all the colours
+  for(i=((int)WHITE)+1;i<(int)BLACK;i++){
+    getTrackingData((bColour)i);
+    //if we see enough pixels of that colour, we found the block
+    if(tData.pixels>PIXEL_BLOCK_MIN){
+      return (bColour)i;
+    }
+  }
+}
+
+bColour cam::getBayColour(){
 
 }
 
-bColour cam::getBayColor(){
+bSize cam::getBlockSize(bColour colour){
 
 }
 
-bSize cam::getBlockSize(){
-
+void cam::trackColour(bColour colour){
+  switch(colour){
+    case BLUE:
+      cmuCam->trackColor(BLUE_R_MIN,BLUE_R_MAX,BLUE_G_MIN,BLUE_G_MAX,BLUE_B_MIN,BLUE_B_MAX);
+    break;
+    case RED:
+      cmuCam->trackColor(BLUE_R_MIN,BLUE_R_MAX,BLUE_G_MIN,BLUE_G_MAX,BLUE_B_MIN,BLUE_B_MAX);
+    break;
+    case BROWN:
+      cmuCam->trackColor(BLUE_R_MIN,BLUE_R_MAX,BLUE_G_MIN,BLUE_G_MAX,BLUE_B_MIN,BLUE_B_MAX);
+    break;
+    case PURPLE:
+      cmuCam->trackColor(BLUE_R_MIN,BLUE_R_MAX,BLUE_G_MIN,BLUE_G_MAX,BLUE_B_MIN,BLUE_B_MAX);
+    break;
+    case YELLOW:
+      cmuCam->trackColor(BLUE_R_MIN,BLUE_R_MAX,BLUE_G_MIN,BLUE_G_MAX,BLUE_B_MIN,BLUE_B_MAX);
+    break;
+    case WHITE:
+      cmuCam->trackColor(WHITE_R_MIN,WHITE_R_MAX,WHITE_G_MIN,WHITE_G_MAX,WHITE_B_MIN,WHITE_B_MAX);
+    break;
+    case GREEN:
+      cmuCam->trackColor(BLUE_R_MIN,BLUE_R_MAX,BLUE_G_MIN,BLUE_G_MAX,BLUE_B_MIN,BLUE_B_MAX);
+    break;
+    default:
+    abort();
+  }
 }
