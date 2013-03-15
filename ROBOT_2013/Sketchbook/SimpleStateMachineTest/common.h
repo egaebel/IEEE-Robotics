@@ -20,13 +20,10 @@ typedef enum bColour_t{	BLUE=0,
 			YELLOW
 		}bColour;
 
-<<<<<<< HEAD
-=======
 typedef enum bSize_t{	RAIL=0,
 			SEA,
 			AIR}bSize;
 
->>>>>>> c4570bd0993087da60f6bf4bf48948322a6ad139
 typedef struct block_t {
 	bColour colour; 
 	bSize size; 

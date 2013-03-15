@@ -55,8 +55,7 @@ class cam{
 		void getTrackingData();
 		void trackBlue();
 		CMUcam4* cmuCam;
-		CMUcam4_tracking_data_t tData; //stands for Travis Data
-		int abs(int a); //absolute value 
+		CMUcam4_tracking_data_t tData; //stands for Travis Data 
 };
 
 #endif
