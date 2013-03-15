@@ -1,6 +1,5 @@
 #include "cmu.h"
 
-
 cam::cam(int pin){
 	cmuCam = new CMUcam4(pin);
 }
@@ -68,4 +67,16 @@ void cam::getTrackingData(){
 int cam::absoluteValue(int a)  {
 	if(a < 0) return (-1 * a);
 	return a;
+}
+
+bColour cam::getBlockColor(){
+
+}
+
+bColour cam::getBayColor(){
+
+}
+
+bSize cam::getBlockSize(){
+
 }

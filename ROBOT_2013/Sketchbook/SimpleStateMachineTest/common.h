@@ -5,19 +5,31 @@
  * This is where all globals and constants should be defined
 */
 
-enum POSITION{	POS_START = 0,
+typedef enum POSITION{	POS_START = 0,
 				POS_SEA_LOAD,
 				POS_RAIL_LOAD,
 				POS_PICK_UP,
 				POS_AIR
 	      	};
 
-enum COLOR{}; //TODO: Colors Should be defined.
-enum SIZE{}; //TODO: Sizes of the blocks.
+typedef enum bColour_t{	BLUE=0,
+			RED,
+			GREEN,
+			PURPLE,
+			BROWN,
+			YELLOW
+		}bColour;
 
+<<<<<<< HEAD
+=======
+typedef enum bSize_t{	RAIL=0,
+			SEA,
+			AIR}bSize;
+
+>>>>>>> c4570bd0993087da60f6bf4bf48948322a6ad139
 typedef struct block_t {
-	COLOR color; 
-	SIZE size; 
+	bColour colour; 
+	bSize size; 
 } block;
 
 
