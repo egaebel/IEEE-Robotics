@@ -24,10 +24,11 @@ void cam::init(){
   	cmuCam->noiseFilter(NOISE_FILTER);	
 }
 
-void cam::trackBlue(){
+void cam::trackBlue()  {
 	cmuCam->trackColor(BLUE_R_MIN,BLUE_R_MAX,BLUE_G_MIN,BLUE_G_MAX,BLUE_B_MIN,BLUE_B_MAX);
 }
-bool cam::inZone(){
+
+bool cam::inZone()  {
 	getTrackingData();
 	#define CENTROID_X_MIN 75
 	#define CENTROID_X_MAX 90
@@ -40,14 +41,13 @@ bool cam::inZone(){
     int area = (tData.x2-tData.x1)*(tData.y2-tData.y1);
     Serial.print("area:");Serial.println(area);
     if(tData.mx>CENTROID_X_MIN && tData.mx<CENTROID_X_MAX && tData.my>CENTROID_Y_MIN && tData.my<CENTROID_Y_MAX && area>BAY_AREA_MIN && area<BAY_AREA_MAX)  {
-		//If tdata1 is upper left corner and tdata2 is lower right corner
+		//tdata1 is point at upper left corner and tdata2 is point at lower right corner
 		if(abs(tData.x1 - UPPER_LEFT_CORNER_X) < UNCERTAINTY_ALLOWANCE && abs(tData.x2 - LOWER_RIGHT_CORNER_X) < UNCERTAINTY_ALLOWANCE
 			&& abs(tData.y1 - UPPER_LEFT_CORNER_Y) < UNCERTAINTY_ALLOWANCE && abs(tData.y2 == LOWER_RIGHT_CORNER_Y) < UNCERTAINTY_ALLOWANCE) { 
 				Serial.println("WE FOUND MICHEAL BAY\n\n\n");
 				return 1;
 		}
-	}
-		
+	}	
 	return 0;
 }
 
