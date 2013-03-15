@@ -20,17 +20,11 @@
 
 
 //Hard cordinate values of the corners of the bays
-#define FAR_LEFT_CORNER_X	0
-#define FAR_LEFT_CORNER_Y	0
-
-#define NEAR_LEFT_CORNER_X	0
-#define NEAR_LEFT_CORNER_Y	0
-
-#define FAR_RIGHT_CORNER_X	0
-#define FAR_RIGHT_CORNER_Y	0
-
-#define NEAR_RIGHT_CORNER_X	0
-#define NEAR_RIGHT_CORNER_Y	0
+#define UPPER_LEFT_CORNER_X	0
+#define UPPER_LEFT_CORNER_Y	0
+#define LOWER_RIGHT_CORNER_X	0
+#define LOWER_RIGHT_CORNER_Y	0
+#define UNCERTAINTY_ALLOWANCE 50;
 
 
 
@@ -57,6 +51,7 @@ class cam{
 		void trackBlue();
 		CMUcam4* cmuCam;
 		CMUcam4_tracking_data_t tData; //stands for Travis Data
+		int abs(int a); //absolute value 
 };
 
 #endif

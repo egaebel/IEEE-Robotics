@@ -15,20 +15,11 @@ enum POSITION{	POS_START = 0,
 enum COLOR{}; //TODO: Colors Should be defined.
 enum SIZE{}; //TODO: Sizes of the blocks.
 
-POSITION curPos = (POSITION)0;
-POSITION nextPos = (POSITION)0;
-
 typedef struct block_t {
 	COLOR color; 
 	SIZE size; 
 } block;
 
-block LClaw; //Block held by the left claw.
-block RClaw; //Block held by the right claw.
-
-block loadingZone[14]; // Blocks in the loading zone, listed west to east.
-COLOR seaZone[6]; //Sea zone colors, listed south to north.
-COLOR railZone[6]; //Rail zone colors, listed west to east. 
 
 /* PIN DEFINITIONS */
 #define COLOR_SENSOR 0 //Pin for color sensor (pin 0 is fake) 
