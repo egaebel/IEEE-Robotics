@@ -19,6 +19,20 @@
 #define BLUE_B_MAX 255
 
 
+//Hard cordinate values of the corners of the bays
+#define FAR_LEFT_CORNER_X	0
+#define FAR_LEFT_CORNER_Y	0
+
+#define NEAR_LEFT_CORNER_X	0
+#define NEAR_LEFT_CORNER_Y	0
+
+#define FAR_RIGHT_CORNER_X	0
+#define FAR_RIGHT_CORNER_Y	0
+
+#define NEAR_RIGHT_CORNER_X	0
+#define NEAR_RIGHT_CORNER_Y	0
+
+
 
 #define LED_BLINK 5 // 5 Hz
 #define WAIT_TIME 5000 // 5 seconds

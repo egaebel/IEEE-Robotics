@@ -41,9 +41,16 @@ bool cam::inZone(){
     int area = (tData.x2-tData.x1)*(tData.y2-tData.y1);
     Serial.print("area:");Serial.println(area);
     if(tData.mx>CENTROID_X_MIN && tData.mx<CENTROID_X_MAX && tData.my>CENTROID_Y_MIN && tData.my<CENTROID_Y_MAX && area>BAY_AREA_MIN && area<BAY_AREA_MAX){
+		
+		if(tData.x1 
+    	
+    	
+    	
     	Serial.println("WE FOUND MICHEAL BAY\n\n\n");
     	return 1;
     }
+    
+    
     return 0;
 }
 
