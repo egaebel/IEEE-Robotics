@@ -47,7 +47,7 @@ bool cam::inZone()  {
 				Serial.println("WE FOUND MICHEAL BAY\n\n\n");
 				return 1;
 		}
-	}	
+	}
 	return 0;
 }
 
