@@ -12,12 +12,15 @@ typedef enum POSITION{	POS_START = 0,
 				POS_AIR
 	      	};
 
-typedef enum bColour_t{	BLUE=0,
+
+typedef enum bColour_t{	WHITE=0,//LEAVE WHITE AS 0
+			BLUE,
 			RED,
 			GREEN,
 			PURPLE,
 			BROWN,
-			YELLOW
+			YELLOW,
+			BLACK//here so we can iterate white to black
 		}bColour;
 
 typedef enum bSize_t{	RAIL=0,

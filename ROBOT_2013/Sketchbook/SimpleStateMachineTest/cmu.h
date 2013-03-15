@@ -4,29 +4,14 @@
 #include "CMUcam4.h"
 #include "CMUcom4.h"
 #include "common.h"
-
-
-#define WHITE_R_MIN 200
-#define WHITE_R_MAX 255
-#define WHITE_G_MIN 200
-#define WHITE_G_MAX 255
-#define WHITE_B_MIN 235
-#define WHITE_B_MAX 255
-
-#define BLUE_R_MIN 70
-#define BLUE_R_MAX 140
-#define BLUE_G_MIN 100
-#define BLUE_G_MAX 170
-#define BLUE_B_MIN 165
-#define BLUE_B_MAX 255
-
+#include "cmu_define.h"
 
 //Hard cordinate values of the corners of the bays
 #define UPPER_LEFT_CORNER_X	0
 #define UPPER_LEFT_CORNER_Y	0
 #define LOWER_RIGHT_CORNER_X	0
 #define LOWER_RIGHT_CORNER_Y	0
-#define UNCERTAINTY_ALLOWANCE 5;
+#define UNCERTAINTY_ALLOWANCE 5
 
 
 #define LED_BLINK 5 // 5 Hz
@@ -47,15 +32,15 @@ class cam{
 		cam(int pin);
 		void init();
 		bool inZone();
-		bColour getBlockColor();
-		bColour getBayColor();
-		bSize getBlockSize();
+		bColour getBlockColour();
+		bColour getBayColour();
+		bSize getBlockSize(bColour colour);
 	
 	private:
-		void getTrackingData();
-		void trackBlue();
+		void trackColour(bColour colour);
+		void getTrackingData(bColour colour);
 		CMUcam4* cmuCam;
-		CMUcam4_tracking_data_t tData; //stands for Travis Data 
+		CMUcam4_tracking_data_t tData; //stands for Travis Data
 };
 
 #endif
