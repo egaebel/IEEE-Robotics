@@ -22,7 +22,7 @@ boolean posRClaw(boolean line[16]){
 	}
 	return 0;	
 }
-//dir=0 is moving left
+
 boolean updatePosition(int* cur,boolean line[16],boolean dir){
 	static int lastPos;
 	if((*cur)==lastPos)

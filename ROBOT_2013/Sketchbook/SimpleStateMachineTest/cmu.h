@@ -6,6 +6,14 @@
 #include "common.h"
 #include "cmu_define.h"
 
+//Hard cordinate values of the corners of the bays
+#define UPPER_LEFT_CORNER_X	0
+#define UPPER_LEFT_CORNER_Y	0
+#define LOWER_RIGHT_CORNER_X	0
+#define LOWER_RIGHT_CORNER_Y	0
+#define UNCERTAINTY_ALLOWANCE 50;
+
+
 
 #define LED_BLINK 5 // 5 Hz
 #define WAIT_TIME 5000 // 5 seconds
@@ -34,6 +42,7 @@ class cam{
 		void getTrackingData(bColour colour);
 		CMUcam4* cmuCam;
 		CMUcam4_tracking_data_t tData; //stands for Travis Data
+		//int abs(int a); //absolute value
 };
 
 #endif
