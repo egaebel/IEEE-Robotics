@@ -1,4 +1,4 @@
-#include "pins.h"
+#include "common.h"
 
 class WallFollower {
 	public:

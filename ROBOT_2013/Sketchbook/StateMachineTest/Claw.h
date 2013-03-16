@@ -1,7 +1,7 @@
 #ifndef _CLAW_H_
 #define _CLAW_H_
 
-#include "pins.h"
+#include "common.h"
 #include <Servo.h>
 
 class Claw {

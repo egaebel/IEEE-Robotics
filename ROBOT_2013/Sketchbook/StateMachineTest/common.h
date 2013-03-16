@@ -36,7 +36,7 @@ typedef struct block_t {
 
 
 /* PIN DEFINITIONS */ //max pin is 53!
-/*	//Motors (Servos)
+	//Motors (Servos)
 #define LEFT_MOTOR 13
 #define RIGHT_MOTOR 12
 #define REAR_MOTOR 11 //Used for setSpeed
@@ -53,6 +53,6 @@ typedef struct block_t {
 #define BUMPER_2_PIN 4
 #define BUMPER_1_PIN 3
 #define COLOR_SENSOR 0 //Pin for color sensor (pin 0 is fake) 
-*/
+
 
 #endif
