@@ -216,8 +216,3 @@ int ColorSensor::absoluteValue(int a)  {
 	
 	return a;
 }
-
-
-
-
-
