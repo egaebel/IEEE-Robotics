@@ -40,6 +40,7 @@ GNU General Public License for more details.
 #include <stdio.h>
 #include <stdint.h>
 #include <avr/io.h>
+#include "pins.h"
 
 class EasyTransfer {
 public:

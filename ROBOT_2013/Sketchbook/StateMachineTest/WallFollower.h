@@ -1,3 +1,5 @@
+#include "pins.h"
+
 class WallFollower {
 	public:
 		bool isTouching() {

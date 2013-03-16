@@ -1,7 +1,7 @@
 #ifndef COLOR_SENSOR_H_
 #define COLOR_SENSOR_H_
 
-#include "common.h"
+#include "pins.h"
 
 /*
  * This is an empty useless class used in place of the actual
