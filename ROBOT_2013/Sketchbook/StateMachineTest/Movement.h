@@ -2,7 +2,7 @@
 #define _MOVEMENT_H_
 
 #include <Servo.h>
-#include "pins.h"
+#include "common.h"
 
 class Movement {
 
