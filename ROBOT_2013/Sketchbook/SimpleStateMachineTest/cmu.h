@@ -11,8 +11,7 @@
 #define UPPER_LEFT_CORNER_Y	0
 #define LOWER_RIGHT_CORNER_X	0
 #define LOWER_RIGHT_CORNER_Y	0
-#define UNCERTAINTY_ALLOWANCE 50
-
+#define UNCERTAINTY_ALLOWANCE 5
 
 
 #define LED_BLINK 5 // 5 Hz
@@ -42,7 +41,6 @@ class cam{
 		void getTrackingData(bColour colour);
 		CMUcam4* cmuCam;
 		CMUcam4_tracking_data_t tData; //stands for Travis Data
-		//int abs(int a); //absolute value
 };
 
 #endif

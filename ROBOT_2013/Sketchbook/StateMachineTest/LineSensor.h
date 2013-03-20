@@ -2,6 +2,7 @@
 #define LineSensor_h
 
 #include <Arduino.h>
+#include "common.h"
 
 class LineSensor
 {

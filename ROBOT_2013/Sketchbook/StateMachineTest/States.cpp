@@ -1,10 +1,32 @@
 #include "States.h"
 
+extern FiniteStateMachine fsm;
+
+//Hardware classes
 LineSensor line;
 Movement move;
 WallFollower wallFollower;
-FiniteStateMachine fsm;
 ColorSensor colorSensor;
+
+//Book keeping classes
+Claw rClaw;
+Claw lClaw;
+
+POSITION curPos = POS_START;
+POSITION nextPos;
+
+//Variables
+Block lBlock; //Block held by the left claw.
+Block rBlock; //Block held by the right claw.
+
+//array of pointers to Blocks
+Block *loadingZone[14]; // Blocks in the loading zone, listed west to east.
+Block *seaZone[6]; //Sea zone colors, listed south to north.
+Block *railZone[6]; //Rail zone colors, listed west to east. 
+
+const int PICKUP_SIZE = 14;
+const int RAIL_SEA_SIZE = 6;
+const int AIR_SIZE = 2;
 
 //used to keep track where we are in a zone 
     //(ie 2 would be 3rd block in a loading zone)
@@ -59,7 +81,7 @@ void initUpdate() {
 void initExit() {}
 
 //scanState
-void initScan() {
+void scanEnter() {
     internalState = 0;
     blockPos = 0;
 }

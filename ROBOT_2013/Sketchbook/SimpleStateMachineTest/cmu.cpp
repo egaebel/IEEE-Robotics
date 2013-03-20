@@ -39,14 +39,17 @@ bool cam::inZone(){
     Serial.print("Y:");Serial.println(tData.my);
     int area = (tData.x2-tData.x1)*(tData.y2-tData.y1);
     Serial.print("area:");Serial.println(area);
+    
     if(tData.mx>CENTROID_X_MIN && tData.mx<CENTROID_X_MAX && tData.my>CENTROID_Y_MIN && tData.my<CENTROID_Y_MAX && area>BAY_AREA_MIN && area<BAY_AREA_MAX)  {
-		//tdata1 is point at upper left corner and tdata2 is point at lower right corner
+		tdata1 is point at upper left corner and tdata2 is point at lower right corner
 		if(abs(tData.x1 - UPPER_LEFT_CORNER_X) < UNCERTAINTY_ALLOWANCE && abs(tData.x2 - LOWER_RIGHT_CORNER_X) < UNCERTAINTY_ALLOWANCE
-			&& abs(tData.y1 - UPPER_LEFT_CORNER_Y) < UNCERTAINTY_ALLOWANCE && abs(tData.y2 == LOWER_RIGHT_CORNER_Y) < UNCERTAINTY_ALLOWANCE) { 
+			&& abs(tData.y1 - UPPER_LEFT_CORNER_Y) < UNCERTAINTY_ALLOWANCE && abs(tData.y2 == LOWER_RIGHT_CORNER_Y) < UNCERTAINTY_ALLOWANCE)  {
 				Serial.println("WE FOUND MICHEAL BAY\n\n\n");
 				return 1;
 		}
-	}	
+		return 1;
+	}
+	
 	return 0;
 }
 
@@ -66,7 +69,13 @@ bColour cam::getBlockColour(){
     }
   }
 }
-
+/**
+ * Finds absolute value of the param
+ */
+/*int cam::abs(int a)  {
+	if(a < 0) return (-1 * a);
+	return a;
+}*/
 bColour cam::getBayColour(){
 
 }
