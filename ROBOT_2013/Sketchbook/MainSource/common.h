@@ -31,27 +31,11 @@ enum SIZE{
 	LARGE
 };
 
-//Structs
-POSITION curPos = POS_START;
-POSITION nextPos;
-
 typedef struct block_t {
 	COLOR color; 
 	SIZE size; 
 	bool present;
 } Block;
-
-//Variables
-Block lBlock; //Block held by the left claw.
-Block rBlock; //Block held by the right claw.
-
-Block *loadingZone[14]; // Blocks in the loading zone, listed west to east.
-Block *seaZone[6]; //Sea zone colors, listed south to north.
-Block *railZone[6]; //Rail zone colors, listed west to east. 
-
-const int PICKUP_SIZE = 14;
-const int RAIL_SEA_SIZE = 6;
-const int AIR_SIZE = 2;
 
 /* PIN DEFINITIONS */
 	//Motors (Servos)

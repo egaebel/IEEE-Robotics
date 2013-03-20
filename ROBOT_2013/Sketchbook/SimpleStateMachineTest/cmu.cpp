@@ -43,7 +43,7 @@ bool cam::inZone(){
     if(tData.mx>CENTROID_X_MIN && tData.mx<CENTROID_X_MAX && tData.my>CENTROID_Y_MIN && tData.my<CENTROID_Y_MAX && area>BAY_AREA_MIN && area<BAY_AREA_MAX)  {
 		tdata1 is point at upper left corner and tdata2 is point at lower right corner
 		if(abs(tData.x1 - UPPER_LEFT_CORNER_X) < UNCERTAINTY_ALLOWANCE && abs(tData.x2 - LOWER_RIGHT_CORNER_X) < UNCERTAINTY_ALLOWANCE
-			&& abs(tData.y1 - UPPER_LEFT_CORNER_Y) < UNCERTAINTY_ALLOWANCE && abs(tData.y2 == LOWER_RIGHT_CORNER_Y) < UNCERTAINTY_ALLOWANCE)  {
+			&& abs(tData.y1 - UPPER_LEFT_CORNER_Y) < UNCERTAINTY_ALLOWANCE && abs(tData.y2 - LOWER_RIGHT_CORNER_Y) < UNCERTAINTY_ALLOWANCE)  {
 				Serial.println("WE FOUND MICHEAL BAY\n\n\n");
 				return 1;
 		}
@@ -52,6 +52,20 @@ bool cam::inZone(){
 	
 	return 0;
 }
+
+bool cam::betweenZone(){
+	getTrackingData(WHITE);
+	#define MAX_WIDTH 50
+	#define MIN_HEIGHT 200
+	
+	if((tData.x2-tData.x1)<WIDTH && (tData.y2-tData.y1)>MIN_HEIGHT)  {
+		return 1;
+	}
+	else  {
+		return 0;
+	}	
+}
+
 
 void cam::getTrackingData(bColour colour){
   trackColour(colour);
