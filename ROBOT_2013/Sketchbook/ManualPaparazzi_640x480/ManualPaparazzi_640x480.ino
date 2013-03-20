@@ -12,9 +12,9 @@
 * @par Update History:
 * @n v1.0 - Initial Release - 8/14/2012
 *******************************************************************************/
-
-#include <CMUcam4.h>
-#include <CMUcom4.h>
+#include "arduino.h"
+#include "CMUcam4.h"
+#include "CMUcom4.h"
 
 #define LED_BLINK 2 // 2 Hz
 #define LED_SETUP 5 // 5 Hz
@@ -39,7 +39,7 @@ void setup()
   delay(WAIT_TIME);
 
   cam.LEDOn(CMUCAM4_LED_ON);
-  serial.println("setup done");
+  Serial.println("setup done");
 }
 
 void loop()

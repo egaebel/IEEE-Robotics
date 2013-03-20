@@ -1,6 +1,15 @@
 #ifndef STATES_H_
 #define STATES_H_
 
+#include "common.h"
+#include "FiniteStateMachine.h"
+#include "Movement.h"
+#include "Claw.h"
+#include "WallFollower.h"
+#include "SimpleFunctions.h"
+#include "EmptyColorSensor.h"
+#include "LineSensor.h"
+
 //Prototypes
 void initEnter();
 void initUpdate();

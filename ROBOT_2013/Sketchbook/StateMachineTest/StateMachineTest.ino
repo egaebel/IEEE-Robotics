@@ -2,10 +2,7 @@
 #include "States.h"
 #include <Servo.h>
 
-//#include "BackEndColorSensor.h"
-//BackEndColorSensor colorSensor;
 extern State initState;
-
 FiniteStateMachine fsm(initState);
 
 void setup() {
