@@ -3,10 +3,8 @@
 extern FiniteStateMachine fsm;
 
 //Hardware classes
-LineSensor line;
 Movement move;
 WallFollower wallFollower;
-ColorSensor colorSensor;
 
 //Book keeping classes
 Claw rClaw;

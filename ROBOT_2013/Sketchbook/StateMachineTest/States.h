@@ -7,8 +7,6 @@
 #include "Claw.h"
 #include "WallFollower.h"
 #include "SimpleFunctions.h"
-#include "EmptyColorSensor.h"
-#include "LineSensor.h"
 
 //Prototypes
 void initEnter();
