@@ -104,7 +104,7 @@ void scanUpdate() {
 
                 //focused on bay, read color
                 if(rightCam.inZone()){
-             
+                    move.stop();             
                     //put color read code here!
                     //--------------------------
                     //--------------------------
@@ -126,7 +126,7 @@ void scanUpdate() {
 
                 //if we're focused on a bay, read color
                 if (leftCam.inZone()) {
-
+                    move.stop();
                     //put color read code here!
                     //--------------------------
                     //--------------------------
@@ -146,7 +146,7 @@ void scanUpdate() {
                 move.slideRight(0.25);
                 //TODO: change to "onBlock" or something?
                 if (rightCam.inZone()) {
-
+                    move.stop();
                     //put color read code here!
                     //--------------------------
                     //--------------------------
@@ -170,7 +170,8 @@ void scanUpdate() {
                 move.slideRight(0.25);
                 //TODO: CREATE inbetweenZones
                 if(rightCam.inbetweenZones()){
-                   internalState = 0:
+                    move.stop();
+                    internalState = 0:
                 }
             }
             //move left
@@ -178,7 +179,8 @@ void scanUpdate() {
                 move.slideLeft(0.25);
                 //TODO: CREATE inbetweenZones
                 if(leftCam.inbetweenZones()){
-                   internalState = 0:
+                    move.stop();
+                    internalState = 0:
                 }
             }
             break;
@@ -210,6 +212,7 @@ void moveToUpdate() {
             case 0:
                 move.slideRight(0.25);
                 if(rightCam.inZone()){
+                    move.stop();
                     internalState++;
                 }
                 break;
@@ -231,19 +234,25 @@ void moveToUpdate() {
                 internalState++;
             break;
             case 1:
+                move.stop();
                 //TODO: figure out the speed needed, or get stopping condition
                 move.turnRight(0.1);
                 internalState++;
             break;
             case 2:
+                move.stop();
                 move.forward(0.1);
-                if (wallFollower.isTouching())
+                if (wallFollower.isTouching()) {
+                    move.stop();
                     internalState++;
+                }
             break;
             case 3:
                 move.slideRight(0.1);
-                if (rightCam.inZone())
+                if (rightCam.inZone()) {
+                    move.stop();
                     internalState++;
+                }
             break;
             case 4:
                 curPos = nextPos;
@@ -263,27 +272,35 @@ void moveToUpdate() {
                 break;
             //turn around
             case 1:
+                move.stop();
                 move.turnAround();
                 internalState++;
                 break;
             //and hit the wall
             case 2:
+                move.stop();
                 move.forward(0.1);
-                if(wallFollower.isTouching())
+                if(wallFollower.isTouching()) {
+                    move.stop();
                     internalState++;
+                }
                 break;
             //slide Right until we are past the first bay
             case 3:
                 move.slideRight(0.25);
                 //TODO: MAKE "IFBLACK" FUNCTION
-                if(!rightCam.inZone())
+                if(!rightCam.inZone()) {
+                    move.stop();
                     internalState++;
+                }
                 break;
             //slide left until we are IN the first bay
             case 4: 
                 move.slideLeft(0.25);
-                if (leftCam.inZone())
+                if (leftCam.inZone()) {
+                    move.stop();
                     internalState++;
+                }
                 break;
             case 5:
                 //We are done scanning after this last scan!
@@ -304,13 +321,17 @@ void moveToUpdate() {
                 internalState++;
                 break;
             case 1:
+                move.stop();
                 move.turnAround();
                 internalState++;
                 break;
             case 2:
+                move.stop();
                 move.forward(0.1);
-                if(wallFollower.isTouching())
+                if(wallFollower.isTouching()) {
+                    move.stop();
                     internalState++;
+                }
                 break;
             //figure out whether to go left or right based on location in rail
             case 3:
@@ -325,14 +346,18 @@ void moveToUpdate() {
             //move left until in first rail bay
             case 4:
                 move.slideLeft(0.25);
-                if (leftCam.inZone())
+                if (leftCam.inZone()) {
+                    move.stop();
                     internalState += 2;
+                }
                 break;
             //move right until in first rail bay
             case 5:
                 move.slideRight(0.25);
-                if (rightCam.inZone() && blockPos == 0)
+                if (rightCam.inZone() && blockPos == 0) {
+                    move.stop();
                     internalState++;
+                }
                 break;
             case 6:
                 //if rail isn't full

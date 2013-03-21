@@ -6,16 +6,13 @@
 class Movement {
 public:
 	void init(); //Setup all motors
-        void liftUp();
-        void liftStop();
-        void liftDown();
 	void slideLeft(float speed);
 	void slideRight(float speed);
 	void turnLeft(float speed);
 	void turnRight(float speed);
 	void forward(float speed);
 	void backward(float speed);
-        void stop();
+    void stop();
 	bool setSpeed(int servo, float speed);
 private:
 	Servo leftMotor;
