@@ -2,6 +2,7 @@
 #define _CLAW_H_
 
 #include "common.h"
+#include <Servo.h>
 
 class Claw{
 
