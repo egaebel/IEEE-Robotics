@@ -356,22 +356,6 @@ void moveToUpdate() {
 
 void moveToExit() {}
 
-//Handles centering the robot on a particular space, so we can properly pickup/drop the block
-//mostly just reads the line array
-void centerEnter() {
-
-	if(
-    //Figure out where you are in the pick up zone
-    //initialize necessary variables & sensors
-}
-
-void centerUpdate() {
-
-    //Perform the drop actions
-}
-
-void centerExit() {}
-
 //pickUpState
 void pickUpEnter() {
 
