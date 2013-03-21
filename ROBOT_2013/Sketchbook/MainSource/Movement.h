@@ -21,8 +21,7 @@ private:
 	Servo leftMotor;
 	Servo rightMotor;
 	Servo rearLeftMotor;
-        Servo rearRightMotor;
-        Servo topMotor;
+    Servo rearRightMotor;
 	void setSpeed(Servo motor, float speed, bool inverted);
 };
 
@@ -30,26 +29,13 @@ void Movement::init(){
 	leftMotor.attach(LEFT_MOTOR);
 	rightMotor.attach(RIGHT_MOTOR);
 	rearLeftMotor.attach(REAR_MOTOR_L);
-        rearRightMotor.attach(REAR_MOTOR_R);
-        topMotor.attach(TOP_MOTOR);
-}
-
-void Movement::liftUp(){
-	topMotor.writeMicroseconds(2000);
-}
-
-void Movement::liftStop(){
-         topMotor.writeMicroseconds(1500); 
-}
-
-void Movement::liftDown(){
-	topMotor.writeMicroseconds(1000);
+    rearRightMotor.attach(REAR_MOTOR_R);
 }
 
 void Movement::slideLeft(float speed){
 	//set rear motor left by speed
 	setSpeed(REAR_MOTOR_L,-speed);
-        setSpeed(REAR_MOTOR_R,-speed);
+    setSpeed(REAR_MOTOR_R,-speed);
 }
 
 void Movement::slideRight(float speed){
