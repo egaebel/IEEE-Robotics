@@ -28,10 +28,6 @@ void pickUpExit();
 void dropEnter();
 void dropUpdate();
 void dropExit();
-
-void centerEnter();
-void centerUpdate();
-void centerExit();
 //end prototpyes
 
 #endif
