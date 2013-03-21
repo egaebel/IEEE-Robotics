@@ -53,7 +53,8 @@ bool cam::inZone(){
 	return 0;
 }
 
-bool cam::betweenZone(){
+//true if there is only one line on the screen
+bool cam::betweenZone()  {
 	getTrackingData(WHITE);
 	#define MAX_WIDTH 50
 	#define MIN_HEIGHT 200
@@ -66,6 +67,14 @@ bool cam::betweenZone(){
 	}	
 }
 
+//Returns positive if need to move right and negative if need to move left
+int cam::locateZone()  {
+	getTrackingData(WHITE);
+	#define WIDTH 200
+	if(((tData.x2-tData.x1)>WIDTH-UNCERTAINTY_ALLOWANCE && (tData.x2-tData.x1)<WIDTH+UNCERTAINTY_ALLOWANCE))  {
+		return tData.x2-LOWER_RIGHT_CORNER;
+	}
+}
 
 void cam::getTrackingData(bColour colour){
   trackColour(colour);

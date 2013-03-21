@@ -416,6 +416,7 @@ void moveToExit() {}
 //mostly just reads the line array
 void centerEnter() {
 
+	if(
     //Figure out where you are in the pick up zone
     //initialize necessary variables & sensors
 }
@@ -491,6 +492,24 @@ void dropUpdate() {
         */      
         }
     }
+}
+
+bool Centered(&cam TheCam)
+{
+	if(TheCam.locateZone() > 0)
+	{
+		move.slideRight(0.1);
+	}
+	else
+	{
+		move.slideLeft(0.1);
+	}
+	if (TheCam.inZone())
+	{
+		move.stop();
+		return true;
+	}
+	return false;
 }
 
 void dropExit() {}
