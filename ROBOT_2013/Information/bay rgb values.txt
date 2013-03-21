@@ -1,0 +1,21 @@
+RED AV	
+r:148	g:79	b:77
+
+BLUE AV
+r:74	g:117	b:206
+
+YELLOW AV
+r:250	g:250	b:142
+
+BROWN AV
+r:70	g:69	b:64
+
+GREEN AV
+r:67	g:88	b:82
+
+PURPLE AV:
+r:104	g:113	b:175
+
+
+
+
