@@ -1,8 +1,8 @@
-#define WHITE_R_MIN 200
+#define WHITE_R_MIN 170
 #define WHITE_R_MAX 255
-#define WHITE_G_MIN 200
+#define WHITE_G_MIN 170
 #define WHITE_G_MAX 255
-#define WHITE_B_MIN 235
+#define WHITE_B_MIN 205
 #define WHITE_B_MAX 255
 
 #define BLUE_R_MIN 90
@@ -40,11 +40,11 @@
 #define GREEN_B_MIN 90
 #define GREEN_B_MAX 120
 
-#define PRUPLE_R_MIN 115
+#define PURPLE_R_MIN 115
 #define PURPLE_R_MAX 145
-#define PRUPLE_G_MIN 135
+#define PURPLE_G_MIN 135
 #define PURPLE_G_MAX 165
-#define PRUPLE_B_MIN 185
+#define PURPLE_B_MIN 185
 #define PURPLE_B_MAX 215
 
 
