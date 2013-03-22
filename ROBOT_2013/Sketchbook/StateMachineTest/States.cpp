@@ -3,37 +3,43 @@
 extern FiniteStateMachine fsm;
 
 //Hardware classes
-LineSensor line;
-Movement move;
-WallFollower wallFollower;
-ColorSensor colorSensor;
-
-//Book keeping classes
+static Movement move;
+static WallFollower wallFollower;
 Claw rClaw;
 Claw lClaw;
+cam leftCam;
+cam rightCam;
 
-POSITION curPos = POS_START;
-POSITION nextPos;
+//positions used for the state machine
+static POSITION curPos = POS_START;
+static POSITION nextPos;
 
-//Variables
-Block lBlock; //Block held by the left claw.
-Block rBlock; //Block held by the right claw.
+//Variables for blocks currently held
+static Block lBlock; //Block held by the left claw.
+static Block rBlock; //Block held by the right claw.
 
 //array of pointers to Blocks
-Block *loadingZone[14]; // Blocks in the loading zone, listed west to east.
-Block *seaZone[6]; //Sea zone colors, listed south to north.
-Block *railZone[6]; //Rail zone colors, listed west to east. 
+//for reference::
+    //*Air is the northmost zone
+    //*Sea is the westmost zone
+// Blocks in the loading zone, listed west to east.
+static Block *loadingZone[14];
+//Sea zone colors, listed south to north.
+static Block *seaZone[6]; 
+//Rail zone colors, listed west to east. 
+static Block *railZone[6]; 
 
-const int PICKUP_SIZE = 14;
-const int RAIL_SEA_SIZE = 6;
-const int AIR_SIZE = 2;
+static const int PICKUP_SIZE = 14;
+static const int RAIL_SEA_SIZE = 6;
+static const int AIR_SIZE = 2;
 
 //used to keep track where we are in a zone 
     //(ie 2 would be 3rd block in a loading zone)
 static int blockPos; 
 //a sub-state used in each state, state-ception
-int internalState; 
-bool isScanning;
+static int internalState; 
+//boolean used to indicate between states if we are scanning zones
+static bool isScanning;
 
 //State objects
 //Put it here since it needs to know that the functions exist
@@ -42,14 +48,13 @@ State scanState = State(scanEnter, scanUpdate, scanExit);
 State moveToState = State(moveToEnter, moveToUpdate, moveToExit);
 State pickUpState = State(pickUpEnter, pickUpUpdate, pickUpExit);
 State dropState = State(dropEnter, dropUpdate, dropExit);
-State centerState = State(centerEnter, centerUpdate, centerExit);
 //End State objects
 
 //*****START State Functions*****//
 //initState Functions
 void initEnter() {
 
-    //initialize necessary variables & sensors
+    //initialize necessary variables
     internalState = 0;
     move.init();
     isScanning = true;
@@ -81,7 +86,7 @@ void initUpdate() {
 void initExit() {}
 
 //scanState
-void scanEnter() {
+void initScan() {
     internalState = 0;
     blockPos = 0;
 }
@@ -92,19 +97,19 @@ void scanUpdate() {
     switch(internalState){
         //Move until hitting a color
         case 0:
-            //scanning sea
+            //scanning sea (state transition 2 in state diagram)
             if (curPos == POS_SEA) {
+
                 move.slideRight(0.25);
 
-                //hit a line! start reading color!
-                if(line.detectRight()){
+                //focused on bay, read color
+                if(rightCam.inZone()){
              
                     //put color read code here!
                     //--------------------------
                     //--------------------------
 
                     blockPos++;
-
                     if(blockPos > 5){
                         //we are done lets moveTo the next place
                         internalState = 2;
@@ -114,18 +119,18 @@ void scanUpdate() {
                     }
                 }
             }
-            //scanning rail
+            //scanning rail (state transition 6)
             else if (curPos == POS_RAIL) {
+
                 move.slideLeft(0.25);
 
-                if (line.detectLeft()) {
+                //if we're focused on a bay, read color
+                if (leftCam.inZone()) {
 
                     //put color read code here!
                     //--------------------------
                     //--------------------------
-
                     blockPos++;
-
                     if(blockPos > 5){
                         //we are done lets moveTo the next place
                         internalState = 2;
@@ -135,19 +140,18 @@ void scanUpdate() {
                     }
                 }
             }
-            //scanning pickup
+            //scanning pickup (state transition 4)
             else {
 
-                move.slideLeft(0.25);
-
-                if (line.detectLeft()) {
+                move.slideRight(0.25);
+                //TODO: change to "onBlock" or something?
+                if (rightCam.inZone()) {
 
                     //put color read code here!
                     //--------------------------
                     //--------------------------
 
                     blockPos++;
-
                     if(blockPos > 13){
                         //we are done lets moveTo the next place
                         internalState = 2;
@@ -161,27 +165,27 @@ void scanUpdate() {
             break;
         //We already read this color, so just keep moving until white
         case 1:
-            if (curPos == POS_SEA) {
+            //move right
+            if (curPos == POS_PICK_SEA || curPos == POS_PICK_UP) {
                 move.slideRight(0.25);
-                if(line.detectRight()){
-                   internalState = 0;
+                //TODO: CREATE inbetweenZones
+                if(rightCam.inbetweenZones()){
+                   internalState = 0:
                 }
             }
+            //move left
             else {
                 move.slideLeft(0.25);
-                if(line.detectLeft()){
-                   internalState = 0;
+                //TODO: CREATE inbetweenZones
+                if(leftCam.inbetweenZones()){
+                   internalState = 0:
                 }
             }
             break;
         case 2:
-
-            //if we're leaving the POS_PICK_UP position, then we are done scanning
-            if (curPos == POS_PICK_UP)
-                isScanning = false;
-            //our nextPos and curPos should be handled for us
+            //nextPos and curPos transitions were handled in most recent moveTo call
             fsm.transitionTo(moveToState);
-            
+            fsm.init();
             break;
     }
 }
@@ -202,159 +206,102 @@ void moveToUpdate() {
     //Start to sea (1 in state diagram) 
     if(curPos == POS_START && nextPos == POS_SEA){
         switch(internalState){
+            //move to first bay in sea
             case 0:
-                //move to line surrounding start area
                 move.slideRight(0.25);
-                if(line.detectRight()){
+                if(rightCam.inZone()){
                     internalState++;
                 }
                 break;
+            //transition to scanning
             case 1:
-                //move to line at start 
-                move.slideRight(0.25);
-                if(line.detectRight()){
-                    internalState++;
-                }
-            case 2:
-                move.slideRight(0.25);
-                if(line.detectRight()){
-                    //if we're scanning currently
-                    if (isScanning) {
-                        fsm.transitionTo(scanState); 
-                        curPos = nextPos;
-                        nextPos = POS_START;
-                    }
-                    else{
-                        //INSERT LINE SENSOR CODE TO DETERMINE WHERE TO DROP
-                        fsm.transitionTo(dropState);
-                        curPos = nextPos;
-                        nextPos = POS_START;
-                        
-                    }
-                }
+                fsm.transitionTo(scanState); 
+                curPos = nextPos;
+                nextPos = POS_PICK_UP;
                 break;
         }
     }
-    //sea to start (2 in state diagram)
-    else if (curPos == POS_SEA && nextPos == POS_START) {
+    //sea to pickup (scanning) (3 in the state diagram)
+    else if (isScanning && curPos == POS_SEA && nextPos == POS_PICK_UP) {
         switch(internalState) {
+            //internal states 0-2 backup, turn, and move to the wall
             case 0:
-                move.slideLeft(0.25);
-                if (line.detectLeft()) {
-                    internalState++;
-                }
+                //TODO: figure out the speed needed, or get stopping condition
+                move.backward(0.1);
+                internalState++;
             break;
             case 1:
-                //TODO: move backwards a certain amount (small amount)
-                move.backward(0.25);
+                //TODO: figure out the speed needed, or get stopping condition
+                move.turnRight(0.1);
                 internalState++;
             break;
             case 2:
-                move.turnLeft(0.25);
-                internalState++;
+                move.forward(0.1);
+                if (wallFollower.isTouching())
+                    internalState++;
             break;
             case 3:
-                move.forward(0.1);
-                if (wallFollower.isTouching()) {
+                move.slideRight(0.1);
+                if (rightCam.inZone())
                     internalState++;
-                }
             break;
             case 4:
                 curPos = nextPos;
                 nextPos = POS_RAIL;
+                fsm->transitionTo(scanState);
             break;
         }
     }
-    //start to rail (3 in state diagram)
-    else if(curPos == POS_START && nextPos == POS_RAIL){
-        switch(internalState){
-            
-            //move backward and right
+    //pickup to rail (scanning) (transition 5 in the state diagram)
+    else if(isScanning && curPos == POS_PICK_UP && nextPos == POS_RAIL){
+
+        switch(internalState){    
+            //backup from wall
             case 0:
                 move.backward(0.25);
-                move.slideRight(0.25);
                 internalState++;
                 break;
-            //turn
+            //turn around
             case 1:
-                move.turnLeft(0.25);
+                move.turnAround();
                 internalState++;
                 break;
             //and hit the wall
             case 2:
                 move.forward(0.1);
-                if(wallFollower.isTouching()){
+                if(wallFollower.isTouching())
                     internalState++;
-                }
                 break;
-            //slide left until we hit a color
-            //don't care about white lines because the start position has white lines that will screw everything up
+            //slide Right until we are past the first bay
             case 3:
-                move.slideLeft(0.25);
-                if(line.detectLeft()){
-                    internalState++;
-                }
-                break;
-            //go backward to the first white line then change state
-            case 4:
                 move.slideRight(0.25);
-                if(line.detectLeft()){
-                    curPos = nextPos;
-                    nextPos = POS_PICK_UP;
-                    fsm.transitionTo(scanState);
-                }
-                break;
-        }
-    }
-    //RAIL to PICK_UP (4 in state diagram)
-    else if(curPos == POS_RAIL && nextPos == POS_PICK_UP){
-        
-        switch(internalState){
-            //turn
-            case 0:
-                //SHOULD TURN ALL THE WAY AROUND
-                    //need to do physical testing to figure out speeds
-                move.turnAround();
-                internalState++;
-                break;
-            // and hit the wall
-            case 1:
-                move.forward(0.1);
-                if(wallFollower.isTouching()){
+                //TODO: MAKE "IFBLACK" FUNCTION
+                if(!rightCam.inZone())
                     internalState++;
-                }
                 break;
-            //slide left until we hit a color
-            case 2:
+            //slide left until we are IN the first bay
+            case 4: 
                 move.slideLeft(0.25);
-                if(line.detectLeft()) {
-
-                    //loading area hasn't been scanned yet
-                    if (loadingZone[0] == NULL) {
-
-                        fsm.transitionTo(scanState);
-                    }
-                    else {
-                        fsm.transitionTo(pickUpState);
-                    }
-                    curPos = nextPos;
-                    nextPos = POS_RAIL;
-                }
+                if (leftCam.inZone())
+                    internalState++;
+                break;
+            case 5:
+                //We are done scanning after this last scan!
+                isScanning = false;
+                curPos = nextPos;
+                nextPos = POS_PICK_UP;
+                fsm->transitionTo(scanState);
                 break;
         }
     }
-    //pickup to rail (5 in state diagram)
+    //pickup to rail (16 & 22 in state diagram)
     else if(curPos == POS_PICK_UP && nextPos == POS_RAIL){
         
         switch(internalState) {
-
-            //slide to end of pickup by ramp
+            //backup 
             case 0:
-                move.slideRight(0.25);
-                //if we are at the FIRST cell in the pickup
-                if (blockPos == 0) {
-                    internalState++;
-                }
+                move.backward(0.1);
+                internalState++;
                 break;
             case 1:
                 move.turnAround();
@@ -362,58 +309,47 @@ void moveToUpdate() {
                 break;
             case 2:
                 move.forward(0.1);
-                if(wallFollower.isTouching()){
-                    
-                    //if rail isn't full
-                    if (!fullOfBlocks(railZone, RAIL_SEA_SIZE)) {
-                        curPos = nextPos;
-                        nextPos = POS_PICK_UP;
-                        fsm.transitionTo(dropState);
-                    }
-                    //if sea isn't full
-                    else if (!fullOfBlocks(seaZone, RAIL_SEA_SIZE)) {
-                        curPos = nextPos;
-                        nextPos = POS_START;
-                        fsm.transitionTo(moveToState);
-                    }
-                    //if air isn't full
-                    else {
-                        //TODO: Kickstart the air states
-                    }
-                    
-                }
+                if(wallFollower.isTouching())
+                    internalState++;
                 break;
-        }
-    }
-    //rail to start (6 in state diagram)
-    else if (curPos == POS_RAIL && nextPos == POS_START) {
-
-        switch (internalState) {
-            case 0:
-                move.slideRight(0.25);
-                if (line.detectRight()) {
-                    internalState++;
-                }
-            break;
-            case 1:
-                //TODO: move backwards a certain amount (small amount)
-                move.backward(0.2);
-                internalState++;
-            break;
-            case 2:
-                move.turnRight(0.25);
-                internalState++;
-            break;
+            //figure out whether to go left or right based on location in rail
             case 3:
-                move.forward(0.1);
-                if (wallFollower.isTouching()) {
-                    internalState++;
-                }
-            break;
+
+                //in the middle of rail zone
+                //if () {}
+                    //internalState++;
+                //to the right of the rail zone
+                //else {}
+                    //internalState += 2;
+
+            //move left until in first rail bay
             case 4:
-                curPos = nextPos;
-                nextPos = POS_SEA;
-            break;
+                move.slideLeft(0.25);
+                if (leftCam.inZone())
+                    internalState += 2;
+                break;
+            //move right until in first rail bay
+            case 5:
+                move.slideRight(0.25);
+                if (rightCam.inZone() && blockPos == 0)
+                    internalState++;
+                break;
+            case 6:
+                //if rail isn't full
+                if (!fullOfBlocks(railZone, RAIL_SEA_SIZE)) {
+                    curPos = nextPos;
+                    nextPos = POS_PICK_UP;
+                    fsm.transitionTo(dropState);
+                }
+                //if air isn't full (which it won't be)
+                else {
+                    //TODO: Kickstart the air states
+                    //curPos = nextPos;
+                    //nextPos = POS_AIR;
+                    //fsm->transitionTo(moveToState);
+                }
+                fsm->init();
+                break;
         }
     }
     else{
@@ -423,21 +359,6 @@ void moveToUpdate() {
 }
 
 void moveToExit() {}
-
-//Handles centering the robot on a particular space, so we can properly pickup/drop the block
-//mostly just reads the line array
-void centerEnter() {
-
-    //Figure out where you are in the pick up zone
-    //initialize necessary variables & sensors
-}
-
-void centerUpdate() {
-
-    //Perform the drop actions
-}
-
-void centerExit() {}
 
 //pickUpState
 void pickUpEnter() {
@@ -500,9 +421,27 @@ void dropUpdate() {
         //....
         /*switch (internalState) {
             case 0:
-                
-        }*/
+        */      
+        }
     }
+}
+
+bool centered(&cam theCam)
+{
+    if(theCam.locateZone() > 0)
+    {
+        move.slideRight(0.1);
+    }
+    else
+    {
+        move.slideLeft(0.1);
+    }
+    if (theCam.inZone())
+    {
+        move.stop();
+        return true;
+    }
+    return false;
 }
 
 void dropExit() {}

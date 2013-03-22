@@ -38,5 +38,4 @@ void Claw::drop(){
 	GRAB_SERVO.write(180);
 }
 
-
 #endif

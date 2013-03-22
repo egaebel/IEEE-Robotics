@@ -6,23 +6,20 @@
 class Movement {
 public:
 	void init(); //Setup all motors
-        void liftUp();
-        void liftStop();
-        void liftDown();
 	void slideLeft(float speed);
 	void slideRight(float speed);
 	void turnLeft(float speed);
 	void turnRight(float speed);
 	void forward(float speed);
 	void backward(float speed);
-        void stop();
+	void turnAround();
+    void stop();
 	bool setSpeed(int servo, float speed);
 private:
 	Servo leftMotor;
 	Servo rightMotor;
 	Servo rearLeftMotor;
-        Servo rearRightMotor;
-        Servo topMotor;
+    Servo rearRightMotor;
 	void setSpeed(Servo motor, float speed, bool inverted);
 };
 
@@ -30,26 +27,13 @@ void Movement::init(){
 	leftMotor.attach(LEFT_MOTOR);
 	rightMotor.attach(RIGHT_MOTOR);
 	rearLeftMotor.attach(REAR_MOTOR_L);
-        rearRightMotor.attach(REAR_MOTOR_R);
-        topMotor.attach(TOP_MOTOR);
-}
-
-void Movement::liftUp(){
-	topMotor.writeMicroseconds(2000);
-}
-
-void Movement::liftStop(){
-         topMotor.writeMicroseconds(1500); 
-}
-
-void Movement::liftDown(){
-	topMotor.writeMicroseconds(1000);
+    rearRightMotor.attach(REAR_MOTOR_R);
 }
 
 void Movement::slideLeft(float speed){
 	//set rear motor left by speed
 	setSpeed(REAR_MOTOR_L,-speed);
-        setSpeed(REAR_MOTOR_R,-speed);
+    setSpeed(REAR_MOTOR_R,-speed);
 }
 
 void Movement::slideRight(float speed){
@@ -88,8 +72,14 @@ void Movement::stop(){
 	//stop all motors
 	setSpeed(LEFT_MOTOR,0);
 	setSpeed(RIGHT_MOTOR,0);
-        setSpeed(REAR_MOTOR_L,0);
-        setSpeed(REAR_MOTOR_R,0);
+    setSpeed(REAR_MOTOR_L,0);
+    setSpeed(REAR_MOTOR_R,0);
+}
+
+//TODO: Need to find speeds necessary to turn around
+void Movement::turnAround() {
+	this->backward(0.25);
+	this->turnLeft(0.25);
 }
 
 bool Movement::setSpeed(int servo, float speed){

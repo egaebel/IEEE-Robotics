@@ -1,10 +1,8 @@
 #ifndef _COMMON_H_
 #define _COMMON_H_
 
-#include <Arduino.h>
-#include <Servo.h>
-#include "LineSensor.h"
-#include "Claw.h"
+//#include <Arduino.h>
+//#include <Servo.h>
 
 /*
  * This is where all globals and constants should be defined
@@ -14,7 +12,7 @@ enum POSITION{
 	POS_START = 0,
 	POS_SEA,
 	POS_RAIL,
-	POS_LOAD,
+	POS_PICK_UP,
 	POS_AIR
 };
 
