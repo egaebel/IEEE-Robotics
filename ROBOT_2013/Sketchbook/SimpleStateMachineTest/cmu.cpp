@@ -35,22 +35,38 @@ bool cam::inZone(){
 	#define CENTROID_Y_MAX 70
 	#define BAY_AREA_MIN 14000
 	#define BAY_AREA_MAX 20000
-	Serial.print("X:");Serial.println(tData.mx);
+
+        #define BOX_X1 14
+        #define BOX_X2 137
+        #define BOX_Y1 0
+        #define BOX_Y2 119
+        #define BOX_UNC 5
+    Serial.print("X:");Serial.println(tData.mx);
     Serial.print("Y:");Serial.println(tData.my);
     int area = (tData.x2-tData.x1)*(tData.y2-tData.y1);
     Serial.print("area:");Serial.println(area);
+    Serial.print("X1:");Serial.println(tData.x1);
+    Serial.print("X2:");Serial.println(tData.x2);
+    Serial.print("Y1:");Serial.println(tData.y1);
+    Serial.print("Y2:");Serial.println(tData.y2);
     
-    if(tData.mx>CENTROID_X_MIN && tData.mx<CENTROID_X_MAX && tData.my>CENTROID_Y_MIN && tData.my<CENTROID_Y_MAX && area>BAY_AREA_MIN && area<BAY_AREA_MAX)  {
-		tdata1 is point at upper left corner and tdata2 is point at lower right corner
+    /*if(tData.mx>CENTROID_X_MIN && tData.mx<CENTROID_X_MAX && tData.my>CENTROID_Y_MIN && tData.my<CENTROID_Y_MAX && area>BAY_AREA_MIN && area<BAY_AREA_MAX)  {
+		//tdata1 is point at upper left corner and tdata2 is point at lower right corner
 		if(abs(tData.x1 - UPPER_LEFT_CORNER_X) < UNCERTAINTY_ALLOWANCE && abs(tData.x2 - LOWER_RIGHT_CORNER_X) < UNCERTAINTY_ALLOWANCE
 			&& abs(tData.y1 - UPPER_LEFT_CORNER_Y) < UNCERTAINTY_ALLOWANCE && abs(tData.y2 - LOWER_RIGHT_CORNER_Y) < UNCERTAINTY_ALLOWANCE)  {
 				Serial.println("WE FOUND MICHEAL BAY\n\n\n");
 				return 1;
 		}
 		return 1;
-	}
+    }*/
+    if(tData.x1 < (BOX_X1+BOX_UNC) && (tData.x2+BOX_UNC) > BOX_X1 && tData.x2 < (BOX_X2+BOX_UNC) && (tData.x2+BOX_UNC) > BOX_X2){
+        if(tData.y1 < (BOX_Y1+BOX_UNC) && (tData.y2+BOX_UNC) > BOX_Y1 && tData.y2 < (BOX_Y2+BOX_UNC) && (tData.y2+BOX_UNC) > BOX_Y2){
+            Serial.println("BILLY BAYS HERE");
+            return 1;
+        }
+    }
 	
-	return 0;
+    return 0;
 }
 
 //true if there is only one line on the screen
@@ -59,21 +75,23 @@ bool cam::betweenZone()  {
 	#define MAX_WIDTH 50
 	#define MIN_HEIGHT 200
 	
-	if((tData.x2-tData.x1)<WIDTH && (tData.y2-tData.y1)>MIN_HEIGHT)  {
+	/*if((tData.x2-tData.x1)<WIDTH && (tData.y2-tData.y1)>MIN_HEIGHT)  {
 		return 1;
 	}
 	else  {
 		return 0;
-	}	
+	}*/
+    return 0;	
 }
 
 //Returns positive if need to move right and negative if need to move left
 int cam::locateZone()  {
-	getTrackingData(WHITE);
+	//getTrackingData(WHITE);
 	#define WIDTH 200
-	if(((tData.x2-tData.x1)>WIDTH-UNCERTAINTY_ALLOWANCE && (tData.x2-tData.x1)<WIDTH+UNCERTAINTY_ALLOWANCE))  {
+	/*if(((tData.x2-tData.x1)>WIDTH-UNCERTAINTY_ALLOWANCE && (tData.x2-tData.x1)<WIDTH+UNCERTAINTY_ALLOWANCE))  {
 		return tData.x2-LOWER_RIGHT_CORNER;
-	}
+	}*/
+    return 0;
 }
 
 void cam::getTrackingData(bColour colour){

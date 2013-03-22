@@ -65,7 +65,7 @@ int internalState;
 int curBayPos;
 //enter the state1 state
 void state1Enter() {
-
+        move.init();
 	internalState = 0;
 	pinMode(53, INPUT);
 	move.init();
@@ -76,7 +76,8 @@ void state1Update() {
 	switch(internalState){
 		case 0:
 			move.forward(1);
-			if(digitalRead(53)){
+                        Serial.println("Move forward");
+			if(0){//digitalRead(53)){
 				//fsm->immediateTransitionTo(state3);
 				Serial.print("button press!\n");
 				move.stop();
