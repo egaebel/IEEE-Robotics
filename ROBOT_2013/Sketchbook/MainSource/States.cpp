@@ -2,13 +2,15 @@
 
 extern FiniteStateMachine fsm;
 
-//Hardware classes
+//Hardware classes----
 static Movement move;
 static WallFollower wallFollower;
-Claw rClaw;
-Claw lClaw;
-cam leftCam;
-cam rightCam;
+
+static Claw rClaw;
+static Claw lClaw;
+
+static cam leftCam;
+static cam rightCam;
 
 //positions used for the state machine
 static POSITION curPos = POS_START;
@@ -66,18 +68,15 @@ void initUpdate() {
     switch(internalState){
         case 0:
             move.backward(0.25);
-            if(line.detectFront()){
-                move.dropDown();
-                internalState++;
-            }
+            //move.dropDown();
+            internalState++;
             break;
         case 1:
-            move.forward(0.25);
+            move.forward(0.1);
             if(wallFollower.isTouching()){
                 curPos = POS_START;
                 nextPos = POS_SEA;
                 fsm.transitionTo(moveToState);
-                    
             }
             break;
     }
@@ -166,12 +165,12 @@ void scanUpdate() {
         //We already read this color, so just keep moving until white
         case 1:
             //move right
-            if (curPos == POS_PICK_SEA || curPos == POS_PICK_UP) {
+            if (curPos == POS_SEA || curPos == POS_PICK_UP) {
                 move.slideRight(0.25);
                 //TODO: CREATE inbetweenZones
                 if(rightCam.inbetweenZones()){
                     move.stop();
-                    internalState = 0:
+                    internalState = 0;
                 }
             }
             //move left
@@ -180,14 +179,15 @@ void scanUpdate() {
                 //TODO: CREATE inbetweenZones
                 if(leftCam.inbetweenZones()){
                     move.stop();
-                    internalState = 0:
+                    internalState = 0;
                 }
             }
             break;
         case 2:
             //nextPos and curPos transitions were handled in most recent moveTo call
             fsm.transitionTo(moveToState);
-            fsm.init();
+            //TODO: not sure if we need to change enter...it currently takes a *fsm...
+            //fsm.enter();
             break;
     }
 }
@@ -232,13 +232,13 @@ void moveToUpdate() {
                 //TODO: figure out the speed needed, or get stopping condition
                 move.backward(0.1);
                 internalState++;
-            break;
+                break;
             case 1:
                 move.stop();
                 //TODO: figure out the speed needed, or get stopping condition
                 move.turnRight(0.1);
                 internalState++;
-            break;
+                break;
             case 2:
                 move.stop();
                 move.forward(0.1);
@@ -246,19 +246,19 @@ void moveToUpdate() {
                     move.stop();
                     internalState++;
                 }
-            break;
+                break;
             case 3:
                 move.slideRight(0.1);
                 if (rightCam.inZone()) {
                     move.stop();
                     internalState++;
                 }
-            break;
+                break;
             case 4:
                 curPos = nextPos;
                 nextPos = POS_RAIL;
-                fsm->transitionTo(scanState);
-            break;
+                fsm.transitionTo(scanState);
+                break;
         }
     }
     //pickup to rail (scanning) (transition 5 in the state diagram)
@@ -307,7 +307,7 @@ void moveToUpdate() {
                 isScanning = false;
                 curPos = nextPos;
                 nextPos = POS_PICK_UP;
-                fsm->transitionTo(scanState);
+                fsm.transitionTo(scanState);
                 break;
         }
     }
@@ -342,7 +342,7 @@ void moveToUpdate() {
                 //to the right of the rail zone
                 //else {}
                     //internalState += 2;
-
+                break;
             //move left until in first rail bay
             case 4:
                 move.slideLeft(0.25);
@@ -371,13 +371,14 @@ void moveToUpdate() {
                     //TODO: Kickstart the air states
                     //curPos = nextPos;
                     //nextPos = POS_AIR;
-                    //fsm->transitionTo(moveToState);
+                    //fsm.transitionTo(moveToState);
                 }
-                fsm->init();
+                //TODO: not sure if we need to change enter...it currently takes a *fsm...
+                //fsm.enter();
                 break;
         }
     }
-    else{
+    else {
         //shouldn't be here, maybe make another case?
         //assert(0);
     }
@@ -416,7 +417,7 @@ void dropUpdate() {
         switch (internalState) {
             case 0:
                 move.slideLeft(0.25);
-                if (lBlock.color == colorSensor.detectColor()) {
+                if (lBlock.color == leftCam.detectColor()) {
                     internalState++;            
                 }
                 break;
@@ -447,11 +448,10 @@ void dropUpdate() {
         /*switch (internalState) {
             case 0:
         */      
-        }
     }
 }
-
-bool centered(&cam theCam)
+/*
+bool centered(cam &theCam)
 {
 	if(theCam.locateZone() > 0)
 	{
@@ -468,6 +468,6 @@ bool centered(&cam theCam)
 	}
 	return false;
 }
-
+*/
 void dropExit() {}
 //*****END State Functions*****//

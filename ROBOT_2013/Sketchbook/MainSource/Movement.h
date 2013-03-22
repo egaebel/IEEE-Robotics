@@ -12,6 +12,7 @@ public:
 	void turnRight(float speed);
 	void forward(float speed);
 	void backward(float speed);
+	void turnAround();
     void stop();
 	bool setSpeed(int servo, float speed);
 private:
@@ -71,8 +72,14 @@ void Movement::stop(){
 	//stop all motors
 	setSpeed(LEFT_MOTOR,0);
 	setSpeed(RIGHT_MOTOR,0);
-        setSpeed(REAR_MOTOR_L,0);
-        setSpeed(REAR_MOTOR_R,0);
+    setSpeed(REAR_MOTOR_L,0);
+    setSpeed(REAR_MOTOR_R,0);
+}
+
+//TODO: Need to find speeds necessary to turn around
+void Movement::turnAround() {
+	this->backward(0.25);
+	this->turnLeft(0.25);
 }
 
 bool Movement::setSpeed(int servo, float speed){
