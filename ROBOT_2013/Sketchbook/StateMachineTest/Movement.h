@@ -6,7 +6,6 @@
 class Movement {
 
 private:
-	Servo topMotor;
 	Servo leftMotor;
 	Servo rightMotor;
 	Servo rearLeftMotor;
@@ -45,23 +44,11 @@ public:
 	bool setSpeed(int servo, float speed);
 	*/
 	void init(){
-		
-		topMotor.attach(TOP_MOTOR);							
-		topMotor.write(0);
-
 		leftMotor.attach(LEFT_MOTOR);
 		rightMotor.attach(RIGHT_MOTOR);
 
 		rearLeftMotor.attach(REAR_MOTOR_L);
 	    rearRightMotor.attach(REAR_MOTOR_R);
-	}
-
-	void liftUp(){
-		topMotor.write(180);
-	}
-
-	void dropDown(){
-		topMotor.write(0);
 	}
 
 	void slideLeft(float speed){
