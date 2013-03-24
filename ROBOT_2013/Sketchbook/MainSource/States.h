@@ -1,6 +1,9 @@
 #ifndef STATES_H_
 #define STATES_H_
 
+//FOR NOW THIS IS EMPTY...MAY NEED TO UPDATE NAME WHEN TRANSITIONING TO REAL CAM class
+#include "cam.h"
+
 #include "common.h"
 #include "FiniteStateMachine.h"
 #include "Movement.h"

@@ -1,3 +1,5 @@
+#include "common.h"
+
 class WallFollower {
 	public:
 		bool isTouching() {

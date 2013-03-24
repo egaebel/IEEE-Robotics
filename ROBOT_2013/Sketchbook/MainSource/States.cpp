@@ -68,7 +68,7 @@ void initUpdate() {
     switch(internalState){
         case 0:
             move.backward(0.25);
-            //move.dropDown();
+            move.setDown();
             internalState++;
             break;
         case 1:
@@ -85,7 +85,7 @@ void initUpdate() {
 void initExit() {}
 
 //scanState
-void initScan() {
+void scanEnter() {
     internalState = 0;
     blockPos = 0;
 }
@@ -202,7 +202,6 @@ void moveToEnter() {
 }
 
 //Handles all the movement, set curPos and nextPos before entering
-//Seems messy to have seperate statements for each move, but allows us to tweak each move in case of issues
 void moveToUpdate() {
 
     //Start to sea (1 in state diagram) 
