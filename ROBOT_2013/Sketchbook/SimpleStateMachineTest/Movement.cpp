@@ -47,7 +47,6 @@ void Movement::backward(float speed){
 	setSpeed(LEFT_MOTOR,-speed);
 	setSpeed(RIGHT_MOTOR,-speed);
 }
-
 void Movement::stop(){
 	//stop all motors
 	setSpeed(LEFT_MOTOR,0);
