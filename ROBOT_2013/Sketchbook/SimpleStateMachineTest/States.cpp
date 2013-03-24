@@ -85,22 +85,27 @@ void state1Update() {
 				move.stop();
 				internalState++;
 			}
-                        else if( digitalRead(53)){
-                          move.setSpeed(LEFT_MOTOR,-.02);
-                          move.setSpeed(RIGHT_MOTOR,.05);
-                            
-                        }
-                        else if( digitalRead(52)){
-                          move.setSpeed(RIGHT_MOTOR,-.02);
-                          move.setSpeed(LEFT_MOTOR,.05);
-                        }
-                        else{
-                          move.forward(0.25);
-                        }
-		break;
+            else if( digitalRead(53)){
+              move.setSpeed(LEFT_MOTOR,-.025);
+              move.setSpeed(RIGHT_MOTOR,.2);
+            }
+            else if( digitalRead(52)){
+              move.setSpeed(RIGHT_MOTOR,-.025);
+              move.setSpeed(LEFT_MOTOR,.2);
+            }
+            else{
+              move.forward(0.25);
+            }
+			break;
 		case 1:
                 if(digitalRead(52)&&digitalRead(53)){
-			move.slideRight(.25);
+
+            //move.forward(1);
+            move.setSpeed(RIGHT_MOTOR, 0);
+            move.setSpeed(LEFT_MOTOR, 1);
+			move.setSpeed(REAR_MOTOR_L, -1);
+			move.setSpeed(REAR_MOTOR_R, -1);
+
 		if(0){//camR.inZone()){
 			move.stop();
 			delay(2000);
