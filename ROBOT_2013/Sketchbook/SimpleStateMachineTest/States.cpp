@@ -3,12 +3,13 @@
 #include "FiniteStateMachine.h"
 #include "EasyTransfer.h"
 #include "Movement.h"
-
+#include "cmu.h"
 using namespace std;
 
 UART_STRUCT uart;
 
 Movement move;
+//cam camR(2);
 
 boolean posLClaw(boolean line[16]){
 	if(line[3]==1 && line[6]==1){
@@ -69,27 +70,46 @@ void state1Enter() {
 	internalState = 0;
 	pinMode(53, INPUT);
 	move.init();
+        //camR.init();
 }
 
 
 void state1Update() {
 	switch(internalState){
 		case 0:
-			move.forward(1);
+			
                         Serial.println("Move forward");
-			if(0){//digitalRead(53)){
+			if(digitalRead(53)&&digitalRead(52)){
 				//fsm->immediateTransitionTo(state3);
 				Serial.print("button press!\n");
 				move.stop();
 				internalState++;
 			}
+                        else if( digitalRead(53)){
+                          move.setSpeed(LEFT_MOTOR,-.02);
+                          move.setSpeed(RIGHT_MOTOR,.05);
+                            
+                        }
+                        else if( digitalRead(52)){
+                          move.setSpeed(RIGHT_MOTOR,-.02);
+                          move.setSpeed(LEFT_MOTOR,.05);
+                        }
+                        else{
+                          move.forward(0.25);
+                        }
 		break;
 		case 1:
-			move.slideRight(1);
-		if(updatePosition(&curBayPos,uart.line,1)){
+                if(digitalRead(52)&&digitalRead(53)){
+			move.slideRight(.25);
+		if(0){//camR.inZone()){
 			move.stop();
 			delay(2000);
 		}
+                }
+                else{
+                  move.stop();
+                  internalState = 0;
+                }
 		break;
 	}
 }
