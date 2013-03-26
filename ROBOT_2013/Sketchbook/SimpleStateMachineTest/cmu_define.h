@@ -19,12 +19,20 @@
 #define RED_B_MIN 85
 #define RED_B_MAX 115
 
-#define YELLOW_R_MIN 240
-#define YELLOW_R_MAX 270
-#define YELLOW_G_MIN 240
-#define YELLOW_G_MAX 270
-#define YELLOW_B_MIN 150
+#define YELLOW_R_MIN 230
+#define YELLOW_R_MAX 255
+#define YELLOW_G_MIN 230
+#define YELLOW_G_MAX 255
+#define YELLOW_B_MIN 130
 #define YELLOW_B_MAX 180
+
+#define YELLOW_Y_MIN	220
+#define YELLOW_Y_MAX	260
+#define YELLOW_CR_MIN	6
+#define YELLOW_CR_MAX	8
+#define YELLOW_CB_MIN	-45
+#define YELLOW_CB_MAX	-41
+
 
 #define BROWN_R_MIN 65
 #define BROWN_R_MAX 95
