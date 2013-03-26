@@ -28,7 +28,7 @@ void cam::init(){
 }
 
 bool cam::inZone(){
-	getTrackingData(WHITE);
+	getTrackingData(BROWN);
 	#define CENTROID_X_MIN 75
 	#define CENTROID_X_MAX 90
 	#define CENTROID_Y_MIN 50
@@ -71,7 +71,7 @@ bool cam::inZone(){
 
 //true if there is only one line on the screen
 bool cam::betweenZone()  {
-	getTrackingData(WHITE);
+	getTrackingData(BLUE);
 	#define MAX_WIDTH 50
 	#define MIN_HEIGHT 200
 	

@@ -19,7 +19,7 @@ void setup() {
 
 //go through the entire state machine
 void loop() {
-    fsm.update();
+    //fsm.update();
     camR.inZone();
 
     delay(100);
