@@ -90,7 +90,8 @@ void initExit() {}
 //scanState
 void scanEnter() {
     internalState = 0;
-    blockPos = 0;
+    rBlockPos = 0;
+    lBlockPos = 0;
 }
 
 void scanUpdate() {
@@ -111,8 +112,8 @@ void scanUpdate() {
                     //--------------------------
                     //--------------------------
 
-                    blockPos++;
-                    if(blockPos > 5){
+                    rBlockPos++;
+                    if(rBlockPos > 5){
                         //we are done lets moveTo the next place
                         internalState = 2;
                     }
@@ -132,8 +133,8 @@ void scanUpdate() {
                     //put color read code here!
                     //--------------------------
                     //--------------------------
-                    blockPos++;
-                    if(blockPos > 5){
+                    rBlockPos++;
+                    if(rBlockPos > 5){
                         //we are done lets moveTo the next place
                         internalState = 2;
                     }
@@ -153,8 +154,8 @@ void scanUpdate() {
                     //--------------------------
                     //--------------------------
 
-                    blockPos++;
-                    if(blockPos > 13){
+                    rBlockPos++;
+                    if(rBlockPos > 13){
                         //we are done lets moveTo the next place
                         internalState = 2;
                     }
@@ -313,7 +314,6 @@ void moveToUpdate() {
                 break;
         }
     }
-    else if (curPos == POS)
     //pickup to sea (10 in state diagram)
     else if (curPos == POS_PICK_UP && nextPos == POS_SEA) {
 
@@ -350,13 +350,13 @@ void moveToUpdate() {
                 break;
             case 6:
                 //moving right
-                move.slideRight();
+                move.slideRight(0.1);
                 //if in zone and centered 
                 internalState += 2;
                 break;
             case 7:
                 //moving left
-                move.slideLeft();
+                move.slideLeft(0.1);
                 //if in zone and centered 
                 internalState++;
                 break;
@@ -375,7 +375,8 @@ void moveToUpdate() {
             //check if we need to move sector in zone
             case 1:
                 //check if we are safe to turn around
-                if (blockPos > 2) {
+                //TODO must do stuff
+                if (rBlockPos > 2) {
                     move.slideLeft(0.1);
                     //if we are now inZone
                     if (rightCam.inZone()) {
@@ -418,7 +419,7 @@ void moveToUpdate() {
                 else {
                     nextPos = POS_RAIL;
                 }
-                fsm.transitionTo(pickUpState    )
+                fsm.transitionTo(pickUpState);
 
                 break;
         }
@@ -465,7 +466,7 @@ void moveToUpdate() {
             //move right until in first rail bay
             case 5:
                 move.slideRight(0.25);
-                if (rightCam.inZone() && blockPos == 0) {
+                if (rightCam.inZone() && rBlockPos == 0) {
                     move.stop();
                     internalState++;
                 }
@@ -495,7 +496,7 @@ void moveToUpdate() {
         switch (internalState) {
 
             case 1:
-                move.backup(0.1);
+                move.backward(0.1);
                 internalState++;
                 break;
             case 2:
@@ -525,7 +526,6 @@ void moveToUpdate() {
                   nextPos = POS_RAIL;
                 }
                 break;
-            }
         }
     }
     else {
