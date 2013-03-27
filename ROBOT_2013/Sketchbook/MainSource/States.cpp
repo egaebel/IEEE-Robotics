@@ -500,6 +500,7 @@ void moveToUpdate() {
                 break;
         }
     }
+  
     //rail to pickup (7 & 18 in state diagram)
     else if (curPos == POS_RAIL && nextPos == POS_PICK_UP) {
 
@@ -553,32 +554,32 @@ void pickUpEnter() {
 	//Figure out which blocks you need to pick up
 	if(!railDone) {
 		for(int i = 0; i < 6; i++) {
-			if(railZone[i]->present == false) {
-				lTargetBlock = railZone[i];
-				rTargetBlock = railZone[i++];
+			if(!railZone[i]->present == false) {
+				lTargetBlock = *railZone[i];
+				rTargetBlock = *railZone[++i];
 			}
 		}
 	}
 	else if(!seaDone) {
 		for(int i = 0; i < 6; i++) {
 			if(seaZone[i]->present == false) {
-				lTargetBlock = seaZone[i];
-				rTargetBlock = seaZone[i++];
+				lTargetBlock = *seaZone[i];
+				rTargetBlock = *seaZone[++i];
 			}
 		}
 	}
 	else {
 	int i = 0;
 		for(i = 0; i < 14; i++) {
-			if(loadingZone->present == true) {
-				lTargetBlock = loadingZone[i];
+			if(loadingZone[i]->present == true) {
+				lTargetBlock = *loadingZone[i];
 				break;
 			}
 		}
 		
 		for(i++; i < 14; i++) {
-			if(loadingZone->present == true) {
-				rTargetBlock = loadingZone[i];
+			if(loadingZone[i]->present == true) {
+				rTargetBlock = *loadingZone[i];
 			}
 		}
 	}
