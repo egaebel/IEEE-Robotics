@@ -16,6 +16,12 @@ static cam rightCam;
 static POSITION curPos = POS_START;
 static POSITION nextPos;
 
+//Variables for blocks needed in claws
+static Block lTargetBlock;
+static Block rTargetBlock;
+static int lTargetPos;
+static int rTargetPos;
+
 //Variables for blocks currently held
 static Block lBlock; //Block held by the left claw.
 static Block rBlock; //Block held by the right claw.
@@ -30,6 +36,10 @@ static Block *loadingZone[14];
 static Block *seaZone[6]; 
 //Rail zone colors, listed west to east. 
 static Block *railZone[6]; 
+
+//Drop-off zones complete
+static bool railDone;
+static bool seaDone;
 
 static const int PICKUP_SIZE = 14;
 static const int RAIL_SEA_SIZE = 6;
@@ -391,11 +401,93 @@ void pickUpEnter() {
     //Figure out where you are in the pick up zone
     //initialize necessary variables & sensors
     internalState = 0;
+	
+	//Figure out which blocks you need to pick up
+	if(!railDone) {
+		for(int i = 0; i < 6; i++) {
+			if(railZone[i]->present == false) {
+				lTargetBlock = railZone[i];
+				rTargetBlock = railZone[i++];
+			}
+		}
+	}
+	else if(!seaDone) {
+		for(int i = 0; i < 6; i++) {
+			if(seaZone[i]->present == false) {
+				lTargetBlock = seaZone[i];
+				rTargetBlock = seaZone[i++];
+			}
+		}
+	}
+	else {
+	int i = 0;
+		for(i = 0; i < 14; i++) {
+			if(loadingZone->present == true) {
+				lTargetBlock = loadingZone[i];
+				break;
+			}
+		}
+		
+		for(i++; i < 14; i++) {
+			if(loadingZone->present == true) {
+				rTargetBlock = loadingZone[i];
+			}
+		}
+	}
+	
+	//Set target positions
+	for(int i = 0; i < 14; i++) {
+		if(loadingZone[i]->color == lTargetBlock.color && loadingZone[i]->size == lTargetBlock.size) {
+			lTargetPos = i;
+		}
+		else if(loadingZone[i]->color == rTargetBlock.color && loadingZone[i]->size == rTargetBlock.size) {
+			rTargetPos = i;
+		}
+	}
 }
 
 void pickUpUpdate() {
 
-    //Perform the pick up actions
+	//Perform the pick up actions
+	switch(internalState) {
+		//Move to the left target
+		case 0:
+			if(lBlockPos == lTargetPos) {
+				internalState++;
+			} else if(lBlockPos < lTargetPos) {
+				//TODO: move to bay to the right
+			} else if(lBlockPos > lTargetPos) {
+				//TODO: move to bay to the left
+			}
+			break;
+		
+		//Pick up left target
+		case 1:
+			lClaw.extend();
+			lClaw.grab();
+			lClaw.retract();
+			internalState++;
+			break;
+		
+		//Move to the right target
+		case 2:
+			if(rBlockPos == rTargetPos) {
+				internalState++;
+			} else if(rBlockPos < rTargetPos) {
+				//TODO: move to bay to the right
+			} else if(rBlockPos > rTargetPos) {
+				//TODO: move to bay to the left
+			}
+			break;
+		
+		//Pick up right target
+		case 3:
+			rClaw.extend();
+			rClaw.grab();
+			rClaw.retract();
+			internalState++;
+			break;
+	}
 }
 
 void pickUpExit() {}
