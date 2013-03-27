@@ -21,7 +21,7 @@ void setup() {
 //go through the entire state machine
 void loop() {
     //fsm.update();
-    camR.getTrackingData(BLUE);
+    camR.getTrackingData(BROWN);
 
     delay(100);
 }
