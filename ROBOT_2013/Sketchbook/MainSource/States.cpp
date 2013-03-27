@@ -25,11 +25,11 @@ static Block rBlock; //Block held by the right claw.
     //*Air is the northmost zone
     //*Sea is the westmost zone
 // Blocks in the loading zone, listed west to east.
-static Block *loadingZone[14];
+static Block * loadingZone[14];
 //Sea zone colors, listed south to north.
-static Block *seaZone[6]; 
+static Block * seaZone[6]; 
 //Rail zone colors, listed west to east. 
-static Block *railZone[6]; 
+static Block * railZone[6]; 
 
 static const int PICKUP_SIZE = 14;
 static const int RAIL_SEA_SIZE = 6;
@@ -37,7 +37,10 @@ static const int AIR_SIZE = 2;
 
 //used to keep track where we are in a zone 
     //(ie 2 would be 3rd block in a loading zone)
-static int blockPos; 
+//what section of the zone the left claw is over
+static int lBlockPos; 
+//what section of the zone the right claw is over
+static int rBlockPos;
 //a sub-state used in each state, state-ception
 static int internalState; 
 //boolean used to indicate between states if we are scanning zones
@@ -260,7 +263,7 @@ void moveToUpdate() {
                 break;
         }
     }
-    //pickup to rail (scanning) (transition 5 in the state diagram)
+    //pickup to rail (scanning) (5 in the state diagram)
     else if(isScanning && curPos == POS_PICK_UP && nextPos == POS_RAIL){
 
         switch(internalState){    
@@ -310,6 +313,116 @@ void moveToUpdate() {
                 break;
         }
     }
+    else if (curPos == POS)
+    //pickup to sea (10 in state diagram)
+    else if (curPos == POS_PICK_UP && nextPos == POS_SEA) {
+
+        switch (internalState) {
+
+            case 1:
+                move.backward(0.1);
+                internalState++;
+                break;
+            case 2:
+                move.turnLeft(0.1);
+                internalState++;
+                break;
+            case 3:
+                move.forward(0.1);
+                if (wallFollower.isTouching()) {
+                    internalState++;
+                }
+                break;
+            //center
+            case 4:
+                //center over block or sector (if not off the edge)
+                //if centered internalState++;
+                break;
+            case 5:
+                //figure out where we are! (in the middle of the sea)
+                //rightCam.getBayColor()
+                //leftCam.getBayColor();
+                //if () {}
+                    //internalState++;
+                //to the left of the sea zone
+                //else {}
+                    //internalState += 2;
+                break;
+            case 6:
+                //moving right
+                move.slideRight();
+                //if in zone and centered 
+                internalState += 2;
+                break;
+            case 7:
+                //moving left
+                move.slideLeft();
+                //if in zone and centered 
+                internalState++;
+                break;
+            case 8:
+                curPos = nextPos;
+                nextPos = POS_PICK_UP;
+                fsm.transitionTo(dropState);
+                break;
+        }
+    }
+    //sea to pickup (12 in state diagram)
+    else if (curPos == POS_SEA && nextPos == POS_PICK_UP) {
+
+        switch (internalState) {
+
+            //check if we need to move sector in zone
+            case 1:
+                //check if we are safe to turn around
+                if (blockPos > 2) {
+                    move.slideLeft(0.1);
+                    //if we are now inZone
+                    if (rightCam.inZone()) {
+                        rBlockPos--;
+                        lBlockPos--;
+                    }
+                    //if we are at the block at index 2, then we're safe
+                    if (rBlockPos < 3) {
+                        internalState++;
+                    }
+                }
+                else {
+                    internalState++;
+                }
+                break;
+            //move back..and
+            case 2:
+                move.backward(0.1);
+                internalState++;
+                break;
+            //turn right
+            case 3:
+                move.turnRight(0.1);
+                internalState++;
+                break;
+            //move to wall
+            case 4:
+                move.forward(0.1);
+                if (wallFollower.isTouching()) {
+                    internalState++;
+                }
+                break;
+            case 5:
+                curPos = nextPos;
+                
+                if (!seaDone) { 
+                    nextPos = POS_SEA;
+                }
+                //else if (seaDone && railDone) {} //maybe....
+                else {
+                    nextPos = POS_RAIL;
+                }
+                fsm.transitionTo(pickUpState    )
+
+                break;
+        }
+    }
     //pickup to rail (16 & 22 in state diagram)
     else if(curPos == POS_PICK_UP && nextPos == POS_RAIL){
         
@@ -334,7 +447,6 @@ void moveToUpdate() {
                 break;
             //figure out whether to go left or right based on location in rail
             case 3:
-
                 //in the middle of rail zone
                 //if () {}
                     //internalState++;
@@ -377,6 +489,45 @@ void moveToUpdate() {
                 break;
         }
     }
+    //rail to pickup (7 & 18 in state diagram)
+    else if (curPos == POS_RAIL && nextPos == POS_PICK_UP) {
+
+        switch (internalState) {
+
+            case 1:
+                move.backup(0.1);
+                internalState++;
+                break;
+            case 2:
+                move.turnAround();
+                internalState++;
+                break;
+            case 3:
+                move.forward(0.1);
+                if (wallFollower.isTouching()) {
+                    internalState++;
+                }
+                break;
+            case 4:
+                 //in the middle of pick up zone
+                //if () {}
+                    //internalState++;
+                //to the right of the rail zone
+                //else {}
+                    //internalState += 2;
+                break;
+            case 5:
+                curPos = nextPos;
+                if (!seaDone) {
+                  nextPos = POS_SEA;
+                }
+                else {
+                  nextPos = POS_RAIL;
+                }
+                break;
+            }
+        }
+    }
     else {
         //shouldn't be here, maybe make another case?
         //assert(0);
@@ -387,9 +538,6 @@ void moveToExit() {}
 
 //pickUpState
 void pickUpEnter() {
-
-    //Figure out where you are in the pick up zone
-    //initialize necessary variables & sensors
     internalState = 0;
 }
 
@@ -402,10 +550,7 @@ void pickUpExit() {}
 
 //dropState
 void dropEnter() {
-
     internalState = 0;
-    //Figure out where you are in the pick up zone
-    //initialize necessary variables & sensors
 }
 
 void dropUpdate() {
@@ -449,6 +594,7 @@ void dropUpdate() {
         */      
     }
 }
+
 /*
 bool centered(cam &theCam)
 {
