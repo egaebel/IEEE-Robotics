@@ -5,12 +5,14 @@ cam::cam(int pin){
 }
 
 void cam::init(){
+        cmuCam->autoGainControl(false);
+    cmuCam->autoWhiteBalance(false);
 	cmuCam->begin();
   	// Wait for auto gain and auto white balance to run.
         cmuCam->autoGainControl(false);
-  	cmuCam->autoWhiteBalance(false);
+    cmuCam->autoWhiteBalance(false);
         cmuCam->cameraBrightness(50);
-        cmuCam->cameraContrast(10);
+        cmuCam->cameraContrast(31);
   	cmuCam->LEDOn(LED_BLINK);
   	//delay(WAIT_TIME);
 
@@ -28,7 +30,7 @@ void cam::init(){
 }
 
 bool cam::inZone(){
-	getTrackingData(WHITE);
+	getTrackingData(BROWN);
 	#define CENTROID_X_MIN 75
 	#define CENTROID_X_MAX 90
 	#define CENTROID_Y_MIN 50
@@ -71,7 +73,7 @@ bool cam::inZone(){
 
 //true if there is only one line on the screen
 bool cam::betweenZone()  {
-	getTrackingData(WHITE);
+	getTrackingData(BLUE);
 	#define MAX_WIDTH 50
 	#define MIN_HEIGHT 200
 	
@@ -97,6 +99,7 @@ int cam::locateZone()  {
 void cam::getTrackingData(bColour colour){
   trackColour(colour);
   cmuCam->getTypeTDataPacket(&tData); // Get a tracking packet
+  Serial.println(tData.confidence);
 }
 
 bColour cam::getBlockColour(){
@@ -125,29 +128,38 @@ bSize cam::getBlockSize(bColour colour){
 
 }
 void cam::trackColour(bColour colour){
-  switch(colour){
-    case BLUE:
-      cmuCam->trackColor(BLUE_R_MIN,BLUE_R_MAX,BLUE_G_MIN,BLUE_G_MAX,BLUE_B_MIN,BLUE_B_MAX);
-    break;
-    case RED:
-      cmuCam->trackColor(RED_R_MIN,RED_R_MAX,RED_G_MIN,RED_G_MAX,RED_B_MIN,RED_B_MAX);
-    break;
-    case BROWN:
-      cmuCam->trackColor(BROWN_R_MIN,BROWN_R_MAX,BROWN_G_MIN,BROWN_G_MAX,BROWN_B_MIN,BROWN_B_MAX);
-    break;
-    case PURPLE:
-      cmuCam->trackColor(PURPLE_R_MIN,PURPLE_R_MAX,PURPLE_G_MIN,PURPLE_G_MAX,PURPLE_B_MIN,PURPLE_B_MAX);
-    break;
-    case YELLOW:
-      cmuCam->trackColor(YELLOW_R_MIN,YELLOW_R_MAX,YELLOW_G_MIN,YELLOW_G_MAX,YELLOW_B_MIN,YELLOW_B_MAX);
-    break;
-    case WHITE:
-      cmuCam->trackColor(WHITE_R_MIN,WHITE_R_MAX,WHITE_G_MIN,WHITE_G_MAX,WHITE_B_MIN,WHITE_B_MAX);
-    break;
-    case GREEN:
-      cmuCam->trackColor(GREEN_R_MIN,GREEN_R_MAX,GREEN_G_MIN,GREEN_G_MAX,GREEN_B_MIN,GREEN_B_MAX);
-    break;
-    default:
-    abort();
+  if(!YUV_MODE){
+    switch(colour){
+      case BLUE:
+        cmuCam->trackColor(BLUE_R_MIN,BLUE_R_MAX,BLUE_G_MIN,BLUE_G_MAX,BLUE_B_MIN,BLUE_B_MAX);
+      break;
+      case RED:
+        cmuCam->trackColor(RED_R_MIN,RED_R_MAX,RED_G_MIN,RED_G_MAX,RED_B_MIN,RED_B_MAX);
+      break;
+      case BROWN:
+        cmuCam->trackColor(BROWN_R_MIN,BROWN_R_MAX,BROWN_G_MIN,BROWN_G_MAX,BROWN_B_MIN,BROWN_B_MAX);
+      break;
+      case PURPLE:
+        cmuCam->trackColor(PURPLE_R_MIN,PURPLE_R_MAX,PURPLE_G_MIN,PURPLE_G_MAX,PURPLE_B_MIN,PURPLE_B_MAX);
+      break;
+      case YELLOW:
+        cmuCam->trackColor(YELLOW_R_MIN,YELLOW_R_MAX,YELLOW_G_MIN,YELLOW_G_MAX,YELLOW_B_MIN,YELLOW_B_MAX);
+      break;
+      case WHITE:
+        cmuCam->trackColor(WHITE_R_MIN,WHITE_R_MAX,WHITE_G_MIN,WHITE_G_MAX,WHITE_B_MIN,WHITE_B_MAX);
+      break;
+      case GREEN:
+        cmuCam->trackColor(GREEN_R_MIN,GREEN_R_MAX,GREEN_G_MIN,GREEN_G_MAX,GREEN_B_MIN,GREEN_B_MAX);
+      break;
+      default:
+        abort();
+    }
+  }
+  else{
+    switch(colour){
+      case YELLOW:
+        cmuCam->trackColor(YELLOW_CR_MIN,YELLOW_CR_MAX,YELLOW_Y_MIN,YELLOW_Y_MAX,YELLOW_CB_MIN,YELLOW_CB_MAX);
+      break;
+    }
   }
 }
