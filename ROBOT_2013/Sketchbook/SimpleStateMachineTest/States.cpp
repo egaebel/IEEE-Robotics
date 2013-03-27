@@ -86,35 +86,40 @@ void state1Update() {
 				internalState++;
 			}
             else if( digitalRead(53)){
-              move.setSpeed(LEFT_MOTOR,-.025);
-              move.setSpeed(RIGHT_MOTOR,.2);
+              move.setSpeed(REAR_MOTOR_L,0);
+              move.setSpeed(REAR_MOTOR_R,-1);
+              move.setSpeed(LEFT_MOTOR,0);
+              move.setSpeed(RIGHT_MOTOR,1);
             }
             else if( digitalRead(52)){
-              move.setSpeed(RIGHT_MOTOR,-.025);
-              move.setSpeed(LEFT_MOTOR,.2);
+              move.setSpeed(REAR_MOTOR_R,0);
+              move.setSpeed(REAR_MOTOR_L,1);
+              move.setSpeed(RIGHT_MOTOR,0);
+              move.setSpeed(LEFT_MOTOR,1);
             }
             else{
+              move.setSpeed(REAR_MOTOR_R,0);
+              move.setSpeed(REAR_MOTOR_L,0);
               move.forward(0.25);
             }
 			break;
 		case 1:
-                if(digitalRead(52)&&digitalRead(53)){
-
-            //move.forward(1);
-            move.setSpeed(RIGHT_MOTOR, 0);
-            move.setSpeed(LEFT_MOTOR, 1);
+                  if(digitalRead(52)&&digitalRead(53)){
+                   
+                        move.setSpeed(LEFT_MOTOR,1);
+                        move.setSpeed(RIGHT_MOTOR,0);
 			move.setSpeed(REAR_MOTOR_L, -1);
 			move.setSpeed(REAR_MOTOR_R, -1);
 
-		if(0){//camR.inZone()){
+		      /*if(camR.inZone()){
 			move.stop();
 			delay(2000);
-		}
-                }
-                else{
-                  move.stop();
-                  internalState = 0;
-                }
+		    }*/
+                  }
+                  else{
+                    move.stop();
+                    internalState = 0;
+                  }
 		break;
 	}
 }

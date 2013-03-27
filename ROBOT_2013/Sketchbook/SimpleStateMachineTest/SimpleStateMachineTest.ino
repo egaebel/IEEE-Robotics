@@ -13,14 +13,15 @@ extern FiniteStateMachine fsm;
 cam camR(2);
 void setup() {
     Serial.begin(9600);
-    pinMode(53, INPUT);
+    pinMode(BUMPER_L, INPUT);
+    pinMode(BUMPER_R, INPUT);
     camR.init();
 }
 
 //go through the entire state machine
 void loop() {
     //fsm.update();
-    camR.inZone();
+    camR.getTrackingData(BLUE);
 
     delay(100);
 }
