@@ -97,9 +97,11 @@ int cam::locateZone()  {
 }
 
 void cam::getTrackingData(bColour colour){
+  cmuCam->setTrackingWindow(40,20,120,119);
   trackColour(colour);
   cmuCam->getTypeTDataPacket(&tData); // Get a tracking packet
-  Serial.println(tData.confidence);
+  Serial.print("pixels");Serial.println(tData.pixels);
+  Serial.print("confidence");Serial.println(tData.confidence);
 }
 
 bColour cam::getBlockColour(){
@@ -158,7 +160,7 @@ void cam::trackColour(bColour colour){
   else{
     switch(colour){
       case YELLOW:
-        cmuCam->trackColor(YELLOW_CR_MIN,YELLOW_CR_MAX,YELLOW_Y_MIN,YELLOW_Y_MAX,YELLOW_CB_MIN,YELLOW_CB_MAX);
+        //cmuCam->trackColor(YELLOW_CR_MIN,YELLOW_CR_MAX,YELLOW_Y_MIN,YELLOW_Y_MAX,YELLOW_CB_MIN,YELLOW_CB_MAX);
       break;
     }
   }
