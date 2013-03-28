@@ -6,8 +6,8 @@
 */
 
 typedef enum POSITION{	POS_START = 0,
-				POS_SEA_LOAD,
-				POS_RAIL_LOAD,
+				POS_SEA,
+				POS_RAIL,
 				POS_PICK_UP,
 				POS_AIR
 	      	};
@@ -31,6 +31,7 @@ typedef enum SIZE{
 typedef struct block_t {
 	bColour colour; 
 	bSize size; 
+        bool present;
 } Block;
 
 /* PIN DEFINITIONS */

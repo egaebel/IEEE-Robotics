@@ -13,13 +13,13 @@ public:
 		void forward(float speed);
 		void backward(float speed);
 		void stop();
-		void turnARound();
+		void turnAround();
+                void liftUp();
+		void setDown();
     //Used for complex movements
 	bool setSpeed(float speedFL,float speedFR, float speedBL, float speedBR);
 private:
 		bool setSpeed(int servo, float speed);
-		void liftUp();
-		void setDown();
 		Servo leftMotor;
 		Servo rightMotor;
 	Servo backLeftMotor;
