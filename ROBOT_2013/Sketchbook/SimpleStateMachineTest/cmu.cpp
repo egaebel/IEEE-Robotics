@@ -5,14 +5,14 @@ cam::cam(int pin){
 }
 
 void cam::init(){
-        cmuCam->autoGainControl(false);
+    cmuCam->autoGainControl(false);
     cmuCam->autoWhiteBalance(false);
-	cmuCam->begin();
+	   cmuCam->begin();
   	// Wait for auto gain and auto white balance to run.
-        cmuCam->autoGainControl(false);
+    cmuCam->autoGainControl(false);
     cmuCam->autoWhiteBalance(false);
-        cmuCam->cameraBrightness(50);
-        cmuCam->cameraContrast(31);
+    cmuCam->cameraBrightness(50);
+    cmuCam->cameraContrast(31);
   	cmuCam->LEDOn(LED_BLINK);
   	//delay(WAIT_TIME);
 

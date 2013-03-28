@@ -36,11 +36,10 @@ typedef struct block_t {
 /* PIN DEFINITIONS */
 #define COLOR_SENSOR 0 //Pin for color sensor (pin 0 is fake) 
 	//Motors (Servos)
-#define LEFT_MOTOR 11
-#define RIGHT_MOTOR 12
-#define REAR_MOTOR 10 //Used for setSpeed
-#define REAR_MOTOR_L 10
-#define REAR_MOTOR_R 13
+#define MOTOR_FRONT_L 11
+#define MOTOR_FRONT_R 12
+#define MOTOR_BACK_L 10
+#define MOTOR_BACK_R 13
 	//Claw Servos
 #define LCLAW_SERVO 9
 #define RCLAW_SERVO 8
@@ -49,7 +48,7 @@ typedef struct block_t {
 	//Wallfolloer servos
 #define WALL_FOLLOW_SERVO 5
         //Top Motor
-#define TOP_MOTO 2
+#define MOTOR_TOP 2
 
 #define BUMPER_L 53
 #define BUMPER_R 52

@@ -1,73 +1,67 @@
 #include "Movement.h"
 
 void Movement::init(){
-	leftMotor.attach(LEFT_MOTOR);
-	rightMotor.attach(RIGHT_MOTOR);
-	rearLeftMotor.attach(REAR_MOTOR_L);
-    rearRightMotor.attach(REAR_MOTOR_R);
+	leftMotor.attach(MOTOR_FRONT_L);
+	rightMotor.attach(MOTOR_FRONT_R);
+	backLeftMotor.attach(MOTOR_BACK_L);
+    backRightMotor.attach(MOTOR_BACK_R);
     stop();
 }
 void Movement::dropDown(){
 	topMotor.write(0);
 }
 void Movement::slideLeft(float speed){
-	//set rear motor left by speed
-		setSpeed(REAR_MOTOR_L,speed);
-	setSpeed(REAR_MOTOR_R,speed);
+	setSpeed(0,0,speed,speed);    
 }
 
 void Movement::slideRight(float speed){
-	//set rear motor right by speed
-	setSpeed(REAR_MOTOR_L,-speed);
-        setSpeed(REAR_MOTOR_R,-speed);
+	setSpeed(0,0,-speed,-speed);    
 }
 
 void Movement::turnLeft(float speed){
-	//set left motor forward by speed
-	setSpeed(LEFT_MOTOR,speed);
-	//set right motor backward by speed
-	setSpeed(RIGHT_MOTOR,-speed);
+	setSpeed(speed,-speed,0,0);	
 }
 
 void Movement::turnRight(float speed){
-	//set left motor backward by speed
-	setSpeed(LEFT_MOTOR,-speed);
-	//set right motor forward by speed
-	setSpeed(RIGHT_MOTOR,speed);
+	setSpeed(-speed,speed,0,0);
 }
 
 void Movement::forward(float speed){
 	//set both motors forward by speed
-	setSpeed(LEFT_MOTOR,speed);
-	setSpeed(RIGHT_MOTOR,speed);
+	setSpeed(speed,speed,0,0);
 }
 
 void Movement::backward(float speed){
 	//set both motors backward by speed
-	setSpeed(LEFT_MOTOR,-speed);
-	setSpeed(RIGHT_MOTOR,-speed);
+	setSpeed(-speed,-speed,0,0);
 }
 void Movement::stop(){
 	//stop all motors
-	setSpeed(LEFT_MOTOR,0);
-	setSpeed(RIGHT_MOTOR,0);
-    setSpeed(REAR_MOTOR_L,0);
-    setSpeed(REAR_MOTOR_R,0);
+	setSpeed(0,0,0,0);
 }
+
+
+bool Movement::setSpeed(float speedFL,float speedFR, float speedBL, float speedBR){
+	setSpeed(MOTOR_FRONT_L,speedFL);
+	setSpeed(MOTOR_FRONT_R,speedFR);
+	setSpeed(MOTOR_BACK_L,speedBL);
+	setSpeed(MOTOR_BACK_R,speedBR);
+}
+
 
 bool Movement::setSpeed(int servo, float speed){
 	switch(servo){
-		case LEFT_MOTOR:
+		case MOTOR_FRONT_L:
 			setSpeed(leftMotor,speed,false);
 			break;
-		case RIGHT_MOTOR:
+		case MOTOR_FRONT_R:
 			setSpeed(rightMotor,speed,true);
 			break;
-        case REAR_MOTOR_L:
-            setSpeed(rearLeftMotor,speed,false);
+        case MOTOR_BACK_L:
+            setSpeed(backLeftMotor,speed,false);
             break;
-        case REAR_MOTOR_R:
-            setSpeed(rearRightMotor,speed,false);
+        case MOTOR_BACK_R:
+            setSpeed(backRightMotor,speed,false);
 			break;
 		default:
 			//opps
