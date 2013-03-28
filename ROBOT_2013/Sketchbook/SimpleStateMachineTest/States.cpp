@@ -59,6 +59,7 @@ void state1Update() {
 						move.stop();
 						Serial.println(camR.getBlockColour());
 		    	}
+		    	move.setSpeed(1,0,-1,-1);
             }
             else{
             	move.stop();
