@@ -7,9 +7,12 @@ void Movement::init(){
     backRightMotor.attach(MOTOR_BACK_R);
     stop();
 }
-void Movement::dropDown(){
-	topMotor.write(0);
+
+void Movement::turnAround() {
+	this->backward(0.25);
+	this->turnLeft(0.25);
 }
+
 void Movement::slideLeft(float speed){
 	setSpeed(0,0,speed,speed);    
 }
@@ -48,6 +51,26 @@ bool Movement::setSpeed(float speedFL,float speedFR, float speedBL, float speedB
 	setSpeed(MOTOR_BACK_R,speedBR);
 }
 
+void Movement::liftUp() {
+	goToDeg(90);
+}
+
+void Movement::setDown() {
+	goToDeg(180);
+}
+
+void Movement::goToDeg(int d){
+	static int curD = 0;
+
+	if(curD<d){
+		topMotor.write(curD);
+		curD++;
+	}
+	else if(curD>d){
+		topMotor.write(curD);
+		curD--;
+	}
+}
 
 bool Movement::setSpeed(int servo, float speed){
 	switch(servo){

@@ -12,7 +12,6 @@ typedef enum POSITION{	POS_START = 0,
 				POS_AIR
 	      	};
 
-
 typedef enum bColour_t{	WHITE=0,//LEAVE WHITE AS 0
 			BLUE,
 			RED,
@@ -23,15 +22,16 @@ typedef enum bColour_t{	WHITE=0,//LEAVE WHITE AS 0
 			BLACK//here so we can iterate white to black
 		}bColour;
 
-typedef enum bSize_t{	RAIL=0,
-			SEA,
-			AIR}bSize;
+typedef enum SIZE{
+	SMALL, 
+	MEDIUM, 
+	LARGE
+} bSize;
 
 typedef struct block_t {
 	bColour colour; 
 	bSize size; 
-} block;
-
+} Block;
 
 /* PIN DEFINITIONS */
 #define COLOR_SENSOR 0 //Pin for color sensor (pin 0 is fake) 
@@ -47,8 +47,15 @@ typedef struct block_t {
 #define RCLAW_EXTEND_SERVO 6
 	//Wallfolloer servos
 #define WALL_FOLLOW_SERVO 5
-        //Top Motor
-#define MOTOR_TOP 2
+#define BUMPER_2_PIN 4
+#define BUMPER_1_PIN 3
+	//Top Motor
+#define COLOR_SENSOR_PIN_S0 22
+#define COLOR_SENSOR_PIN_S1 24 //Pin for color sensor (pin 0 is fake) 
+#define COLOR_SENSOR_PIN_S2 26
+#define COLOR_SENSOR_PIN_S3 28
+#define COLOR_SENSOR_PIN_OUT 30
+#define COLOR_SENSOR_PIN_LED 32 
 
 #define BUMPER_L 53
 #define BUMPER_R 52
