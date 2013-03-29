@@ -11,4 +11,7 @@ class cam {
 		bColour detectColor() {
 			return RED;
 		}
+                bSize detectSize() {
+			return LARGE;
+		}
 };
