@@ -1,12 +1,10 @@
 #ifndef _MOVEMENT_H_
 #define _MOVEMENT_H_
 
-#include <Servo.h>
 #include "common.h"
-
-//modded, cus i canz
+#include "Servo.h"
 class Movement {
-	public:
+public:
 		void init();
 		void slideLeft(float speed);
 		void slideRight(float speed);
@@ -15,16 +13,17 @@ class Movement {
 		void forward(float speed);
 		void backward(float speed);
 		void stop();
-		//TODO: Need to find speeds necessary to turn around
 		void turnAround();
-		bool setSpeed(int servo, float speed);
-		void liftUp();
+                void liftUp();
 		void setDown();
-	private:
+    //Used for complex movements
+	bool setSpeed(float speedFL,float speedFR, float speedBL, float speedBR);
+private:
+		bool setSpeed(int servo, float speed);
 		Servo leftMotor;
 		Servo rightMotor;
-		Servo rearLeftMotor;
-	    Servo rearRightMotor;
+	Servo backLeftMotor;
+    Servo backRightMotor;
 	    Servo topMotor;
 	    void setSpeed(Servo motor, float speed, bool inverted);
 	    void goToDeg(int d);

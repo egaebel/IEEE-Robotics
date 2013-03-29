@@ -17,7 +17,7 @@
 #define LED_BLINK 5 // 5 Hz
 #define WAIT_TIME 5000 // 5 seconds
 
-#define POLL_MODE true // See the command interface manual about poll mode.
+#define POLL_MODE false // See the command interface manual about poll mode.
 #define YUV_MODE false // See the command interface manual about yuv mode.
 
 #define NOISE_FILTER 2
@@ -38,8 +38,9 @@ class cam{
 		bColour getBayColour();
 		bSize getBlockSize(bColour colour);
 		void getTrackingData(bColour colour);
-
+		void getTrackingData();
 	private:
+		bColour curColour;
 		void trackColour(bColour colour);
 		CMUcam4* cmuCam;
 		CMUcam4_tracking_data_t tData; //stands for Travis Data

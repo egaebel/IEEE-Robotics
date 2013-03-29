@@ -4,42 +4,43 @@
 /*
  * This is where all globals and constants should be defined
 */
-//Enumerations
-enum POSITION{	
-	POS_START = 0,
-	POS_SEA,
-	POS_RAIL,
-	POS_PICK_UP,
-	POS_AIR
-};
 
-enum COLOR{
-    WHITE = 0,
-    BLUE = 1,
-    RED = 2,
-    GREEN = 3
-}; //TODO: There are still some colors to be defined, waiting on color sensor defs
+typedef enum POSITION{	POS_START = 0,
+				POS_SEA,
+				POS_RAIL,
+				POS_PICK_UP,
+				POS_AIR
+	      	};
 
-enum SIZE{
+typedef enum bColour_t{	WHITE=0,//LEAVE WHITE AS 0
+			BLUE,
+			RED,
+			GREEN,
+			PURPLE,
+			BROWN,
+			YELLOW,
+			BLACK//here so we can iterate white to black
+		}bColour;
+
+typedef enum SIZE{
 	SMALL, 
 	MEDIUM, 
 	LARGE
-};
+} bSize;
 
 typedef struct block_t {
-	COLOR color; 
-	SIZE size; 
-	bool present;
+	bColour colour; 
+	bSize size; 
+        bool present;
 } Block;
 
 /* PIN DEFINITIONS */
+#define COLOR_SENSOR 0 //Pin for color sensor (pin 0 is fake) 
 	//Motors (Servos)
-#define LEFT_MOTOR 13
-#define RIGHT_MOTOR 12
-#define REAR_MOTOR 11 //Used for setSpeed
-#define REAR_MOTOR_L 11
-#define REAR_MOTOR_R 10
-#define TOP_MOTOR 2
+#define MOTOR_FRONT_L 11
+#define MOTOR_FRONT_R 12
+#define MOTOR_BACK_L 10
+#define MOTOR_BACK_R 13
 	//Claw Servos
 #define LCLAW_SERVO 9
 #define RCLAW_SERVO 8
@@ -57,41 +58,6 @@ typedef struct block_t {
 #define COLOR_SENSOR_PIN_OUT 30
 #define COLOR_SENSOR_PIN_LED 32 
 
-//Color Sensor Values
-#define white_AveragePV_RED	2900
-#define blue_AveragePV_RED 2900
-#define red_AveragePV_RED 890
-#define green_AveragePV_RED 2920
-#define range_RED 100
-
-#define white_AveragePV_BLUE 2000
-#define blue_AveragePV_BLUE 2000
-#define red_AveragePV_BLUE 2470
-#define green_AveragePV_BLUE 2000
-#define range_BLUE 100
-
-#define white_AveragePV_BROWN 3300
-#define blue_AveragePV_BROWN 3250
-#define red_AveragePV_BROWN 2500
-#define green_AveragePV_BROWN 3250
-#define range_BROWN 150
-
-#define white_AveragePV_YELLOW 700
-#define blue_AveragePV_YELLOW 700
-#define red_AveragePV_YELLOW 470
-#define green_AveragePV_YELLOW 700
-#define range_YELLOW 50
-
-#define white_AveragePV_PURPLE 2265
-#define blue_AveragePV_PURPLE 2250
-#define red_AveragePV_PURPLE 1900
-#define green_AveragePV_PURPLE 2250
-#define range_PURPLE 100
-
-#define white_AveragePV_GREEN 3100
-#define blue_AveragePV_GREEN 3100
-#define red_AveragePV_GREEN 3000
-#define green_AveragePV_GREEN 3100
-#define range_GREEN 200
-
+#define BUMPER_L 53
+#define BUMPER_R 52
 #endif

@@ -5,14 +5,14 @@ cam::cam(int pin){
 }
 
 void cam::init(){
-        cmuCam->autoGainControl(false);
+    cmuCam->autoGainControl(false);
     cmuCam->autoWhiteBalance(false);
-	cmuCam->begin();
+	   cmuCam->begin();
   	// Wait for auto gain and auto white balance to run.
-        cmuCam->autoGainControl(false);
+    cmuCam->autoGainControl(false);
     cmuCam->autoWhiteBalance(false);
-        cmuCam->cameraBrightness(50);
-        cmuCam->cameraContrast(31);
+    cmuCam->cameraBrightness(50);
+    cmuCam->cameraContrast(31);
   	cmuCam->LEDOn(LED_BLINK);
   	//delay(WAIT_TIME);
 
@@ -26,11 +26,12 @@ void cam::init(){
   	cmuCam->pollMode(POLL_MODE);
   	cmuCam->colorTracking(YUV_MODE);
 
-  	cmuCam->noiseFilter(NOISE_FILTER);	
+  	cmuCam->noiseFilter(NOISE_FILTER);
+    curColour = BLACK;
 }
 
 bool cam::inZone(){
-	getTrackingData(BROWN);
+	getTrackingData(WHITE);
 	#define CENTROID_X_MIN 75
 	#define CENTROID_X_MAX 90
 	#define CENTROID_Y_MIN 50
@@ -43,14 +44,14 @@ bool cam::inZone(){
         #define BOX_Y1 0
         #define BOX_Y2 119
         #define BOX_UNC 5
-    Serial.print("X:");Serial.println(tData.mx);
-    Serial.print("Y:");Serial.println(tData.my);
+    //Serial.print("X:");Serial.println(tData.mx);
+    //Serial.print("Y:");Serial.println(tData.my);
     int area = (tData.x2-tData.x1)*(tData.y2-tData.y1);
-    Serial.print("area:");Serial.println(area);
+    /*Serial.print("area:");Serial.println(area);
     Serial.print("X1:");Serial.println(tData.x1);
     Serial.print("X2:");Serial.println(tData.x2);
     Serial.print("Y1:");Serial.println(tData.y1);
-    Serial.print("Y2:");Serial.println(tData.y2);
+    Serial.print("Y2:");Serial.println(tData.y2);*/
     
     /*if(tData.mx>CENTROID_X_MIN && tData.mx<CENTROID_X_MAX && tData.my>CENTROID_Y_MIN && tData.my<CENTROID_Y_MAX && area>BAY_AREA_MIN && area<BAY_AREA_MAX)  {
 		//tdata1 is point at upper left corner and tdata2 is point at lower right corner
@@ -73,7 +74,7 @@ bool cam::inZone(){
 
 //true if there is only one line on the screen
 bool cam::betweenZone()  {
-	getTrackingData(BLUE);
+	getTrackingData(WHITE);
 	#define MAX_WIDTH 50
 	#define MIN_HEIGHT 200
 	
@@ -97,9 +98,16 @@ int cam::locateZone()  {
 }
 
 void cam::getTrackingData(bColour colour){
-  trackColour(colour);
+  if(curColour != colour){
+    //cmuCam->setTrackingWindow(40,20,120,119);
+    trackColour(colour);
+  }
   cmuCam->getTypeTDataPacket(&tData); // Get a tracking packet
-  Serial.println(tData.confidence);
+  //Serial.print("pixels");Serial.println(tData.pixels);
+  //Serial.print("confidence");Serial.println(tData.confidence);
+}
+void cam::getTrackingData(){
+  cmuCam->getTypeTDataPacket(&tData);
 }
 
 bColour cam::getBlockColour(){
@@ -158,7 +166,7 @@ void cam::trackColour(bColour colour){
   else{
     switch(colour){
       case YELLOW:
-        cmuCam->trackColor(YELLOW_CR_MIN,YELLOW_CR_MAX,YELLOW_Y_MIN,YELLOW_Y_MAX,YELLOW_CB_MIN,YELLOW_CB_MAX);
+        //cmuCam->trackColor(YELLOW_CR_MIN,YELLOW_CR_MAX,YELLOW_Y_MIN,YELLOW_Y_MAX,YELLOW_CB_MIN,YELLOW_CB_MAX);
       break;
     }
   }

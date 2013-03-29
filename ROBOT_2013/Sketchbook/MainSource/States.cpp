@@ -58,11 +58,11 @@ static bool isScanning;
 
 //State objects
 //Put it here since it needs to know that the functions exist
-State initState = State(initEnter, initUpdate, initExit);
-State scanState = State(scanEnter, scanUpdate, scanExit);
-State moveToState = State(moveToEnter, moveToUpdate, moveToExit);
-State pickUpState = State(pickUpEnter, pickUpUpdate, pickUpExit);
-State dropState = State(dropEnter, dropUpdate, dropExit);
+State initState = State(initEnter, initUpdate, defExit);
+State scanState = State(scanEnter, scanUpdate, defExit);
+State moveToState = State(moveToEnter, moveToUpdate, defExit);
+State pickUpState = State(pickUpEnter, pickUpUpdate, defExit);
+State dropState = State(dropEnter, dropUpdate, defExit);
 //End State objects
 
 //*****START State Functions*****//
@@ -95,7 +95,7 @@ void initUpdate() {
     }
 }
 
-void initExit() {}
+void defExit() {}
 
 //scanState
 void scanEnter() {
@@ -163,7 +163,9 @@ void scanUpdate() {
                     //put color read code here!
                     //--------------------------
                     //--------------------------
-
+                    loadingZone[rBlockPos]->colour = rightCam.detectColor(); 
+	            loadingZone[rBlockPos]->size = rightCam.detectSize();
+                    loadingZone[rBlockPos]->present = true;
                     rBlockPos++;
                     if(rBlockPos > 13){
                         //we are done lets moveTo the next place
@@ -205,8 +207,6 @@ void scanUpdate() {
             break;
     }
 }
-
-void scanExit() {}
 
 //moveToState
 void moveToEnter() {
@@ -440,8 +440,14 @@ void moveToUpdate() {
                     internalState++;
                 }
                 break;
-            //center OR slide Left
-            case 5:
+            case 5: 
+                move.slideRight(0.25);
+                if (rightCam.inbetweenZones()) {
+                    move.stop();
+                    internalState++;
+                }
+                break;
+            case 6:
                 //center over block or sector (if not off the edge)
                 //if centered internalState += 2;
                 //if not over zone internalState++;
@@ -583,6 +589,7 @@ void moveToUpdate() {
                 else {
                   nextPos = POS_RAIL;
                 }
+                fsm.transitionTo(pickUpState);
                 break;
         }
     }
@@ -592,13 +599,37 @@ void moveToUpdate() {
     }
 }
 
-void moveToExit() {}
-
 //pickUpState
 void pickUpEnter() {
     internalState = 0;
-	
-	//Figure out which blocks you need to pick up
+    if(rightCam.inZone())
+    {
+        bColour currentColor = rightCam.detectColor();
+        bSize currentSize = rightCam.detectSize();
+        for(int i = 0; i < 14; i++) {
+	        if(loadingZone[i]->colour == currentColor && loadingZone[i]->size == currentSize) {
+			rBlockPos = i;
+                        lBlockPos = i - 1;
+		}
+	}
+    }
+    else if(leftCam.inZone())
+    {
+        bColour currentColor = leftCam.detectColor();
+        bSize currentSize = leftCam.detectSize();
+        for(int i = 0; i < 14; i++) {
+	        if(loadingZone[i]->colour == currentColor && loadingZone[i]->size == currentSize) {
+			lBlockPos = i;
+                        rBlockPos = i + 1;
+		}
+	}
+    }
+    else
+    {
+        rBlockPos = -1;
+        lBlockPos = -2;
+    }  
+      	//Figure out which blocks you need to pick up
 	if(!railDone) {
 		for(int i = 0; i < 6; i++) {
 			if(!railZone[i].present == false) {
@@ -651,9 +682,37 @@ void pickUpUpdate() {
 			if(lBlockPos == lTargetPos) {
 				internalState++;
 			} else if(lBlockPos < lTargetPos) {
-				//TODO: move to bay to the right
+				move.slideRight(0.25);
+                                //TODO: change to "onBlock" or something?
+                                if(leftCam.inZone())
+                                {
+                                    if(lBlockPos < 0);
+                                    {
+                                        lBlockPos = 0;
+                                        rBlockPos = 1;
+                                    }
+                                    else if (leftCam.detectColor() != loadingZone[lBlockPos]->colour || leftCam.detectSize() != loadingZone[lBlockPos]->size) {
+                                        move.stop();
+                                        lBlockPos++;
+                                        rBlockPos++;
+                                    }
+                                }
 			} else if(lBlockPos > lTargetPos) {
-				//TODO: move to bay to the left
+                                move.slideLeft(0.25);
+                                //TODO: change to "onBlock" or something?
+                                if(leftCam.inZone());
+                                {
+                                    if(lBlockPos > 13)
+                                    {
+                                        lBlockPos = 13;
+                                        rBlockPos = 14;
+                                    }
+                                    else if (leftCam.detectColor() != loadingZone[lBlockPos]->colour || leftCam.detectSize() != loadingZone[lBlockPos]->size) {
+                                        move.stop();
+                                        lBlockPos--;
+                                        rBlockPos--;
+                                    }
+                                }
 			}
 			break;
 		
@@ -670,9 +729,37 @@ void pickUpUpdate() {
 			if(rBlockPos == rTargetPos) {
 				internalState++;
 			} else if(rBlockPos < rTargetPos) {
-				//TODO: move to bay to the right
+                                move.slideRight(0.25);
+                                //TODO: change to "onBlock" or something?
+                                if(rightCam.inZone())
+                                {
+                                    if(rBlockPos < 0);
+                                    {
+                                        rBlockPos = 0;
+                                        rBlockPos = -1;
+                                    }
+                                    else if (rightCam.detectColor() != loadingZone[rBlockPos]->colour || rightCam.detectSize() != loadingZone[rBlockPos]->size) {
+                                        move.stop();
+                                        lBlockPos++;
+                                        rBlockPos++;
+                                    }
+                                }
 			} else if(rBlockPos > rTargetPos) {
-				//TODO: move to bay to the left
+				move.slideLeft(0.25);
+                                //TODO: change to "onBlock" or something?
+                                if(rightCam.inZone());
+                                {
+                                    if(rBlockPos > 13)
+                                    {
+                                        lBlockPos = 12;
+                                        rBlockPos = 13;
+                                    }
+                                    else if (rightCam.detectColor() != loadingZone[rBlockPos]->colour || rightCam.detectSize() != loadingZone[rBlockPos]->size) {
+                                        move.stop();
+                                        lBlockPos--;
+                                        rBlockPos--;
+                                    }
+                                }
 			}
 			break;
 		
@@ -685,8 +772,6 @@ void pickUpUpdate() {
 			break;
 	}
 }
-
-void pickUpExit() {}
 
 //dropState
 void dropEnter() {
@@ -754,5 +839,4 @@ bool centered(cam &theCam)
 	return false;
 }
 */
-void dropExit() {}
 //*****END State Functions*****//

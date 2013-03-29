@@ -33,7 +33,8 @@
 #define GREEN_B_MIN 60
 #define GREEN_B_MAX 90
 
-#define BROWN_R_MAX 95
+#define BROWN_R_MIN 80
+#define BROWN_R_MAX 120
 #define BROWN_G_MIN 65
 #define BROWN_G_MAX 95
 #define BROWN_B_MIN 60

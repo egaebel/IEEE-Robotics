@@ -5,23 +5,28 @@
 #include "Servo.h"
 class Movement {
 public:
-	void init(); //Setup all motors
-        void dropDown();
-	void slideLeft(float speed);
-	void slideRight(float speed);
-	void turnLeft(float speed);
-	void turnRight(float speed);
-	void forward(float speed);
-	void backward(float speed);
-        void stop();
-	bool setSpeed(int servo, float speed);
+		void init();
+		void slideLeft(float speed);
+		void slideRight(float speed);
+		void turnLeft(float speed);
+		void turnRight(float speed);
+		void forward(float speed);
+		void backward(float speed);
+		void stop();
+		void turnAround();
+    //Used for complex movements
+	bool setSpeed(float speedFL,float speedFR, float speedBL, float speedBR);
 private:
-	Servo leftMotor;
-	Servo rightMotor;
-	Servo rearLeftMotor;
-        Servo rearRightMotor;
-        Servo topMotor;
-	void setSpeed(Servo motor, float speed, bool inverted);
+		bool setSpeed(int servo, float speed);
+		void liftUp();
+		void setDown();
+		Servo leftMotor;
+		Servo rightMotor;
+	Servo backLeftMotor;
+    Servo backRightMotor;
+	    Servo topMotor;
+	    void setSpeed(Servo motor, float speed, bool inverted);
+	    void goToDeg(int d);
 };
 
 #endif
