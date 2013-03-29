@@ -58,11 +58,11 @@ static bool isScanning;
 
 //State objects
 //Put it here since it needs to know that the functions exist
-State initState = State(initEnter, initUpdate, initExit);
-State scanState = State(scanEnter, scanUpdate, scanExit);
-State moveToState = State(moveToEnter, moveToUpdate, moveToExit);
-State pickUpState = State(pickUpEnter, pickUpUpdate, pickUpExit);
-State dropState = State(dropEnter, dropUpdate, dropExit);
+State initState = State(initEnter, initUpdate, defExit);
+State scanState = State(scanEnter, scanUpdate, defExit);
+State moveToState = State(moveToEnter, moveToUpdate, defExit);
+State pickUpState = State(pickUpEnter, pickUpUpdate, defExit);
+State dropState = State(dropEnter, dropUpdate, defExit);
 //End State objects
 
 //*****START State Functions*****//
@@ -95,7 +95,7 @@ void initUpdate() {
     }
 }
 
-void initExit() {}
+void defExit() {}
 
 //scanState
 void scanEnter() {
@@ -205,8 +205,6 @@ void scanUpdate() {
             break;
     }
 }
-
-void scanExit() {}
 
 //moveToState
 void moveToEnter() {
@@ -545,8 +543,6 @@ void moveToUpdate() {
     }
 }
 
-void moveToExit() {}
-
 //pickUpState
 void pickUpEnter() {
     internalState = 0;
@@ -639,8 +635,6 @@ void pickUpUpdate() {
 	}
 }
 
-void pickUpExit() {}
-
 //dropState
 void dropEnter() {
     internalState = 0;
@@ -707,5 +701,4 @@ bool centered(cam &theCam)
 	return false;
 }
 */
-void dropExit() {}
 //*****END State Functions*****//
