@@ -8,7 +8,7 @@ class cam {
 		bool inbetweenZones() {
 			return true;
 		}
-		enum COLOR detectColor() {
+		enum COLOR getBayColor() {
 			return RED;
 		}
 };

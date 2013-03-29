@@ -31,11 +31,11 @@ static Block rBlock; //Block held by the right claw.
     //*Air is the northmost zone
     //*Sea is the westmost zone
 // Blocks in the loading zone, listed west to east.
-static Block * loadingZone[14];
+static Block loadingZone[14];
 //Sea zone colors, listed south to north.
-static Block * seaZone[6]; 
+static Block seaZone[6]; 
 //Rail zone colors, listed west to east. 
-static Block * railZone[6]; 
+static Block railZone[6]; 
 
 //Drop-off zones complete
 static bool railDone;
@@ -220,7 +220,7 @@ void moveToUpdate() {
 
     //Start to sea (1 in state diagram) 
     if(curPos == POS_START && nextPos == POS_SEA){
-        switch(internalState){
+        switch(internalState) {
             //move to first bay in sea
             case 0:
                 move.slideRight(0.25);
@@ -260,14 +260,39 @@ void moveToUpdate() {
                     internalState++;
                 }
                 break;
+            //ensure we are the start of the zone
             case 3:
-                move.slideRight(0.1);
-                if (rightCam.inZone()) {
+                move.slideLeft(0.1);
+                //we want the left camera hanging off and the right in a zone
+                if (!leftCam.inZone() && rightCam.inZone()) {
                     move.stop();
+                    rBlockPos = 0;
+                    lBlockPos = -1;
                     internalState++;
                 }
                 break;
+            //slide into position
             case 4:
+                move.slideRight(0.1);
+                if (rightCam.inZone() && leftCam.inZone()) {
+                    move.stop();
+                    rBlockPos++;
+                    lBlockPos++;
+                    internalState++;
+                }
+                break;
+            //slide two spaces
+            case 5:
+                move.slideRight(0.1);
+                if (rightCam.inZone() && leftCam.inZone() && leftCam.getBayColor() != loadingZone[rBlockPos].color) {
+                    move.stop();
+                    rBlockPos += 2;
+                    lBlockPos += 2;
+                    internalState++;
+                }
+                break;
+            //transition to scan
+            case 6:
                 curPos = nextPos;
                 nextPos = POS_RAIL;
                 fsm.transitionTo(scanState);
@@ -298,6 +323,7 @@ void moveToUpdate() {
                     internalState++;
                 }
                 break;
+            //move to the right of the zone
             //slide Right until we are past the first bay
             case 3:
                 move.slideRight(0.25);
@@ -337,40 +363,36 @@ void moveToUpdate() {
                 move.turnLeft(0.1);
                 internalState++;
                 break;
+            //move to wall
             case 3:
                 move.forward(0.1);
                 if (wallFollower.isTouching()) {
                     internalState++;
                 }
                 break;
-            //center
+            //center OR slide Left
             case 4:
                 //center over block or sector (if not off the edge)
-                //if centered internalState++;
+                //if centered internalState += 2;
+                //if not over zone internalState++;
                 break;
+            //not in the zone fully, need to slide
             case 5:
-                //figure out where we are! (in the middle of the sea)
-                //rightCam.getBayColor()
-                //leftCam.getBayColor();
-                //if () {}
-                    //internalState++;
-                //to the left of the sea zone
-                //else {}
-                    //internalState += 2;
-                break;
-            case 6:
-                //moving right
-                move.slideRight(0.1);
-                //if in zone and centered 
-                internalState += 2;
-                break;
-            case 7:
                 //moving left
                 move.slideLeft(0.1);
-                //if in zone and centered 
-                internalState++;
+                //if both cameras are in zones
+                if (leftCam.inZone() && rightCam.inZone()) {
+                    internalState--;
+                }
                 break;
-            case 8:
+            //determine position
+            case 6:
+                //returns if the robot is in a bay (true if it is, false if not) sets leftBlockPos and rightBlockPos if over bay
+                //if (getBayPos(seaZone, RAIL_SEA_SIZE, leftCam.getBayColor(), rightCam.getBayColor(), &leftBlockPos, &rightBlockPos)) {
+                    //internalState++;
+                //}
+                break;
+            case 7:
                 curPos = nextPos;
                 nextPos = POS_PICK_UP;
                 fsm.transitionTo(dropState);
@@ -385,7 +407,6 @@ void moveToUpdate() {
             //check if we need to move sector in zone
             case 1:
                 //check if we are safe to turn around
-                //TODO must do stuff
                 if (rBlockPos > 2) {
                     move.slideLeft(0.1);
                     //if we are now inZone
@@ -419,7 +440,29 @@ void moveToUpdate() {
                     internalState++;
                 }
                 break;
+            //center OR slide Left
             case 5:
+                //center over block or sector (if not off the edge)
+                //if centered internalState += 2;
+                //if not over zone internalState++;
+                break;
+            //
+            case 6:
+                //moving left
+                move.slideLeft(0.1);
+                //if both cameras are in zones
+                if (leftCam.inZone() && rightCam.inZone()) {
+                    internalState--;
+                }
+                break;
+            //determine position
+            case 7:
+                //returns if the robot is in a bay (true if it is, false if not) sets leftBlockPos and rightBlockPos if over bay
+                //if (getBayPos(seaZone, RAIL_SEA_SIZE, leftCam.getBayColor(), rightCam.getBayColor(), &leftBlockPos, &rightBlockPos)) {
+                    //internalState++;
+                //}
+                break;
+            case 8:
                 curPos = nextPos;
                 
                 if (!seaDone) { 
@@ -458,12 +501,14 @@ void moveToUpdate() {
                 break;
             //figure out whether to go left or right based on location in rail
             case 3:
-                //in the middle of rail zone
-                //if () {}
+                //returns if the robot is in a bay (true if it is, false if not) sets leftBlockPos and rightBlockPos if over bay
+                //if (getBayPos(seaZone, RAIL_SEA_SIZE, leftCam.getBayColor(), rightCam.getBayColor(), &leftBlockPos, &rightBlockPos)) {
                     //internalState++;
-                //to the right of the rail zone
-                //else {}
+                //}
+                //to the left of the sea zone
+                //else {
                     //internalState += 2;
+                //}
                 break;
             //move left until in first rail bay
             case 4:
@@ -500,7 +545,6 @@ void moveToUpdate() {
                 break;
         }
     }
-  
     //rail to pickup (7 & 18 in state diagram)
     else if (curPos == POS_RAIL && nextPos == POS_PICK_UP) {
 
@@ -521,13 +565,16 @@ void moveToUpdate() {
                 }
                 break;
             case 4:
-                 //in the middle of pick up zone
-                //if () {}
+                 //returns if the robot is in a bay (true if it is, false if not) sets leftBlockPos and rightBlockPos if over bay
+                //if (getBayPos(seaZone, RAIL_SEA_SIZE, leftCam.getBayColor(), rightCam.getBayColor(), &leftBlockPos, &rightBlockPos)) {
                     //internalState++;
-                //to the right of the rail zone
-                //else {}
+                //}
+                //to the left of the sea zone
+                //else {
                     //internalState += 2;
+                //}
                 break;
+            //TODO: we may need to add a case in case the robot goes ridiculously diagonal to the right
             case 5:
                 curPos = nextPos;
                 if (!seaDone) {
@@ -554,42 +601,42 @@ void pickUpEnter() {
 	//Figure out which blocks you need to pick up
 	if(!railDone) {
 		for(int i = 0; i < 6; i++) {
-			if(!railZone[i]->present == false) {
-				lTargetBlock = *railZone[i];
-				rTargetBlock = *railZone[++i];
+			if(!railZone[i].present == false) {
+				lTargetBlock = railZone[i];
+				rTargetBlock = railZone[++i];
 			}
 		}
 	}
 	else if(!seaDone) {
 		for(int i = 0; i < 6; i++) {
-			if(seaZone[i]->present == false) {
-				lTargetBlock = *seaZone[i];
-				rTargetBlock = *seaZone[++i];
+			if(seaZone[i].present == false) {
+				lTargetBlock = seaZone[i];
+				rTargetBlock = seaZone[++i];
 			}
 		}
 	}
 	else {
 	int i = 0;
 		for(i = 0; i < 14; i++) {
-			if(loadingZone[i]->present == true) {
-				lTargetBlock = *loadingZone[i];
+			if(loadingZone[i].present == true) {
+				lTargetBlock = loadingZone[i];
 				break;
 			}
 		}
 		
 		for(i++; i < 14; i++) {
-			if(loadingZone[i]->present == true) {
-				rTargetBlock = *loadingZone[i];
+			if(loadingZone[i].present == true) {
+				rTargetBlock = loadingZone[i];
 			}
 		}
 	}
 	
 	//Set target positions
 	for(int i = 0; i < 14; i++) {
-		if(loadingZone[i]->color == lTargetBlock.color && loadingZone[i]->size == lTargetBlock.size) {
+		if(loadingZone[i].color == lTargetBlock.color && loadingZone[i].size == lTargetBlock.size) {
 			lTargetPos = i;
 		}
-		else if(loadingZone[i]->color == rTargetBlock.color && loadingZone[i]->size == rTargetBlock.size) {
+		else if(loadingZone[i].color == rTargetBlock.color && loadingZone[i].size == rTargetBlock.size) {
 			rTargetPos = i;
 		}
 	}
@@ -654,7 +701,7 @@ void dropUpdate() {
         switch (internalState) {
             case 0:
                 move.slideLeft(0.25);
-                if (lBlock.color == leftCam.detectColor()) {
+                if (lBlock.color == leftCam.getBayColor()) {
                     internalState++;            
                 }
                 break;
