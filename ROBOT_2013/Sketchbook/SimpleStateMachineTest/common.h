@@ -42,9 +42,12 @@ typedef struct block_t {
 #define MOTOR_BACK_R 13
 	//Claw Servos
 #define LCLAW_SERVO 9
-#define RCLAW_SERVO 8
-#define LCLAW_EXTEND_SERVO 7
-#define RCLAW_EXTEND_SERVO 6
+#define RCLAW_SERVO 3
+#define LCLAW_EXTEND_SERVO 6
+#define RCLAW_EXTEND_SERVO 4
+
+#define RIGHT_TRACK_BUMPER_IN 22
+
 	//Wallfolloer servos
 #define WALL_FOLLOW_SERVO 5
 #define BUMPER_2_PIN 4

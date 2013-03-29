@@ -3,6 +3,7 @@
 
 #include "common.h"
 #include "Servo.h"
+#include "Timer.h"
 class Movement {
 public:
 		void init();
@@ -14,19 +15,26 @@ public:
 		void backward(float speed);
 		void stop();
 		void turnAround();
-                void liftUp();
+		void openClaw(side s);
+		void closeClaw(side s);
+    	//Used for complex movements
+		bool setSpeed(float speedFL,float speedFR, float speedBL, float speedBR);
+		void liftUp();
 		void setDown();
-    //Used for complex movements
-	bool setSpeed(float speedFL,float speedFR, float speedBL, float speedBR);
 private:
 		bool setSpeed(int servo, float speed);
+
 		Servo leftMotor;
 		Servo rightMotor;
-	Servo backLeftMotor;
-    Servo backRightMotor;
+		Servo backLeftMotor;
+    	Servo backRightMotor;
 	    Servo topMotor;
+
+	    Servo rightClawMotor;
+	    Servo rightExtendMotor;
+
 	    void setSpeed(Servo motor, float speed, bool inverted);
-	    void goToDeg(int d);
+	    bool goToDeg(Servo motor,int d);
 };
 
 #endif

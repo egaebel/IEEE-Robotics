@@ -3,9 +3,6 @@
 
 #include <Arduino.h>
 
-
-/* This class lets you set an egg timer pretty much, so it will return true after X amount of time,
-then you can just reset it*/
 class Timer {
 
 	public:

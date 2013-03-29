@@ -1,10 +1,13 @@
 #include "Movement.h"
 
+
 void Movement::init(){
 	leftMotor.attach(MOTOR_FRONT_L);
 	rightMotor.attach(MOTOR_FRONT_R);
 	backLeftMotor.attach(MOTOR_BACK_L);
     backRightMotor.attach(MOTOR_BACK_R);
+    rightClawMotor.attach(RCLAW_SERVO);
+    rightExtendMotor.attach(RCLAW_EXTEND_SERVO);
     stop();
 }
 
@@ -52,24 +55,39 @@ bool Movement::setSpeed(float speedFL,float speedFR, float speedBL, float speedB
 }
 
 void Movement::liftUp() {
-	goToDeg(90);
+	goToDeg(topMotor,90);
 }
 
 void Movement::setDown() {
-	goToDeg(180);
+	goToDeg(topMotor,180);
 }
 
-void Movement::goToDeg(int d){
+void Movement::openRightClaw(){
+	rightClawMotor.write(120);
+}
+void Movement::closeRightClaw(){
+	rightClawMotor.write(90);
+}
+bool Movement::goToDeg(Servo motor, int d){
 	static int curD = 0;
-
-	if(curD<d){
-		topMotor.write(curD);
-		curD++;
+	static Timer t(100);
+	t.start();
+	if(t.isDone()){
+		if(curD<d){		
+			motor.write(curD);
+			curD++;
+		}
+		else if(curD>d){
+			motor.write(curD);
+			curD--;
+		}
+		else {
+			t.stop();
+			return true;
+		}
+		t.reset();
 	}
-	else if(curD>d){
-		topMotor.write(curD);
-		curD--;
-	}
+	return false;
 }
 
 bool Movement::setSpeed(int servo, float speed){
