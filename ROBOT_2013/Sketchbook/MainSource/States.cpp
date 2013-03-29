@@ -163,7 +163,9 @@ void scanUpdate() {
                     //put color read code here!
                     //--------------------------
                     //--------------------------
-
+                    loadingZone[rBlockPos]->colour = rightCam.detectColor(); 
+	            loadingZone[rBlockPos]->size = rightCam.detectSize();
+                    loadingZone[rBlockPos]->present = true;
                     rBlockPos++;
                     if(rBlockPos > 13){
                         //we are done lets moveTo the next place
@@ -536,6 +538,7 @@ void moveToUpdate() {
                 else {
                   nextPos = POS_RAIL;
                 }
+                fsm.transitionTo(pickUpState);
                 break;
         }
     }
@@ -586,10 +589,10 @@ void pickUpEnter() {
 	
 	//Set target positions
 	for(int i = 0; i < 14; i++) {
-		if(loadingZone[i]->color == lTargetBlock.color && loadingZone[i]->size == lTargetBlock.size) {
+		if(loadingZone[i]->colour == lTargetBlock.colour && loadingZone[i]->size == lTargetBlock.size) {
 			lTargetPos = i;
 		}
-		else if(loadingZone[i]->color == rTargetBlock.color && loadingZone[i]->size == rTargetBlock.size) {
+		else if(loadingZone[i]->colour == rTargetBlock.colour && loadingZone[i]->size == rTargetBlock.size) {
 			rTargetPos = i;
 		}
 	}
@@ -654,7 +657,7 @@ void dropUpdate() {
         switch (internalState) {
             case 0:
                 move.slideLeft(0.25);
-                if (lBlock.color == leftCam.detectColor()) {
+                if (lBlock.colour == leftCam.detectColor()) {
                     internalState++;            
                 }
                 break;
