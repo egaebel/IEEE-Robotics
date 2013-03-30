@@ -15,14 +15,17 @@ public:
 		void backward(float speed);
 		void stop();
 		void turnAround();
-		void openRightClaw();
-		void closeRightClaw();
+		void openClaw(side s);
+		void closeClaw(side s);
+		void extendClaw();
+		bool retractClaw();
     //Used for complex movements
-	bool setSpeed(float speedFL,float speedFR, float speedBL, float speedBR);
-private:
-		bool setSpeed(int servo, float speed);
+		bool setSpeed(float speedFL,float speedFR, float speedBL, float speedBR);
 		void liftUp();
 		void setDown();
+private:
+		bool setSpeed(int servo, float speed);
+
 		Servo leftMotor;
 		Servo rightMotor;
 		Servo backLeftMotor;

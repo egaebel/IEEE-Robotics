@@ -44,6 +44,7 @@ void state1Update() {
 			if(digitalRead(52)){
 				move.closeRightClaw();
 			}
+			move.retractClaw();
 		break;
 		case 2:
 			if(digitalRead(53)&&digitalRead(52)){
