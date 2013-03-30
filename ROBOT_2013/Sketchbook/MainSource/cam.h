@@ -8,10 +8,10 @@ class cam {
 		bool inbetweenZones() {
 			return true;
 		}
-		bColour getBayColor() {
+		bColour getBayColour() {
 			return RED;
 		}
-                bSize detectSize() {
+        bSize detectSize() {
 			return LARGE;
 		}
 };

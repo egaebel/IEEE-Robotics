@@ -32,9 +32,9 @@ static Block rBlock; //Block held by the right claw.
     //*Sea is the westmost zone
 // Blocks in the loading zone, listed west to east.
 static Block loadingZone[14];
-//Sea zone colors, listed south to north.
+//Sea zone colours, listed south to north.
 static Block seaZone[6]; 
-//Rail zone colors, listed west to east. 
+//Rail zone colours, listed west to east. 
 static Block railZone[6]; 
 
 //Drop-off zones complete
@@ -108,17 +108,17 @@ void scanUpdate() {
     
     //Perform the scanning actions
     switch(internalState){
-        //Move until hitting a color
+        //Move until hitting a colour
         case 0:
             //scanning sea (state transition 2 in state diagram)
             if (curPos == POS_SEA) {
 
                 move.slideRight(0.25);
 
-                //focused on bay, read color
+                //focused on bay, read colour
                 if(rightCam.inZone()){
                     move.stop();             
-                    //put color read code here!
+                    //put colour read code here!
                     //--------------------------
                     //--------------------------
 
@@ -137,10 +137,10 @@ void scanUpdate() {
 
                 move.slideLeft(0.25);
 
-                //if we're focused on a bay, read color
+                //if we're focused on a bay, read colour
                 if (leftCam.inZone()) {
                     move.stop();
-                    //put color read code here!
+                    //put colour read code here!
                     //--------------------------
                     //--------------------------
                     rBlockPos++;
@@ -160,12 +160,12 @@ void scanUpdate() {
                 //TODO: change to "onBlock" or something?
                 if (rightCam.inZone()) {
                     move.stop();
-                    //put color read code here!
+                    //put colour read code here!
                     //--------------------------
                     //--------------------------
-                    loadingZone[rBlockPos]->colour = rightCam.detectColor(); 
-	            loadingZone[rBlockPos]->size = rightCam.detectSize();
-                    loadingZone[rBlockPos]->present = true;
+                    loadingZone[rBlockPos].colour = rightCam.getBayColour(); 
+    	            loadingZone[rBlockPos].size = rightCam.detectSize();
+                    loadingZone[rBlockPos].present = true;
                     rBlockPos++;
                     if(rBlockPos > 13){
                         //we are done lets moveTo the next place
@@ -178,7 +178,7 @@ void scanUpdate() {
             }
 
             break;
-        //We already read this color, so just keep moving until white
+        //We already read this colour, so just keep moving until white
         case 1:
             //move right
             if (curPos == POS_SEA || curPos == POS_PICK_UP) {
@@ -284,7 +284,7 @@ void moveToUpdate() {
             //slide two spaces
             case 5:
                 move.slideRight(0.1);
-                if (rightCam.inZone() && leftCam.inZone() && leftCam.getBayColor() != loadingZone[rBlockPos].color) {
+                if (rightCam.inZone() && leftCam.inZone() && leftCam.getBayColour() != loadingZone[rBlockPos].colour) {
                     move.stop();
                     rBlockPos += 2;
                     lBlockPos += 2;
@@ -387,10 +387,10 @@ void moveToUpdate() {
                 break;
             //determine position
             case 6:
-                //returns if the robot is in a bay (true if it is, false if not) sets leftBlockPos and rightBlockPos if over bay
-                //if (getBayPos(seaZone, RAIL_SEA_SIZE, leftCam.getBayColor(), rightCam.getBayColor(), &leftBlockPos, &rightBlockPos)) {
-                    //internalState++;
-                //}
+                //returns if the robot is in a bay (true if it is, false if not) sets lBlockPos and rBlockPos if over bay
+                if (getBayPos(seaZone, RAIL_SEA_SIZE, leftCam.getBayColour(), rightCam.getBayColour(), &lBlockPos, &rBlockPos)) {
+                    internalState++;
+                }
                 break;
             case 7:
                 curPos = nextPos;
@@ -405,7 +405,7 @@ void moveToUpdate() {
         switch (internalState) {
 
             //check if we need to move sector in zone
-            case 1:
+            case 0:
                 //check if we are safe to turn around
                 if (rBlockPos > 2) {
                     move.slideLeft(0.1);
@@ -424,30 +424,30 @@ void moveToUpdate() {
                 }
                 break;
             //move back..and
-            case 2:
+            case 1:
                 move.backward(0.1);
                 internalState++;
                 break;
             //turn right
-            case 3:
+            case 2:
                 move.turnRight(0.1);
                 internalState++;
                 break;
             //move to wall
-            case 4:
+            case 3:
                 move.forward(0.1);
                 if (wallFollower.isTouching()) {
                     internalState++;
                 }
                 break;
-            case 5: 
+            case 4: 
                 move.slideRight(0.25);
                 if (rightCam.inbetweenZones()) {
                     move.stop();
                     internalState++;
                 }
                 break;
-            case 6:
+            case 5:
                 //center over block or sector (if not off the edge)
                 //if centered internalState += 2;
                 //if not over zone internalState++;
@@ -463,10 +463,10 @@ void moveToUpdate() {
                 break;
             //determine position
             case 7:
-                //returns if the robot is in a bay (true if it is, false if not) sets leftBlockPos and rightBlockPos if over bay
-                //if (getBayPos(seaZone, RAIL_SEA_SIZE, leftCam.getBayColor(), rightCam.getBayColor(), &leftBlockPos, &rightBlockPos)) {
-                    //internalState++;
-                //}
+                //returns if the robot is in a bay (true if it is, false if not) sets lBlockPos and rBlockPos if over bay
+                if (getBayPos(seaZone, RAIL_SEA_SIZE, leftCam.getBayColour(), rightCam.getBayColour(), &lBlockPos, &rBlockPos)) {
+                    internalState++;
+                }
                 break;
             case 8:
                 curPos = nextPos;
@@ -507,14 +507,14 @@ void moveToUpdate() {
                 break;
             //figure out whether to go left or right based on location in rail
             case 3:
-                //returns if the robot is in a bay (true if it is, false if not) sets leftBlockPos and rightBlockPos if over bay
-                //if (getBayPos(seaZone, RAIL_SEA_SIZE, leftCam.getBayColor(), rightCam.getBayColor(), &leftBlockPos, &rightBlockPos)) {
-                    //internalState++;
-                //}
+                //returns if the robot is in a bay (true if it is, false if not) sets lBlockPos and rBlockPos if over bay
+                if (getBayPos(seaZone, RAIL_SEA_SIZE, leftCam.getBayColour(), rightCam.getBayColour(), &lBlockPos, &rBlockPos)) {
+                    internalState++;
+                }
                 //to the left of the sea zone
-                //else {
-                    //internalState += 2;
-                //}
+                else {
+                    internalState += 2;
+                }
                 break;
             //move left until in first rail bay
             case 4:
@@ -571,14 +571,14 @@ void moveToUpdate() {
                 }
                 break;
             case 4:
-                 //returns if the robot is in a bay (true if it is, false if not) sets leftBlockPos and rightBlockPos if over bay
-                //if (getBayPos(seaZone, RAIL_SEA_SIZE, leftCam.getBayColor(), rightCam.getBayColor(), &leftBlockPos, &rightBlockPos)) {
-                    //internalState++;
-                //}
+                 //returns if the robot is in a bay (true if it is, false if not) sets lBlockPos and rBlockPos if over bay
+                if (getBayPos(seaZone, RAIL_SEA_SIZE, leftCam.getBayColour(), rightCam.getBayColour(), &lBlockPos, &rBlockPos)) {
+                    internalState++;
+                }
                 //to the left of the sea zone
-                //else {
-                    //internalState += 2;
-                //}
+                else {
+                    internalState += 2;
+                }
                 break;
             //TODO: we may need to add a case in case the robot goes ridiculously diagonal to the right
             case 5:
@@ -604,32 +604,32 @@ void pickUpEnter() {
     internalState = 0;
     if(rightCam.inZone())
     {
-        bColour currentColor = rightCam.detectColor();
+        bColour currentColor = rightCam.getBayColour();
         bSize currentSize = rightCam.detectSize();
         for(int i = 0; i < 14; i++) {
-	        if(loadingZone[i]->colour == currentColor && loadingZone[i]->size == currentSize) {
-			rBlockPos = i;
-                        lBlockPos = i - 1;
-		}
-	}
+	        if(loadingZone[i].colour == currentColor && loadingZone[i].size == currentSize) {
+    			rBlockPos = i;
+                lBlockPos = i - 1;
+    		}
+	   }
     }
     else if(leftCam.inZone())
     {
-        bColour currentColor = leftCam.detectColor();
+        bColour currentColor = leftCam.getBayColour();
         bSize currentSize = leftCam.detectSize();
         for(int i = 0; i < 14; i++) {
-	        if(loadingZone[i]->colour == currentColor && loadingZone[i]->size == currentSize) {
-			lBlockPos = i;
-                        rBlockPos = i + 1;
-		}
-	}
+	        if(loadingZone[i].colour == currentColor && loadingZone[i].size == currentSize) {
+    			lBlockPos = i;
+                rBlockPos = i + 1;
+    		}
+    	}
     }
     else
     {
         rBlockPos = -1;
         lBlockPos = -2;
     }  
-      	//Figure out which blocks you need to pick up
+  	//Figure out which blocks you need to pick up
 	if(!railDone) {
 		for(int i = 0; i < 6; i++) {
 			if(!railZone[i].present == false) {
@@ -664,10 +664,10 @@ void pickUpEnter() {
 	
 	//Set target positions
 	for(int i = 0; i < 14; i++) {
-		if(loadingZone[i].color == lTargetBlock.color && loadingZone[i].size == lTargetBlock.size) {
+		if(loadingZone[i].colour == lTargetBlock.colour && loadingZone[i].size == lTargetBlock.size) {
 			lTargetPos = i;
 		}
-		else if(loadingZone[i].color == rTargetBlock.color && loadingZone[i].size == rTargetBlock.size) {
+		else if(loadingZone[i].colour == rTargetBlock.colour && loadingZone[i].size == rTargetBlock.size) {
 			rTargetPos = i;
 		}
 	}
@@ -681,38 +681,40 @@ void pickUpUpdate() {
 		case 0:
 			if(lBlockPos == lTargetPos) {
 				internalState++;
-			} else if(lBlockPos < lTargetPos) {
+			} 
+            else if(lBlockPos < lTargetPos) {
 				move.slideRight(0.25);
-                                //TODO: change to "onBlock" or something?
-                                if(leftCam.inZone())
-                                {
-                                    if(lBlockPos < 0);
-                                    {
-                                        lBlockPos = 0;
-                                        rBlockPos = 1;
-                                    }
-                                    else if (leftCam.detectColor() != loadingZone[lBlockPos]->colour || leftCam.detectSize() != loadingZone[lBlockPos]->size) {
-                                        move.stop();
-                                        lBlockPos++;
-                                        rBlockPos++;
-                                    }
-                                }
-			} else if(lBlockPos > lTargetPos) {
-                                move.slideLeft(0.25);
-                                //TODO: change to "onBlock" or something?
-                                if(leftCam.inZone());
-                                {
-                                    if(lBlockPos > 13)
-                                    {
-                                        lBlockPos = 13;
-                                        rBlockPos = 14;
-                                    }
-                                    else if (leftCam.detectColor() != loadingZone[lBlockPos]->colour || leftCam.detectSize() != loadingZone[lBlockPos]->size) {
-                                        move.stop();
-                                        lBlockPos--;
-                                        rBlockPos--;
-                                    }
-                                }
+                //TODO: change to "onBlock" or something?
+                if(leftCam.inZone())
+                {
+                    if(lBlockPos < 0)
+                    {
+                        lBlockPos = 0;
+                        rBlockPos = 1;
+                    }
+                    else if (leftCam.getBayColour() != loadingZone[lBlockPos].colour || leftCam.detectSize() != loadingZone[lBlockPos].size) {
+                        move.stop();
+                        lBlockPos++;
+                        rBlockPos++;
+                    }
+                }
+			} 
+            else if(lBlockPos > lTargetPos) {
+                move.slideLeft(0.25);
+                //TODO: change to "onBlock" or something?
+                if(leftCam.inZone())
+                {
+                    if(lBlockPos > 13)
+                    {
+                        lBlockPos = 13;
+                        rBlockPos = 14;
+                    }
+                    else if (leftCam.getBayColour() != loadingZone[lBlockPos].colour || leftCam.detectSize() != loadingZone[lBlockPos].size) {
+                        move.stop();
+                        lBlockPos--;
+                        rBlockPos--;
+                    }
+                }
 			}
 			break;
 		
@@ -728,38 +730,40 @@ void pickUpUpdate() {
 		case 2:
 			if(rBlockPos == rTargetPos) {
 				internalState++;
-			} else if(rBlockPos < rTargetPos) {
-                                move.slideRight(0.25);
-                                //TODO: change to "onBlock" or something?
-                                if(rightCam.inZone())
-                                {
-                                    if(rBlockPos < 0);
-                                    {
-                                        rBlockPos = 0;
-                                        rBlockPos = -1;
-                                    }
-                                    else if (rightCam.detectColor() != loadingZone[rBlockPos]->colour || rightCam.detectSize() != loadingZone[rBlockPos]->size) {
-                                        move.stop();
-                                        lBlockPos++;
-                                        rBlockPos++;
-                                    }
-                                }
-			} else if(rBlockPos > rTargetPos) {
+			} 
+            else if(rBlockPos < rTargetPos) {
+                move.slideRight(0.25);
+                //TODO: change to "onBlock" or something?
+                if(rightCam.inZone())
+                {
+                    if(rBlockPos < 0)
+                    {
+                        rBlockPos = 0;
+                        rBlockPos = -1;
+                    }
+                    else if (rightCam.getBayColour() != loadingZone[rBlockPos].colour || rightCam.detectSize() != loadingZone[rBlockPos].size) {
+                        move.stop();
+                        lBlockPos++;
+                        rBlockPos++;
+                    }
+                }
+			} 
+            else if(rBlockPos > rTargetPos) {
 				move.slideLeft(0.25);
-                                //TODO: change to "onBlock" or something?
-                                if(rightCam.inZone());
-                                {
-                                    if(rBlockPos > 13)
-                                    {
-                                        lBlockPos = 12;
-                                        rBlockPos = 13;
-                                    }
-                                    else if (rightCam.detectColor() != loadingZone[rBlockPos]->colour || rightCam.detectSize() != loadingZone[rBlockPos]->size) {
-                                        move.stop();
-                                        lBlockPos--;
-                                        rBlockPos--;
-                                    }
-                                }
+                //TODO: change to "onBlock" or something?
+                if(rightCam.inZone())
+                {
+                    if(rBlockPos > 13)
+                    {
+                        lBlockPos = 12;
+                        rBlockPos = 13;
+                    }
+                    else if (rightCam.getBayColour() != loadingZone[rBlockPos].colour || rightCam.detectSize() != loadingZone[rBlockPos].size) {
+                        move.stop();
+                        lBlockPos--;
+                        rBlockPos--;
+                    }
+                }
 			}
 			break;
 		
@@ -782,23 +786,22 @@ void dropUpdate() {
     
     //we aren't at air (phew!)
     if (curPos != POS_AIR) {    
-        //scan and move until the second color is encountered (main case)
+        //scan and move until the second colour is encountered (main case)
         switch (internalState) {
             case 0:
                 move.slideLeft(0.25);
-                if (lBlock.color == leftCam.getBayColor()) {
+                if (lBlock.colour == leftCam.getBayColour()) {
                     internalState++;            
                 }
                 break;
             case 1:
                 //drop blocks
                 lClaw.extend();
-                rClaw.extend();
-
                 lClaw.drop();
-                rClaw.drop();
-
                 lClaw.retract();
+
+                rClaw.extend();
+                rClaw.drop();
                 rClaw.retract();
 
                 internalState++;
