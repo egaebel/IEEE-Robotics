@@ -5,22 +5,24 @@
  * This is where all globals and constants should be defined
 */
 
-typedef enum POSITION{	POS_START = 0,
-				POS_SEA,
-				POS_RAIL,
-				POS_PICK_UP,
-				POS_AIR
-	      	};
+typedef enum POSITION {	
+	POS_START = 0,
+	POS_SEA,
+	POS_RAIL,
+	POS_PICK_UP,
+	POS_AIR
+} bPosition;
 
-typedef enum bColour_t{	WHITE=0,//LEAVE WHITE AS 0
-			BLUE,
-			RED,
-			GREEN,
-			PURPLE,
-			BROWN,
-			YELLOW,
-			BLACK//here so we can iterate white to black
-		}bColour;
+typedef enum bColour_t {	
+	WHITE=0,//LEAVE WHITE AS 0
+	BLUE,
+	RED,
+	GREEN,
+	PURPLE,
+	BROWN,
+	YELLOW,
+	BLACK//here so we can iterate white to black
+} bColour;
 
 typedef enum SIZE{
 	SMALL, 
@@ -37,7 +39,7 @@ typedef enum side_t{
 typedef struct block_t {
 	bColour colour; 
 	bSize size; 
-        bool present;
+    bool present;
 } Block;
 
 /* PIN DEFINITIONS */
