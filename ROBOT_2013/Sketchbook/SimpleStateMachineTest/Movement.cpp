@@ -8,12 +8,26 @@ void Movement::init(){
     backRightMotor.attach(MOTOR_BACK_R);
     rightClawMotor.attach(RCLAW_SERVO);
     rightExtendMotor.attach(RCLAW_EXTEND_SERVO);
+    rightExtendMotor.write(0);
     stop();
 }
 
 void Movement::turnAround() {
 	this->backward(0.25);
 	this->turnLeft(0.25);
+}
+
+void Movement::extendClaw(){
+	rightExtendMotor.write(20);
+}
+bool Movement::retractClaw(){
+	if((digitalRead(22))){
+		rightExtendMotor.write(180);
+		return false;
+	}
+	rightExtendMotor.write(0);
+	return true;
+
 }
 
 void Movement::slideLeft(float speed){
@@ -62,11 +76,13 @@ void Movement::setDown() {
 	goToDeg(topMotor,180);
 }
 
-void Movement::openRightClaw(){
-	rightClawMotor.write(120);
+void Movement::openClaw(side clawSide){
+	if(clawSide==RIGHT)
+		rightClawMotor.write(120);
 }
-void Movement::closeRightClaw(){
-	rightClawMotor.write(90);
+void Movement::closeClaw(side clawSide){
+	if(clawSide==RIGHT)
+		rightClawMotor.write(90);
 }
 bool Movement::goToDeg(Servo motor, int d){
 	static int curD = 0;
