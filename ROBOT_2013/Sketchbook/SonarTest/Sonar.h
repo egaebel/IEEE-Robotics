@@ -7,6 +7,7 @@
 #define SONAR_RIGHT byte(0x69)
 
 #include "Wire.h"
+#include <Arduino.h>
 
 class Sonar {
 	
@@ -14,6 +15,7 @@ class Sonar {
 		Sonar();
 		int getLeftDistance();
 		int getRightDistance();
+		void read();
 	private:
 		int leftDistance;
 		int rightDistance;

@@ -12,9 +12,8 @@ void setup() {
 
 
 int i2cRead(int address) {
+
   int data = 0;
-
-
 
   Wire.beginTransmission(address);
   Wire.write(0x51);

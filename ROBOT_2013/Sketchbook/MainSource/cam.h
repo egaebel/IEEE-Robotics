@@ -14,4 +14,7 @@ class cam {
         bSize detectSize() {
 			return LARGE;
 		}
+		bool betweenZones() {
+			return true;
+		}
 };

@@ -12,6 +12,8 @@ static Claw lClaw;
 static cam leftCam;
 static cam rightCam;
 
+static Sonar sonar;
+
 //positions used for the state machine
 static POSITION curPos = POS_START;
 static POSITION nextPos;
@@ -183,8 +185,7 @@ void scanUpdate() {
             //move right
             if (curPos == POS_SEA || curPos == POS_PICK_UP) {
                 move.slideRight(0.25);
-                //TODO: CREATE inbetweenZones
-                if(rightCam.inbetweenZones()){
+                if(rightCam.betweenZones()){
                     move.stop();
                     internalState = 0;
                 }
@@ -192,8 +193,7 @@ void scanUpdate() {
             //move left
             else {
                 move.slideLeft(0.25);
-                //TODO: CREATE inbetweenZones
-                if(leftCam.inbetweenZones()){
+                if(leftCam.betweenZones()){
                     move.stop();
                     internalState = 0;
                 }
@@ -263,8 +263,9 @@ void moveToUpdate() {
             //ensure we are the start of the zone
             case 3:
                 move.slideLeft(0.1);
-                //we want the left camera hanging off and the right in a zone
-                if (!leftCam.inZone() && rightCam.inZone()) {
+                //we want to be a certain distance from the back wall
+                if (rightCam.inZone() 
+                    && sonar.getRightDistance() == SEA_START_LEFT_DIST) {
                     move.stop();
                     rBlockPos = 0;
                     lBlockPos = -1;
@@ -273,8 +274,10 @@ void moveToUpdate() {
                 break;
             //slide into position
             case 4:
-                move.slideRight(0.1);
-                if (rightCam.inZone() && leftCam.inZone()) {
+                move.slideRight(0.25);
+                //make it so the cams can both read a zone
+                if (rightCam.inZone() 
+                    /*&& leftCam.inZone()*/) {
                     move.stop();
                     rBlockPos++;
                     lBlockPos++;
@@ -284,7 +287,8 @@ void moveToUpdate() {
             //slide two spaces
             case 5:
                 move.slideRight(0.1);
-                if (rightCam.inZone() && leftCam.inZone() && leftCam.getBayColour() != loadingZone[rBlockPos].colour) {
+                if (rightCam.inZone()/* && leftCam.inZone() */
+                    && leftCam.getBayColour() != loadingZone[rBlockPos].colour) {
                     move.stop();
                     rBlockPos += 2;
                     lBlockPos += 2;
@@ -388,7 +392,9 @@ void moveToUpdate() {
             //determine position
             case 6:
                 //returns if the robot is in a bay (true if it is, false if not) sets lBlockPos and rBlockPos if over bay
-                if (getBayPos(seaZone, RAIL_SEA_SIZE, leftCam.getBayColour(), rightCam.getBayColour(), &lBlockPos, &rBlockPos)) {
+                if (getBayPos(seaZone, RAIL_SEA_SIZE, 
+                        leftCam.getBayColour(), rightCam.getBayColour(), 
+                        &lBlockPos, &rBlockPos)) {
                     internalState++;
                 }
                 break;
@@ -442,7 +448,7 @@ void moveToUpdate() {
                 break;
             case 4: 
                 move.slideRight(0.25);
-                if (rightCam.inbetweenZones()) {
+                if (rightCam.betweenZones()) {
                     move.stop();
                     internalState++;
                 }
@@ -456,8 +462,8 @@ void moveToUpdate() {
             case 6:
                 //moving left
                 move.slideLeft(0.1);
-                //if both cameras are in zones
-                if (leftCam.inZone() && rightCam.inZone()) {
+                //if both cameras are in zones (make possible....)
+                if (leftCam.inZone() /*&& rightCam.inZone()*/) {
                     internalState--;
                 }
                 break;
@@ -821,6 +827,41 @@ void dropUpdate() {
             case 0:
         */      
     }
+}
+
+
+//returns true if we are centered
+    //false if we are not
+bool center() {
+
+    //if in a bay on both {
+        //do stuff with white lines and bays to get a full bay in view of each cmu cam (equally)
+        //if the boxes are the same size and the space on the side of the boxes are the same (we're centered!)
+        //if (/*leftCam.getBoxWidth() == rightCam.getBoxWidth() 
+            //&& leftCam.getLeftOfBoxWidth() == rightCam.getLeftOfBoxWidth() 
+            //&& leftCam.getRightOfBoxWidth() == rightCam.getRightOfBoxWidth()*/) {
+
+            //return true;
+        //}
+        //if there are white lines in the center (not exactly centered) of the camera view
+            //and there are colors to the left of both white lines
+        //else if (/*(leftCam.hasWhiteLineInCenter() && leftCam.hasColorOnLeft()) 
+            //&& (rightCam.hasWhiteLineInCenter() && rightCam.hasColorOnLeft())*/) {
+            //go left
+        //}
+        //if there are white lines in the center (not exactly centered) of the camera view
+            //and there are colors to the right of both white lines.
+        //else if (/*(leftCam.hasWhiteLineInCenter() && leftCam.hasColorOnRight()) 
+            //&& (rightCam.hasWhiteLineInCenter() && rightCam.hasColorOnRight())*/) {
+            //go right
+        //}
+        //
+    //}
+    //else {
+        //return false;
+    //}
+
+    return false;
 }
 
 /*
