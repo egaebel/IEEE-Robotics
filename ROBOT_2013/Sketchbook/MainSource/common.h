@@ -2,7 +2,17 @@
 #define _COMMON_H_
 
 //Sonar Distances
-#define SEA_START_LEFT_DIST 33
+#define SEA_START_LEFT_DIST 
+#define SEA_START_RIGHT_DIST 
+//in centimeters
+#define BAY_WIDTH 6.5
+#define BAY_DEPTH 15.5
+#define LINE_WIDTH 1 
+
+#define AIR_BLOCK 5
+#define SEA_BLOCK 7.5
+#define RAIL_BLOCK 10
+#define BLOCK_WIDTH 4
 
 /*
  * This is where all globals and constants should be defined
