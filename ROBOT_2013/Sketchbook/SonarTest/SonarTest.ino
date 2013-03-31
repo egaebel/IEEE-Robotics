@@ -34,19 +34,20 @@ int i2cRead(int address) {
 
 
 
-int sensor=SONAR_LEFT;
+int sensor=SONAR_RIGHT;
 unsigned long time=0;
 
 void loop(){
-  if(millis()>time+500){
-    Serial.print("sonar: ");Serial.println(i2cRead(sensor));
+  if(
+    millis()>time+500){
+    Serial.print("sonar: ");
+    Serial.println(i2cRead(sensor));
     time=millis();
     /*
     if(sensor==SONAR_LEFT)
       sensor=SONAR_RIGHT;
     else
       sensor=SONAR_LEFT;*/
-      Serial.println(analogRead(1));
     }
     
 }
