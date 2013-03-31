@@ -8,4 +8,5 @@ typedef struct block_t Block;
 bool fullOfBlocks(Block blocks[], int numBlocks);
 bool getBayPos(Block blocks[], int numBlocks, bColour leftColor, bColour rightColor, int * lBlockPos, int * rBlockPos);
 bool goToWall(Movement *move);
+Block* getZoneByPos(bPosition pos, Block * seaZone, Block * railZone, Block * loadingZone);
 #endif

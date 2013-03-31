@@ -51,3 +51,19 @@ bool goToWall(Movement *move)
     }
     return false;
 }
+
+Block* getZoneByPos(bPosition pos, Block * seaZone, Block * railZone, Block * loadingZone) {
+
+	if (pos == POS_SEA) {
+		return seaZone;
+	}
+	else if (pos == POS_RAIL) {
+		return railZone;
+	}
+	else if (pos == PICK_UP) {
+		return loadingZone;
+	}
+	else {
+		return NULL;
+	}
+}

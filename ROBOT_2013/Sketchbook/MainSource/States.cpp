@@ -115,10 +115,8 @@ void scanUpdate() {
                 //focused on bay, read colour
                 if(rightCam.inZone()){
                     move.stop();             
-                    //put colour read code here!
-                    //--------------------------
-                    //--------------------------
-
+                    loadingZone[rBlockPos].colour = rightCam.getBlockColour(); 
+                    loadingZone[rBlockPos].size = rightCam.getBlockSize(loadingZone[rBlockPos].colour);
                     rBlockPos++;
                     if(rBlockPos > 5){
                         //we are done lets moveTo the next place
@@ -136,12 +134,12 @@ void scanUpdate() {
 
                 //if we're focused on a bay, read colour
                 if (leftCam.inZone()) {
+                    
                     move.stop();
-                    //put colour read code here!
-                    //--------------------------
-                    //--------------------------
-                    rBlockPos++;
-                    if(rBlockPos > 5){
+                    loadingZone[lBlockPos].colour = leftCam.getBlockColour(); 
+                    loadingZone[lBlockPos].size = leftCam.getBlockSize(loadingZone[lBlockPos].colour);
+                    lBlockPos++;
+                    if(lBlockPos > 5){
                         //we are done lets moveTo the next place
                         internalState = 2;
                     }
@@ -157,9 +155,6 @@ void scanUpdate() {
                 //TODO: change to "onBlock" or something?
                 if (rightCam.inZone()) {
                     move.stop();
-                    //put colour read code here!
-                    //--------------------------
-                    //--------------------------
                     loadingZone[rBlockPos].colour = rightCam.getBlockColour(); 
     	            loadingZone[rBlockPos].size = rightCam.getBlockSize(loadingZone[rBlockPos].colour);
                     loadingZone[rBlockPos].present = true;
@@ -537,9 +532,9 @@ void moveToUpdate() {
                 //if air isn't full (which it won't be)
                 else {
                     //TODO: Kickstart the air states
-                    //curPos = nextPos;
-                    //nextPos = POS_AIR;
-                    //fsm.transitionTo(moveToState);
+                    curPos = nextPos;
+                    nextPos = POS_AIR;
+                    fsm.transitionTo(moveToState);
                 }
                 //TODO: not sure if we need to change enter...it currently takes a *fsm...
                 //fsm.enter();
@@ -699,6 +694,7 @@ void pickUpUpdate() {
 			move.extendClaw(LEFT);
 			move.closeClaw(LEFT);
             move.retractClaw(LEFT);
+            loadingZone[lTargetBlock].present = false;
        		internalState++;
 			break;
 		//Move to the right target
@@ -752,6 +748,7 @@ void pickUpUpdate() {
 			move.extendClaw(RIGHT);
 			move.closeClaw(RIGHT);
             move.retractClaw(RIGHT);
+            loadingZone[rTargetBlock].present = false;
 			internalState++;
 			break;
         case 4:
@@ -763,6 +760,18 @@ void pickUpUpdate() {
 //dropState
 void dropEnter() {
     internalState = 0;
+
+    Block * blocks = getZoneByPos(curPos);
+
+    //Set target positions of blocks in loading
+    for(int i = 0; i < 14; i++) {
+        if(blocks[i].colour == lBlock.colour) {
+            lTargetPos = i;
+        }
+        else if(blocks[i].colour == rTargetBlock.colour) {
+            rTargetPos = i;
+        }
+    }
 }
 
 void dropUpdate() {
@@ -802,9 +811,9 @@ void dropUpdate() {
     else {
         //scan both spaces in air
         //....
-        /*switch (internalState) {
+        switch (internalState) {
             case 0:
-        */      
+        }      
     }
 }
 
