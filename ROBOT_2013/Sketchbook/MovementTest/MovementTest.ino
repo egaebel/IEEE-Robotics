@@ -7,6 +7,7 @@
 #include "Movement.h"
 
 Movement move;
+bool run = true;
 
 void setup(){
   Serial.begin(9600);
@@ -14,7 +15,10 @@ void setup(){
 }
 
 void loop(){
-  if( move.turnAround() == 1){
-     Serial.println("Turned Around");
+  if( run ){
+    if( move.turnAround() == 1){
+      run = false;
+      Serial.println("Turned 90");
+    }
   }
 }
