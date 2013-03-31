@@ -50,10 +50,13 @@ typedef struct block_t {
 #define MOTOR_BACK_L 10
 #define MOTOR_BACK_R 13
 	//Claw Servos
-#define LCLAW_SERVO 9
+//#define LCLAW_SERVO 9
 #define RCLAW_SERVO 3
-#define LCLAW_EXTEND_SERVO 6
+#define LCLAW_EXTEND_SERVO 2
 #define RCLAW_EXTEND_SERVO 4
+
+#define RIGHT_TRACK_BUMPER_IN 22
+
 	//Wallfolloer servos
 #define WALL_FOLLOW_SERVO 5
 #define BUMPER_2_PIN 4
@@ -65,6 +68,9 @@ typedef struct block_t {
 #define COLOR_SENSOR_PIN_S3 28
 #define COLOR_SENSOR_PIN_OUT 30
 #define COLOR_SENSOR_PIN_LED 32 
+
+#define RIGHT_IR 1
+#define LEFT_IR	6
 
 #define BUMPER_L 53
 #define BUMPER_R 52

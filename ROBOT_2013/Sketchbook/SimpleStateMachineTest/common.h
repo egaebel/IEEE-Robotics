@@ -5,22 +5,24 @@
  * This is where all globals and constants should be defined
 */
 
-typedef enum POSITION{	POS_START = 0,
-				POS_SEA_LOAD,
-				POS_RAIL_LOAD,
-				POS_PICK_UP,
-				POS_AIR
-	      	};
+typedef enum POSITION {	
+	POS_START = 0,
+	POS_SEA,
+	POS_RAIL,
+	POS_PICK_UP,
+	POS_AIR
+} bPosition;
 
-typedef enum bColour_t{	WHITE=0,//LEAVE WHITE AS 0
-			BLUE,
-			RED,
-			GREEN,
-			PURPLE,
-			BROWN,
-			YELLOW,
-			BLACK//here so we can iterate white to black
-		}bColour;
+typedef enum bColour_t {	
+	WHITE=0,//LEAVE WHITE AS 0
+	BLUE,
+	RED,
+	GREEN,
+	PURPLE,
+	BROWN,
+	YELLOW,
+	BLACK//here so we can iterate white to black
+} bColour;
 
 typedef enum SIZE{
 	SMALL, 
@@ -28,9 +30,16 @@ typedef enum SIZE{
 	LARGE
 } bSize;
 
+typedef enum side_t{
+	LEFT,
+	RIGHT,
+	CENTER
+} side;
+
 typedef struct block_t {
 	bColour colour; 
 	bSize size; 
+    bool present;
 } Block;
 
 /* PIN DEFINITIONS */
@@ -41,9 +50,9 @@ typedef struct block_t {
 #define MOTOR_BACK_L 10
 #define MOTOR_BACK_R 13
 	//Claw Servos
-#define LCLAW_SERVO 9
+//#define LCLAW_SERVO 9
 #define RCLAW_SERVO 3
-#define LCLAW_EXTEND_SERVO 6
+#define LCLAW_EXTEND_SERVO 2
 #define RCLAW_EXTEND_SERVO 4
 
 #define RIGHT_TRACK_BUMPER_IN 22
@@ -59,6 +68,9 @@ typedef struct block_t {
 #define COLOR_SENSOR_PIN_S3 28
 #define COLOR_SENSOR_PIN_OUT 30
 #define COLOR_SENSOR_PIN_LED 32 
+
+#define RIGHT_IR 1
+#define LEFT_IR	6
 
 #define BUMPER_L 53
 #define BUMPER_R 52

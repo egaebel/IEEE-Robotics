@@ -25,6 +25,13 @@
 #define PIXELS_THRESHOLD 1
 #define CONFIDENCE_THRESHOLD 50
 
+typedef enum bay_t{
+	LOADING, 
+	AIR, 
+	RAIL,
+	SEA,
+	NONE
+} bay;
 
 class cam{
 
@@ -41,7 +48,9 @@ class cam{
 		void getTrackingData();
 	private:
 		bColour curColour;
+		bay curBay;
 		void trackColour(bColour colour);
+		void setWindow(bay b);
 		CMUcam4* cmuCam;
 		CMUcam4_tracking_data_t tData; //stands for Travis Data
 };
