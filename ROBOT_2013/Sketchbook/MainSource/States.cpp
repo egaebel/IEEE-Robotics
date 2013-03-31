@@ -83,7 +83,7 @@ void initUpdate() {
             internalState++;
             break;
         case 1:
-            if(goToWall()){
+            if(goToWall(&move)){
                 curPos = POS_START;
                 nextPos = POS_SEA;
                 fsm.transitionTo(moveToState);
@@ -249,7 +249,7 @@ void moveToUpdate() {
                 break;
             case 2:
                 move.stop();
-                if (goToWall()) {
+                if (goToWall(&move)) {
                     move.stop();
                     internalState++;
                 }
@@ -314,7 +314,7 @@ void moveToUpdate() {
             //and hit the wall
             case 2:
                 move.stop();
-                if(goToWall()) {
+                if(goToWall(&move)) {
                     move.stop();
                     internalState++;
                 }
@@ -361,7 +361,7 @@ void moveToUpdate() {
                 break;
             //move to wall
             case 3:
-                if (goToWall()) {
+                if (goToWall(&move)) {
                     internalState++;
                 }
                 break;
@@ -432,7 +432,7 @@ void moveToUpdate() {
                 break;
             //move to wall
             case 3:
-                if (goToWall()) {
+                if (goToWall(&move)) {
                     internalState++;
                 }
                 break;
@@ -495,7 +495,7 @@ void moveToUpdate() {
                 break;
             case 2:
                 move.stop();
-                if(goToWall()) {
+                if(goToWall(&move)) {
                     move.stop();
                     internalState++;
                 }
@@ -560,7 +560,7 @@ void moveToUpdate() {
                 internalState++;
                 break;
             case 3:
-                if (goToWall()) {
+                if (goToWall(&move)) {
                     internalState++;
                 }
                 break;
