@@ -4,6 +4,9 @@
 #include "common.h"
 #include "Servo.h"
 #include "Timer.h"
+
+#define TURN_90_TIME 820
+
 class Movement {
 public:
 		void init();
@@ -14,7 +17,8 @@ public:
 		void forward(float speed);
 		void backward(float speed);
 		void stop();
-		void turnAround();
+		int turn90(side s = LEFT);
+		int turnAround(side s = LEFT);
 		void openClaw(side s);
 		void closeClaw(side s);
 		void extendClaw();
@@ -29,14 +33,14 @@ private:
 		Servo leftMotor;
 		Servo rightMotor;
 		Servo backLeftMotor;
-    	Servo backRightMotor;
-	    Servo topMotor;
+    	        Servo backRightMotor;
+	        Servo topMotor;
 
-	    Servo rightClawMotor;
-	    Servo rightExtendMotor;
+	        Servo rightClawMotor;
+	        Servo rightExtendMotor;
 
-	    void setSpeed(Servo motor, float speed, bool inverted);
-	    bool goToDeg(Servo motor,int d);
+	        void setSpeed(Servo motor, float speed, bool inverted);
+	        bool goToDeg(Servo motor,int d);
 };
 
 #endif

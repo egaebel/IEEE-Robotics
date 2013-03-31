@@ -12,9 +12,51 @@ void Movement::init(){
     stop();
 }
 
-void Movement::turnAround() {
-	this->backward(0.25);
-	this->turnLeft(0.25);
+int Movement::turn90(side s){
+    static int state;
+    static Timer timer(TURN_90_TIME);
+    switch( state ){
+        case 0: //Setup
+        {
+            timer.start();
+            state++;
+            if(s == LEFT){
+                turnLeft(1);
+            }else{
+                turnRight(1);
+            }
+            break;
+        }
+        case 1: //Run
+        {
+            if( timer.isDone() ){
+                stop();
+                timer.stop();
+                state = 0;
+                return 1;
+            }
+            break;
+        }
+    }
+    return 0;
+}
+
+int Movement::turnAround(side s) {
+    static int step;
+    switch( step ){
+        case 0:
+	        if(turn90(s)){
+	            step++;
+	        }
+	        break;
+	    case 1:
+	        if(turn90(s)){
+	            step=0;
+	            return 1;
+	        }
+	        break;
+	}
+	return 0;
 }
 
 void Movement::extendClaw(){
@@ -41,11 +83,11 @@ void Movement::slideRight(float speed){
 }
 
 void Movement::turnLeft(float speed){
-	setSpeed(speed,-speed,0,0);	
+	setSpeed(-speed,speed,0,0);	
 }
 
 void Movement::turnRight(float speed){
-	setSpeed(-speed,speed,0,0);
+	setSpeed(speed,-speed,0,0);
 }
 
 void Movement::forward(float speed){

@@ -1,22 +1,26 @@
 #include "Movement.h"
-#include "Arduino.h"
+
 
 void Movement::init(){
-	leftMotor.attach(LEFT_MOTOR);
-	rightMotor.attach(RIGHT_MOTOR);
-	rearLeftMotor.attach(REAR_MOTOR_L);
-    rearRightMotor.attach(REAR_MOTOR_R);
+	leftMotor.attach(MOTOR_FRONT_L);
+	rightMotor.attach(MOTOR_FRONT_R);
+	backLeftMotor.attach(MOTOR_BACK_L);
+    backRightMotor.attach(MOTOR_BACK_R);
+    rightClawMotor.attach(RCLAW_SERVO);
+    rightExtendMotor.attach(RCLAW_EXTEND_SERVO);
+    rightExtendMotor.write(90);
     stop();
 }
 
-int Movement::turn90(int left){
+int Movement::turn90(side s){
     static int state;
+    static Timer timer(TURN_90_TIME);
     switch( state ){
         case 0: //Setup
         {
-            this->time = millis() + TURN_90_TIME;
+            timer.start();
             state++;
-            if(left){
+            if(s == LEFT){
                 turnLeft(1);
             }else{
                 turnRight(1);
@@ -25,9 +29,9 @@ int Movement::turn90(int left){
         }
         case 1: //Run
         {
-            if( this->time < millis() ){
-                state++;
+            if( timer.isDone() ){
                 stop();
+                timer.stop();
                 state = 0;
                 return 1;
             }
@@ -37,16 +41,16 @@ int Movement::turn90(int left){
     return 0;
 }
 
-int Movement::turnAround() {
+int Movement::turnAround(side s) {
     static int step;
     switch( step ){
         case 0:
-	        if(turn90(0)){
+	        if(turn90(s)){
 	            step++;
 	        }
 	        break;
 	    case 1:
-	        if(turn90(0)){
+	        if(turn90(s)){
 	            step=0;
 	            return 1;
 	        }
@@ -55,86 +59,110 @@ int Movement::turnAround() {
 	return 0;
 }
 
+void Movement::extendClaw(){
+	rightExtendMotor.write(180);
+}
+bool Movement::retractClaw(){
+	if(!(digitalRead(22))){
+		rightExtendMotor.write(90);
+		return false;
+	}
+	else{
+		rightExtendMotor.write(0);
+		return true;
+	}
+
+}
+
 void Movement::slideLeft(float speed){
-	//set rear motor left by speed
-	setSpeed(REAR_MOTOR_L,speed);
-	setSpeed(REAR_MOTOR_R,speed);
+	setSpeed(0,0,speed,speed);    
 }
 
 void Movement::slideRight(float speed){
-	//set rear motor right by speed
-	setSpeed(REAR_MOTOR_L,-speed);
-    setSpeed(REAR_MOTOR_R,-speed);
+	setSpeed(0,0,-speed,-speed);    
 }
 
 void Movement::turnLeft(float speed){
-	//set left motor forward by speed
-	setSpeed(LEFT_MOTOR,speed);
-	//set right motor backward by speed
-	setSpeed(RIGHT_MOTOR,-speed);
+	setSpeed(-speed,speed,0,0);	
 }
 
 void Movement::turnRight(float speed){
-	//set left motor backward by speed
-	setSpeed(LEFT_MOTOR,-speed);
-	//set right motor forward by speed
-	setSpeed(RIGHT_MOTOR,speed);
+	setSpeed(speed,-speed,0,0);
 }
 
 void Movement::forward(float speed){
 	//set both motors forward by speed
-	setSpeed(LEFT_MOTOR,speed);
-	setSpeed(RIGHT_MOTOR,speed);
+	setSpeed(speed,speed,0,0);
 }
 
 void Movement::backward(float speed){
 	//set both motors backward by speed
-	setSpeed(LEFT_MOTOR,-speed);
-	setSpeed(RIGHT_MOTOR,-speed);
+	setSpeed(-speed,-speed,0,0);
 }
-
 void Movement::stop(){
 	//stop all motors
-	setSpeed(LEFT_MOTOR,0);
-	setSpeed(RIGHT_MOTOR,0);
-    setSpeed(REAR_MOTOR_L,0);
-    setSpeed(REAR_MOTOR_R,0);
+	setSpeed(0,0,0,0);
+}
+
+
+bool Movement::setSpeed(float speedFL,float speedFR, float speedBL, float speedBR){
+	setSpeed(MOTOR_FRONT_L,speedFL);
+	setSpeed(MOTOR_FRONT_R,speedFR);
+	setSpeed(MOTOR_BACK_L,speedBL);
+	setSpeed(MOTOR_BACK_R,speedBR);
 }
 
 void Movement::liftUp() {
-	goToDeg(90);
+	goToDeg(topMotor,90);
 }
 
 void Movement::setDown() {
-	goToDeg(180);
+	goToDeg(topMotor,180);
 }
 
-void Movement::goToDeg(int d){
+void Movement::openClaw(side clawSide){
+	if(clawSide==RIGHT)
+		rightClawMotor.write(120);
+}
+void Movement::closeClaw(side clawSide){
+	if(clawSide==RIGHT)
+		rightClawMotor.write(90);
+}
+bool Movement::goToDeg(Servo motor, int d){
 	static int curD = 0;
-
-	if(curD<d){
-		topMotor.write(curD);
-		curD++;
+	static Timer t(100);
+	t.start();
+	if(t.isDone()){
+		if(curD<d){		
+			motor.write(curD);
+			curD++;
+		}
+		else if(curD>d){
+			motor.write(curD);
+			curD--;
+		}
+		else {
+			t.stop();
+			return true;
+		}
+		t.reset();
 	}
-	else if(curD>d){
-		topMotor.write(curD);
-		curD--;
-	}
+	return false;
 }
 
 bool Movement::setSpeed(int servo, float speed){
 	switch(servo){
-		case LEFT_MOTOR:
-			setSpeed(leftMotor,speed,false);
+		case MOTOR_FRONT_L:
+			setSpeed(leftMotor,speed,true);
 			break;
-		case RIGHT_MOTOR:
-			setSpeed(rightMotor,speed,true);
+		case MOTOR_FRONT_R:
+			setSpeed(rightMotor,speed,false);
 			break;
-        case REAR_MOTOR_L:
-            setSpeed(rearLeftMotor,speed,false);
+        case MOTOR_BACK_L:
+            setSpeed(backLeftMotor,speed,false);
             break;
-        case REAR_MOTOR_R:
-            setSpeed(rearRightMotor,speed,false);
+        case MOTOR_BACK_R:
+            setSpeed(backRightMotor,speed,false);
 			break;
 		default:
 			//opps

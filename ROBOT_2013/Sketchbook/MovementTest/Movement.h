@@ -1,14 +1,14 @@
 #ifndef _MOVEMENT_H_
 #define _MOVEMENT_H_
 
-#include <Servo.h>
 #include "common.h"
+#include "Servo.h"
+#include "Timer.h"
 
-#define TURN_90_TIME 3000 /* milliseconds */
+#define TURN_90_TIME 820
 
-//modded, cus i canz
 class Movement {
-	public:
+public:
 		void init();
 		void slideLeft(float speed);
 		void slideRight(float speed);
@@ -17,21 +17,30 @@ class Movement {
 		void forward(float speed);
 		void backward(float speed);
 		void stop();
-		int turnAround();
-		int turn90(int left);
-		bool setSpeed(int servo, float speed);
+		int turn90(side s = LEFT);
+		int turnAround(side s = LEFT);
+		void openClaw(side s);
+		void closeClaw(side s);
+		void extendClaw();
+		bool retractClaw();
+    //Used for complex movements
+		bool setSpeed(float speedFL,float speedFR, float speedBL, float speedBR);
 		void liftUp();
 		void setDown();
-	private:
-	    unsigned long time;
-	    Servo leftMotor;
-            Servo rightMotor;
-	    Servo rearLeftMotor;
-	    Servo rearRightMotor;
-	    Servo topMotor;
-	    void setSpeed(Servo motor, float speed, bool inverted);
-	    void goToDeg(int d);
-	    
+private:
+		bool setSpeed(int servo, float speed);
+
+		Servo leftMotor;
+		Servo rightMotor;
+		Servo backLeftMotor;
+    	        Servo backRightMotor;
+	        Servo topMotor;
+
+	        Servo rightClawMotor;
+	        Servo rightExtendMotor;
+
+	        void setSpeed(Servo motor, float speed, bool inverted);
+	        bool goToDeg(Servo motor,int d);
 };
 
 #endif
