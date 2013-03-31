@@ -693,9 +693,9 @@ void pickUpUpdate() {
 			move.openClaw(LEFT);
 			move.extendClaw(LEFT);
 			move.closeClaw(LEFT);
-            move.retractClaw(LEFT);
-            loadingZone[lTargetBlock].present = false;
-       		internalState++;
+                        move.retractClaw(LEFT);
+                        loadingZone[lTargetPos].present = false;
+       		        internalState++;
 			break;
 		//Move to the right target
 		case 2:
@@ -747,8 +747,8 @@ void pickUpUpdate() {
 			move.openClaw(RIGHT);
 			move.extendClaw(RIGHT);
 			move.closeClaw(RIGHT);
-            move.retractClaw(RIGHT);
-            loadingZone[rTargetBlock].present = false;
+                        move.retractClaw(RIGHT);
+                        loadingZone[rTargetPos].present = false;
 			internalState++;
 			break;
         case 4:
@@ -761,7 +761,7 @@ void pickUpUpdate() {
 void dropEnter() {
     internalState = 0;
 
-    Block * blocks = getZoneByPos(curPos);
+    Block * blocks = getZoneByPos(curPos, seaZone, railZone, loadingZone);
 
     //Set target positions of blocks in loading
     for(int i = 0; i < 14; i++) {
@@ -813,6 +813,7 @@ void dropUpdate() {
         //....
         switch (internalState) {
             case 0:
+                  break;
         }      
     }
 }

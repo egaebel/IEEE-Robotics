@@ -60,7 +60,7 @@ Block* getZoneByPos(bPosition pos, Block * seaZone, Block * railZone, Block * lo
 	else if (pos == POS_RAIL) {
 		return railZone;
 	}
-	else if (pos == PICK_UP) {
+	else if (pos == POS_PICK_UP) {
 		return loadingZone;
 	}
 	else {
