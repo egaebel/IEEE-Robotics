@@ -1,13 +1,11 @@
 #ifndef SONAR_H_
 #define SONAR_H_
 
-#define TWI_FREQ 25000L
-
-#define SONAR_LEFT byte(0x70)
-#define SONAR_RIGHT byte(0x69)
-
+#include "Arduino.h"
 #include "Wire.h"
-#include <Arduino.h>
+
+#define SONAR_LEFT 0x34 //0x70
+#define SONAR_RIGHT 0x36 //0x69
 
 class Sonar {
 	
@@ -16,9 +14,10 @@ class Sonar {
 		int getLeftDistance();
 		int getRightDistance();
 		void read();
+                void changeAddress(byte oldAddress, byte newAddress);
 	private:
-		int leftDistance;
-		int rightDistance;
+		unsigned int leftDistance;
+		unsigned int rightDistance;
 		int i2cRead(int address);
 };
 
