@@ -34,3 +34,7 @@ bool getBayPos(Block blocks[], int numBlocks, bColour leftColor, bColour rightCo
 
 	return haveInfo;
 }
+bool goToWall()
+{
+  
+}

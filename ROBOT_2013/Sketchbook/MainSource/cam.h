@@ -39,8 +39,8 @@ class cam{
 		cam(int pin);
 		void init();
 		bool inZone();
-        bool betweenZone();
-        int locateZone(); 
+                bool betweenZones();
+                int locateZone(); 
 		bColour getBlockColour();
 		bColour getBayColour();
 		bSize getBlockSize(bColour colour);
@@ -51,6 +51,7 @@ class cam{
 		bay curBay;
 		void trackColour(bColour colour);
 		void setWindow(bay b);
+                int cmToPx(float cm);
 		CMUcam4* cmuCam;
 		CMUcam4_tracking_data_t tData; //stands for Travis Data
 };

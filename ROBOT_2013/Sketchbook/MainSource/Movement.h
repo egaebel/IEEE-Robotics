@@ -17,8 +17,8 @@ public:
 		void turnAround();
 		void openClaw(side s);
 		void closeClaw(side s);
-		void extendClaw();
-		bool retractClaw();
+		void extendClaw(side s);
+		bool retractClaw(side s);
     //Used for complex movements
 		bool setSpeed(float speedFL,float speedFR, float speedBL, float speedBR);
 		void liftUp();

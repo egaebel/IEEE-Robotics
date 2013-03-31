@@ -17,10 +17,10 @@ void Movement::turnAround() {
 	this->turnLeft(0.25);
 }
 
-void Movement::extendClaw(){
+void Movement::extendClaw(side s){
 	rightExtendMotor.write(180);
 }
-bool Movement::retractClaw(){
+bool Movement::retractClaw(side s){
 	if(!(digitalRead(22))){
 		rightExtendMotor.write(90);
 		return false;

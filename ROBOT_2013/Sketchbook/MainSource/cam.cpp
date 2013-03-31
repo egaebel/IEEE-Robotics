@@ -75,7 +75,7 @@ bool cam::inZone(){
 }
 
 //true if there is only one line on the screen
-bool cam::betweenZone()  {
+bool cam::betweenZones()  {
 	getTrackingData(WHITE);
 	#define MAX_WIDTH 50
 	#define MIN_HEIGHT 200
@@ -117,7 +117,7 @@ bColour cam::getBlockColour(){
   for(i=((int)WHITE)+1;i<(int)BLACK;i++){
     getTrackingData((bColour)i);
     //if we see enough pixels of that colour, we found the block
-    if(tData.pixels>cmToPixels(BLOCK_WIDTH)){
+    if(tData.pixels>cmToPx(BLOCK_WIDTH)){
       return (bColour)i;
     }
   }
@@ -183,7 +183,7 @@ void cam::trackColour(bColour colour){
 }
 
 
-int cmToPx(float cm){
+cmToPx(float cm){
   #define CM_TO_PIX_CONV 17
   return cm*CM_TO_PIX_CONV;
 }
