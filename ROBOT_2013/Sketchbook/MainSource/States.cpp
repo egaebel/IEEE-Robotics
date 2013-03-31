@@ -4,13 +4,9 @@ extern FiniteStateMachine fsm;
 
 //Hardware classes----
 static Movement move;
-static WallFollower wallFollower;
 
-static Claw rClaw;
-static Claw lClaw;
-
-static cam leftCam;
-static cam rightCam;
+static cam leftCam = cam(LCAM_PIN);
+static cam rightCam = cam(RCAM_PIN);
 
 static Sonar sonar;
 
@@ -87,8 +83,7 @@ void initUpdate() {
             internalState++;
             break;
         case 1:
-            move.forward(0.1);
-            if(wallFollower.isTouching()){
+            if(goToWall()){
                 curPos = POS_START;
                 nextPos = POS_SEA;
                 fsm.transitionTo(moveToState);
@@ -165,8 +160,8 @@ void scanUpdate() {
                     //put colour read code here!
                     //--------------------------
                     //--------------------------
-                    loadingZone[rBlockPos].colour = rightCam.getBayColour(); 
-    	            loadingZone[rBlockPos].size = rightCam.detectSize();
+                    loadingZone[rBlockPos].colour = rightCam.getBlockColour(); 
+    	            loadingZone[rBlockPos].size = rightCam.getBlockSize(loadingZone[rBlockPos].colour);
                     loadingZone[rBlockPos].present = true;
                     rBlockPos++;
                     if(rBlockPos > 13){
@@ -254,8 +249,7 @@ void moveToUpdate() {
                 break;
             case 2:
                 move.stop();
-                move.forward(0.1);
-                if (wallFollower.isTouching()) {
+                if (goToWall()) {
                     move.stop();
                     internalState++;
                 }
@@ -264,8 +258,7 @@ void moveToUpdate() {
             case 3:
                 move.slideLeft(0.1);
                 //we want to be a certain distance from the back wall
-                if (rightCam.inZone() 
-                    && sonar.getRightDistance() == SEA_START_LEFT_DIST) {
+                if (rightCam.inZone() && (sonar.getRightDistance() == SEA_START_LEFT_DIST)) {
                     move.stop();
                     rBlockPos = 0;
                     lBlockPos = -1;
@@ -321,8 +314,7 @@ void moveToUpdate() {
             //and hit the wall
             case 2:
                 move.stop();
-                move.forward(0.1);
-                if(wallFollower.isTouching()) {
+                if(goToWall()) {
                     move.stop();
                     internalState++;
                 }
@@ -369,8 +361,7 @@ void moveToUpdate() {
                 break;
             //move to wall
             case 3:
-                move.forward(0.1);
-                if (wallFollower.isTouching()) {
+                if (goToWall()) {
                     internalState++;
                 }
                 break;
@@ -441,8 +432,7 @@ void moveToUpdate() {
                 break;
             //move to wall
             case 3:
-                move.forward(0.1);
-                if (wallFollower.isTouching()) {
+                if (goToWall()) {
                     internalState++;
                 }
                 break;
@@ -505,8 +495,7 @@ void moveToUpdate() {
                 break;
             case 2:
                 move.stop();
-                move.forward(0.1);
-                if(wallFollower.isTouching()) {
+                if(goToWall()) {
                     move.stop();
                     internalState++;
                 }
@@ -571,8 +560,7 @@ void moveToUpdate() {
                 internalState++;
                 break;
             case 3:
-                move.forward(0.1);
-                if (wallFollower.isTouching()) {
+                if (goToWall()) {
                     internalState++;
                 }
                 break;
@@ -610,19 +598,19 @@ void pickUpEnter() {
     internalState = 0;
     if(rightCam.inZone())
     {
-        bColour currentColor = rightCam.getBayColour();
-        bSize currentSize = rightCam.detectSize();
+        bColour currentColor = rightCam.getBlockColour();
+        bSize currentSize = rightCam.getBlockSize(currentColor);
         for(int i = 0; i < 14; i++) {
 	        if(loadingZone[i].colour == currentColor && loadingZone[i].size == currentSize) {
     			rBlockPos = i;
-                lBlockPos = i - 1;
+                        lBlockPos = i - 1;
     		}
 	   }
     }
     else if(leftCam.inZone())
     {
-        bColour currentColor = leftCam.getBayColour();
-        bSize currentSize = leftCam.detectSize();
+        bColour currentColor = leftCam.getBlockColour();
+        bSize currentSize = leftCam.getBlockSize(currentColor);
         for(int i = 0; i < 14; i++) {
 	        if(loadingZone[i].colour == currentColor && loadingZone[i].size == currentSize) {
     			lBlockPos = i;
@@ -688,48 +676,53 @@ void pickUpUpdate() {
 			if(lBlockPos == lTargetPos) {
 				internalState++;
 			} 
-            else if(lBlockPos < lTargetPos) {
-				move.slideRight(0.25);
-                //TODO: change to "onBlock" or something?
-                if(leftCam.inZone())
-                {
-                    if(lBlockPos < 0)
-                    {
-                        lBlockPos = 0;
-                        rBlockPos = 1;
-                    }
-                    else if (leftCam.getBayColour() != loadingZone[lBlockPos].colour || leftCam.detectSize() != loadingZone[lBlockPos].size) {
-                        move.stop();
-                        lBlockPos++;
-                        rBlockPos++;
-                    }
-                }
+                        else if(lBlockPos < lTargetPos) {
+            		    move.slideRight(0.25);
+                            //TODO: change to "onBlock" or something?
+                            if(leftCam.inZone())
+                            {
+                                if(lBlockPos < 0)
+                                {
+                                    lBlockPos = 0;
+                                    rBlockPos = 1;
+                                }
+                                else if (leftCam.getBlockColour() != loadingZone[lBlockPos].colour
+                                    || leftCam.getBlockSize(leftCam.getBlockColour()) != loadingZone[lBlockPos].size)
+                                {
+                                    move.stop();
+                                    lBlockPos++;
+                                    rBlockPos++;
+                                }
+                            }
 			} 
-            else if(lBlockPos > lTargetPos) {
-                move.slideLeft(0.25);
-                //TODO: change to "onBlock" or something?
-                if(leftCam.inZone())
-                {
-                    if(lBlockPos > 13)
-                    {
-                        lBlockPos = 13;
-                        rBlockPos = 14;
-                    }
-                    else if (leftCam.getBayColour() != loadingZone[lBlockPos].colour || leftCam.detectSize() != loadingZone[lBlockPos].size) {
-                        move.stop();
-                        lBlockPos--;
-                        rBlockPos--;
-                    }
-                }
+                        else if(lBlockPos > lTargetPos) {
+                            move.slideLeft(0.25);
+                            //TODO: change to "onBlock" or something?
+                            if(leftCam.inZone())
+                            {
+                                if(lBlockPos > 13)
+                                {
+                                    lBlockPos = 13;
+                                    rBlockPos = 14;
+                                }
+                                else if (leftCam.getBlockColour() != loadingZone[lBlockPos].colour 
+                                    || leftCam.getBlockSize(leftCam.getBlockColour()) != loadingZone[lBlockPos].size)
+                                {
+                                    move.stop();
+                                    lBlockPos--;
+                                    rBlockPos--;
+                                }
+                            }
 			}
 			break;
 		
 		//Pick up left target
 		case 1:
-			lClaw.extend();
-			lClaw.grab();
-			lClaw.retract();
-			internalState++;
+			move.openClaw(LEFT);
+			move.extendClaw(LEFT);
+			move.closeClaw(LEFT);
+                        move.retractClaw(LEFT);
+       			internalState++;
 			break;
 		
 		//Move to the right target
@@ -747,7 +740,9 @@ void pickUpUpdate() {
                         rBlockPos = 0;
                         rBlockPos = -1;
                     }
-                    else if (rightCam.getBayColour() != loadingZone[rBlockPos].colour || rightCam.detectSize() != loadingZone[rBlockPos].size) {
+                    else if (rightCam.getBlockColour() != loadingZone[rBlockPos].colour
+                        || rightCam.getBlockSize(rightCam.getBlockColour()) != loadingZone[rBlockPos].size)
+                    {
                         move.stop();
                         lBlockPos++;
                         rBlockPos++;
@@ -764,7 +759,9 @@ void pickUpUpdate() {
                         lBlockPos = 12;
                         rBlockPos = 13;
                     }
-                    else if (rightCam.getBayColour() != loadingZone[rBlockPos].colour || rightCam.detectSize() != loadingZone[rBlockPos].size) {
+                    else if (rightCam.getBlockColour() != loadingZone[rBlockPos].colour
+                        || rightCam.getBlockSize(rightCam.getBlockColour()) != loadingZone[rBlockPos].size)
+                    {
                         move.stop();
                         lBlockPos--;
                         rBlockPos--;
@@ -775,9 +772,10 @@ void pickUpUpdate() {
 		
 		//Pick up right target
 		case 3:
-			rClaw.extend();
-			rClaw.grab();
-			rClaw.retract();
+			move.openClaw(RIGHT);
+			move.extendClaw(RIGHT);
+			move.closeClaw(RIGHT);
+                        move.retractClaw(RIGHT);
 			internalState++;
 			break;
 	}
@@ -802,13 +800,15 @@ void dropUpdate() {
                 break;
             case 1:
                 //drop blocks
-                lClaw.extend();
-                lClaw.drop();
-                lClaw.retract();
+                move.extendClaw(LEFT);
+                move.openClaw(LEFT);
+                move.retractClaw(LEFT);
+                move.closeClaw(LEFT);
 
-                rClaw.extend();
-                rClaw.drop();
-                rClaw.retract();
+                move.extendClaw(RIGHT);
+                move.openClaw(RIGHT);
+                move.retractClaw(RIGHT);
+                move.closeClaw(RIGHT);
 
                 internalState++;
                 break;

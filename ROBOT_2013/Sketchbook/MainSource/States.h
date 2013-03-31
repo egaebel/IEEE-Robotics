@@ -7,9 +7,7 @@
 #include "common.h"
 #include "FiniteStateMachine.h"
 #include "Movement.h"
-#include "Claw.h"
 #include "Sonar.h"
-#include "WallFollower.h"
 #include "SimpleFunctions.h"
 
 //Prototypes
