@@ -83,7 +83,7 @@ void initUpdate() {
             internalState++;
             break;
         case 1:
-            if(goToWall()){
+            if(goToWall(&move)){
                 curPos = POS_START;
                 nextPos = POS_SEA;
                 fsm.transitionTo(moveToState);
@@ -115,10 +115,8 @@ void scanUpdate() {
                 //focused on bay, read colour
                 if(rightCam.inZone()){
                     move.stop();             
-                    //put colour read code here!
-                    //--------------------------
-                    //--------------------------
-
+                    loadingZone[rBlockPos].colour = rightCam.getBlockColour(); 
+                    loadingZone[rBlockPos].size = rightCam.getBlockSize(loadingZone[rBlockPos].colour);
                     rBlockPos++;
                     if(rBlockPos > 5){
                         //we are done lets moveTo the next place
@@ -136,12 +134,12 @@ void scanUpdate() {
 
                 //if we're focused on a bay, read colour
                 if (leftCam.inZone()) {
+                    
                     move.stop();
-                    //put colour read code here!
-                    //--------------------------
-                    //--------------------------
-                    rBlockPos++;
-                    if(rBlockPos > 5){
+                    loadingZone[lBlockPos].colour = leftCam.getBlockColour(); 
+                    loadingZone[lBlockPos].size = leftCam.getBlockSize(loadingZone[lBlockPos].colour);
+                    lBlockPos++;
+                    if(lBlockPos > 5){
                         //we are done lets moveTo the next place
                         internalState = 2;
                     }
@@ -157,9 +155,6 @@ void scanUpdate() {
                 //TODO: change to "onBlock" or something?
                 if (rightCam.inZone()) {
                     move.stop();
-                    //put colour read code here!
-                    //--------------------------
-                    //--------------------------
                     loadingZone[rBlockPos].colour = rightCam.getBlockColour(); 
     	            loadingZone[rBlockPos].size = rightCam.getBlockSize(loadingZone[rBlockPos].colour);
                     loadingZone[rBlockPos].present = true;
@@ -249,7 +244,7 @@ void moveToUpdate() {
                 break;
             case 2:
                 move.stop();
-                if (goToWall()) {
+                if (goToWall(&move)) {
                     move.stop();
                     internalState++;
                 }
@@ -314,7 +309,7 @@ void moveToUpdate() {
             //and hit the wall
             case 2:
                 move.stop();
-                if(goToWall()) {
+                if(goToWall(&move)) {
                     move.stop();
                     internalState++;
                 }
@@ -361,7 +356,7 @@ void moveToUpdate() {
                 break;
             //move to wall
             case 3:
-                if (goToWall()) {
+                if (goToWall(&move)) {
                     internalState++;
                 }
                 break;
@@ -432,7 +427,7 @@ void moveToUpdate() {
                 break;
             //move to wall
             case 3:
-                if (goToWall()) {
+                if (goToWall(&move)) {
                     internalState++;
                 }
                 break;
@@ -495,7 +490,7 @@ void moveToUpdate() {
                 break;
             case 2:
                 move.stop();
-                if(goToWall()) {
+                if(goToWall(&move)) {
                     move.stop();
                     internalState++;
                 }
@@ -537,9 +532,9 @@ void moveToUpdate() {
                 //if air isn't full (which it won't be)
                 else {
                     //TODO: Kickstart the air states
-                    //curPos = nextPos;
-                    //nextPos = POS_AIR;
-                    //fsm.transitionTo(moveToState);
+                    curPos = nextPos;
+                    nextPos = POS_AIR;
+                    fsm.transitionTo(moveToState);
                 }
                 //TODO: not sure if we need to change enter...it currently takes a *fsm...
                 //fsm.enter();
@@ -560,7 +555,7 @@ void moveToUpdate() {
                 internalState++;
                 break;
             case 3:
-                if (goToWall()) {
+                if (goToWall(&move)) {
                     internalState++;
                 }
                 break;
@@ -596,52 +591,28 @@ void moveToUpdate() {
 //pickUpState
 void pickUpEnter() {
     internalState = 0;
-    if(rightCam.inZone())
-    {
-        bColour currentColor = rightCam.getBlockColour();
-        bSize currentSize = rightCam.getBlockSize(currentColor);
-        for(int i = 0; i < 14; i++) {
-	        if(loadingZone[i].colour == currentColor && loadingZone[i].size == currentSize) {
-    			rBlockPos = i;
-                        lBlockPos = i - 1;
-    		}
-	   }
-    }
-    else if(leftCam.inZone())
-    {
-        bColour currentColor = leftCam.getBlockColour();
-        bSize currentSize = leftCam.getBlockSize(currentColor);
-        for(int i = 0; i < 14; i++) {
-	        if(loadingZone[i].colour == currentColor && loadingZone[i].size == currentSize) {
-    			lBlockPos = i;
-                rBlockPos = i + 1;
-    		}
-    	}
-    }
-    else
-    {
-        rBlockPos = -1;
-        lBlockPos = -2;
-    }  
+
   	//Figure out which blocks you need to pick up
-	if(!railDone) {
+	if(!seaDone) {
 		for(int i = 0; i < 6; i++) {
 			if(!railZone[i].present == false) {
 				lTargetBlock = railZone[i];
 				rTargetBlock = railZone[++i];
+                break;
 			}
 		}
 	}
-	else if(!seaDone) {
+	else if(!railDone) {
 		for(int i = 0; i < 6; i++) {
 			if(seaZone[i].present == false) {
 				lTargetBlock = seaZone[i];
 				rTargetBlock = seaZone[++i];
+                break;
 			}
 		}
 	}
 	else {
-	int i = 0;
+	    int i = 0;
 		for(i = 0; i < 14; i++) {
 			if(loadingZone[i].present == true) {
 				lTargetBlock = loadingZone[i];
@@ -652,11 +623,12 @@ void pickUpEnter() {
 		for(i++; i < 14; i++) {
 			if(loadingZone[i].present == true) {
 				rTargetBlock = loadingZone[i];
+                break;
 			}
 		}
 	}
 	
-	//Set target positions
+	//Set target positions of blocks in loading
 	for(int i = 0; i < 14; i++) {
 		if(loadingZone[i].colour == lTargetBlock.colour && loadingZone[i].size == lTargetBlock.size) {
 			lTargetPos = i;
@@ -676,55 +648,55 @@ void pickUpUpdate() {
 			if(lBlockPos == lTargetPos) {
 				internalState++;
 			} 
-                        else if(lBlockPos < lTargetPos) {
-            		    move.slideRight(0.25);
-                            //TODO: change to "onBlock" or something?
-                            if(leftCam.inZone())
-                            {
-                                if(lBlockPos < 0)
-                                {
-                                    lBlockPos = 0;
-                                    rBlockPos = 1;
-                                }
-                                else if (leftCam.getBlockColour() != loadingZone[lBlockPos].colour
-                                    || leftCam.getBlockSize(leftCam.getBlockColour()) != loadingZone[lBlockPos].size)
-                                {
-                                    move.stop();
-                                    lBlockPos++;
-                                    rBlockPos++;
-                                }
-                            }
+            //if the block is to the right of the left claw
+            else if(lBlockPos < lTargetPos) {
+		        move.slideRight(0.25);
+                //TODO: change to "onBlock" or something?
+                if(leftCam.inZone())
+                {
+                    if(lBlockPos < 0)
+                    {
+                        lBlockPos = 0;
+                        rBlockPos = 1;
+                    }
+                    else if (leftCam.getBlockColour() != loadingZone[lBlockPos].colour
+                        || leftCam.getBlockSize(leftCam.getBlockColour()) != loadingZone[lBlockPos].size)
+                    {
+                        move.stop();
+                        lBlockPos++;
+                        rBlockPos++;
+                    }
+                }
 			} 
-                        else if(lBlockPos > lTargetPos) {
-                            move.slideLeft(0.25);
-                            //TODO: change to "onBlock" or something?
-                            if(leftCam.inZone())
-                            {
-                                if(lBlockPos > 13)
-                                {
-                                    lBlockPos = 13;
-                                    rBlockPos = 14;
-                                }
-                                else if (leftCam.getBlockColour() != loadingZone[lBlockPos].colour 
-                                    || leftCam.getBlockSize(leftCam.getBlockColour()) != loadingZone[lBlockPos].size)
-                                {
-                                    move.stop();
-                                    lBlockPos--;
-                                    rBlockPos--;
-                                }
-                            }
+            else if(lBlockPos > lTargetPos) {
+                move.slideLeft(0.25);
+                //TODO: change to "onBlock" or something?
+                if(leftCam.inZone())
+                {
+                    if(lBlockPos > 13)
+                    {
+                        lBlockPos = 13;
+                        rBlockPos = 14;
+                    }
+                    else if (leftCam.getBlockColour() != loadingZone[lBlockPos].colour 
+                        || leftCam.getBlockSize(leftCam.getBlockColour()) != loadingZone[lBlockPos].size)
+                    {
+                        move.stop();
+                        lBlockPos--;
+                        rBlockPos--;
+                    }
+                }
 			}
 			break;
-		
 		//Pick up left target
 		case 1:
 			move.openClaw(LEFT);
 			move.extendClaw(LEFT);
 			move.closeClaw(LEFT);
                         move.retractClaw(LEFT);
-       			internalState++;
+                        loadingZone[lTargetPos].present = false;
+       		        internalState++;
 			break;
-		
 		//Move to the right target
 		case 2:
 			if(rBlockPos == rTargetPos) {
@@ -776,14 +748,30 @@ void pickUpUpdate() {
 			move.extendClaw(RIGHT);
 			move.closeClaw(RIGHT);
                         move.retractClaw(RIGHT);
+                        loadingZone[rTargetPos].present = false;
 			internalState++;
 			break;
+        case 4:
+            fsm.transitionTo(moveToState);
+            break;
 	}
 }
 
 //dropState
 void dropEnter() {
     internalState = 0;
+
+    Block * blocks = getZoneByPos(curPos, seaZone, railZone, loadingZone);
+
+    //Set target positions of blocks in loading
+    for(int i = 0; i < 14; i++) {
+        if(blocks[i].colour == lBlock.colour) {
+            lTargetPos = i;
+        }
+        else if(blocks[i].colour == rTargetBlock.colour) {
+            rTargetPos = i;
+        }
+    }
 }
 
 void dropUpdate() {
@@ -823,9 +811,10 @@ void dropUpdate() {
     else {
         //scan both spaces in air
         //....
-        /*switch (internalState) {
+        switch (internalState) {
             case 0:
-        */      
+                  break;
+        }      
     }
 }
 

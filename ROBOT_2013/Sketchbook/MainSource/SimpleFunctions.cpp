@@ -34,7 +34,36 @@ bool getBayPos(Block blocks[], int numBlocks, bColour leftColor, bColour rightCo
 
 	return haveInfo;
 }
-bool goToWall()
+bool goToWall(Movement *move)
 {
-  
+  	if(digitalRead(53)&&digitalRead(52)){
+		move->stop();
+		return true;
+	}
+    else if( digitalRead(53)){
+      	move->setSpeed(0,.25,0,-1);
+    }
+    else if( digitalRead(52)){
+      	move->setSpeed(.25,0,1,0);
+    }
+    else{
+       	move->forward(0.10);
+    }
+    return false;
+}
+
+Block* getZoneByPos(bPosition pos, Block * seaZone, Block * railZone, Block * loadingZone) {
+
+	if (pos == POS_SEA) {
+		return seaZone;
+	}
+	else if (pos == POS_RAIL) {
+		return railZone;
+	}
+	else if (pos == POS_PICK_UP) {
+		return loadingZone;
+	}
+	else {
+		return NULL;
+	}
 }
