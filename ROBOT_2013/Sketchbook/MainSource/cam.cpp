@@ -183,7 +183,7 @@ void cam::trackColour(bColour colour){
 }
 
 
-cmToPx(float cm){
+int cam::cmToPx(float cm){
   #define CM_TO_PIX_CONV 17
   return cm*CM_TO_PIX_CONV;
 }
