@@ -7,7 +7,7 @@ cam::cam(int pin){
 void cam::init(){
     cmuCam->autoGainControl(false);
     cmuCam->autoWhiteBalance(false);
-	   cmuCam->begin();
+    cmuCam->begin();
   	// Wait for auto gain and auto white balance to run.
     cmuCam->autoGainControl(false);
     cmuCam->autoWhiteBalance(false);
@@ -32,20 +32,20 @@ void cam::init(){
 }
 
 bool cam::inZone(){
-  setWindow(LOADING);
-	getTrackingData(WHITE);
-	#define CENTROID_X_MIN 70
-	#define CENTROID_X_MAX 95
-	#define CENTROID_Y_MIN 45
-	#define CENTROID_Y_MAX 75
-	#define BAY_AREA_MIN 14000
-	#define BAY_AREA_MAX 20000
+    setWindow(LOADING);
+  	getTrackingData(WHITE);
+  	#define CENTROID_X_MIN 70
+  	#define CENTROID_X_MAX 95
+  	#define CENTROID_Y_MIN 45`
+  	#define CENTROID_Y_MAX 75
+  	#define BAY_AREA_MIN 14000
+  	#define BAY_AREA_MAX 20000
 
-        #define BOX_X1 14
-        #define BOX_X2 137
-        #define BOX_Y1 30
-        #define BOX_Y2 90
-        #define BOX_UNC 10
+    #define BOX_X1 14
+    #define BOX_X2 137
+    #define BOX_Y1 30
+    #define BOX_Y2 90
+    #define BOX_UNC 10
     //Serial.print("X:");Serial.println(tData.mx);
     //Serial.print("Y:");Serial.println(tData.my);
     int area = (tData.x2-tData.x1)*(tData.y2-tData.y1);
@@ -117,7 +117,7 @@ bColour cam::getBlockColour(){
   for(i=((int)WHITE)+1;i<(int)BLACK;i++){
     getTrackingData((bColour)i);
     //if we see enough pixels of that colour, we found the block
-    if(tData.pixels>PIXEL_BLOCK_MIN){
+    if(tData.pixels>cmToPixels(BLOCK_WIDTH)){
       return (bColour)i;
     }
   }

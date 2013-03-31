@@ -12,6 +12,7 @@
 #define AIR_BLOCK 5
 #define SEA_BLOCK 7.5
 #define RAIL_BLOCK 10
+#define BLOCK_WIDTH 4
 
 /*
  * This is where all globals and constants should be defined
