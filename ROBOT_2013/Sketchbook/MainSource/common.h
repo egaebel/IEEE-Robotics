@@ -1,6 +1,9 @@
 #ifndef _COMMON_H_
 #define _COMMON_H_
 
+//Sonar Distances
+#define SEA_START_LEFT_DIST 33
+
 /*
  * This is where all globals and constants should be defined
 */
