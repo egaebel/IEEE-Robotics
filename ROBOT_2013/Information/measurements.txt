@@ -1,0 +1,21 @@
+67.5 cm -- north wall to beginning of sea zone
+130 cm -- east wall to rail start
+41 cm -- east wall to pickup start
+
+46.5 cm -- rail and sea zone sizes
+
+108 cm -- pickup size
+107.5 cm -- calculated pickup size
+
+single bay: 6.5cm
+single line: 1 cm
+
+17 pixels per cm
+
+our camera resolution is 160x120
+
+
+
+Sonar Results
+--------------
+55 -- North wall to beginning of sea mode
