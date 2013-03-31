@@ -8,7 +8,7 @@ using namespace std;
 UART_STRUCT uart;
 
 Movement move;
-cam camR(2);
+cam camR(3);
 
 //Prototypes
 void state1Enter();
@@ -38,15 +38,19 @@ void state1Enter() {
 void state1Update() {
 	switch(internalState){
 		case 0:
+			camR.inZone();
+			break;
+		case 69:
 			if(digitalRead(53)){
-				move.openRightClaw();
+				//move.openClaw(RIGHT);
+				move.retractClaw();
 			}
 			if(digitalRead(52)){
-				move.closeRightClaw();
+				move.extendClaw();
+				//move.closeClaw(RIGHT);
 			}
-			move.retractClaw();
 		break;
-		case 2:
+		case 3:
 			if(digitalRead(53)&&digitalRead(52)){
 				move.stop();
 				internalState++;
@@ -58,12 +62,12 @@ void state1Update() {
             	move.setSpeed(.25,0,1,0);
             }
             else{
-              	move.forward(0.25);
+              	move.forward(0.10);
             }
 			break;
 		case 1:
             if(digitalRead(52)&&digitalRead(53)){
-            	move.setSpeed(.25,0,-1,-1);
+            	move.setSpeed(.13,-.02,-1,-1);
 		    	if(camR.inZone()){
 						move.stop();
 						Serial.println(camR.getBlockColour());

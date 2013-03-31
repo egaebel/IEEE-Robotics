@@ -10,6 +10,7 @@ void setup() {
     Serial.begin(9600);
     pinMode(BUMPER_L, INPUT);
     pinMode(BUMPER_R, INPUT);
+    pinMode(22,INPUT);
 }
 
 //go through the entire state machine

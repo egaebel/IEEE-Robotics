@@ -28,30 +28,32 @@ void cam::init(){
 
   	cmuCam->noiseFilter(NOISE_FILTER);
     curColour = BLACK;
+    curBay = NONE;
 }
 
 bool cam::inZone(){
+  setWindow(LOADING);
 	getTrackingData(WHITE);
-	#define CENTROID_X_MIN 75
-	#define CENTROID_X_MAX 90
-	#define CENTROID_Y_MIN 50
-	#define CENTROID_Y_MAX 70
+	#define CENTROID_X_MIN 70
+	#define CENTROID_X_MAX 95
+	#define CENTROID_Y_MIN 45
+	#define CENTROID_Y_MAX 75
 	#define BAY_AREA_MIN 14000
 	#define BAY_AREA_MAX 20000
 
         #define BOX_X1 14
         #define BOX_X2 137
-        #define BOX_Y1 0
-        #define BOX_Y2 119
-        #define BOX_UNC 5
+        #define BOX_Y1 30
+        #define BOX_Y2 90
+        #define BOX_UNC 10
     //Serial.print("X:");Serial.println(tData.mx);
     //Serial.print("Y:");Serial.println(tData.my);
     int area = (tData.x2-tData.x1)*(tData.y2-tData.y1);
-    /*Serial.print("area:");Serial.println(area);
+    //Serial.print("area:");Serial.println(area);
     Serial.print("X1:");Serial.println(tData.x1);
     Serial.print("X2:");Serial.println(tData.x2);
     Serial.print("Y1:");Serial.println(tData.y1);
-    Serial.print("Y2:");Serial.println(tData.y2);*/
+    Serial.print("Y2:");Serial.println(tData.y2);
     
     /*if(tData.mx>CENTROID_X_MIN && tData.mx<CENTROID_X_MAX && tData.my>CENTROID_Y_MIN && tData.my<CENTROID_Y_MAX && area>BAY_AREA_MIN && area<BAY_AREA_MAX)  {
 		//tdata1 is point at upper left corner and tdata2 is point at lower right corner
@@ -99,7 +101,6 @@ int cam::locateZone()  {
 
 void cam::getTrackingData(bColour colour){
   if(curColour != colour){
-    //cmuCam->setTrackingWindow(40,20,120,119);
     trackColour(colour);
   }
   cmuCam->getTypeTDataPacket(&tData); // Get a tracking packet
@@ -120,6 +121,15 @@ bColour cam::getBlockColour(){
       return (bColour)i;
     }
   }
+}
+void cam::setWindow(bay b){
+  if(curBay != b){
+    switch(b){
+      case LOADING:
+          cmuCam->setTrackingWindow(0,20,140,100);
+      break;
+    }
+  }  
 }
 /**
  * Finds absolute value of the param
@@ -170,4 +180,10 @@ void cam::trackColour(bColour colour){
       break;
     }
   }
+}
+
+
+int cmToPx(float cm){
+  #define CM_TO_PIX_CONV 17
+  return cm*CM_TO_PIX_CONV;
 }

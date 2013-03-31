@@ -8,7 +8,7 @@ void Movement::init(){
     backRightMotor.attach(MOTOR_BACK_R);
     rightClawMotor.attach(RCLAW_SERVO);
     rightExtendMotor.attach(RCLAW_EXTEND_SERVO);
-    rightExtendMotor.write(0);
+    rightExtendMotor.write(90);
     stop();
 }
 
@@ -18,15 +18,17 @@ void Movement::turnAround() {
 }
 
 void Movement::extendClaw(){
-	rightExtendMotor.write(20);
+	rightExtendMotor.write(180);
 }
 bool Movement::retractClaw(){
-	if((digitalRead(22))){
-		rightExtendMotor.write(180);
+	if(!(digitalRead(22))){
+		rightExtendMotor.write(90);
 		return false;
 	}
-	rightExtendMotor.write(0);
-	return true;
+	else{
+		rightExtendMotor.write(0);
+		return true;
+	}
 
 }
 
@@ -109,10 +111,10 @@ bool Movement::goToDeg(Servo motor, int d){
 bool Movement::setSpeed(int servo, float speed){
 	switch(servo){
 		case MOTOR_FRONT_L:
-			setSpeed(leftMotor,speed,false);
+			setSpeed(leftMotor,speed,true);
 			break;
 		case MOTOR_FRONT_R:
-			setSpeed(rightMotor,speed,true);
+			setSpeed(rightMotor,speed,false);
 			break;
         case MOTOR_BACK_L:
             setSpeed(backLeftMotor,speed,false);
