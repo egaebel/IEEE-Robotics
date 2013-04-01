@@ -11,7 +11,7 @@
 #define UPPER_LEFT_CORNER_Y	0
 #define LOWER_RIGHT_CORNER_X	0
 #define LOWER_RIGHT_CORNER_Y	0
-#define UNCERTAINTY_ALLOWANCE 5
+#define UNCERTAINTY_ALLOWANCE 8
 
 
 #define LED_BLINK 5 // 5 Hz
@@ -39,19 +39,24 @@ class cam{
 		cam(int pin);
 		void init();
 		bool inZone();
-                bool betweenZones();
-                int locateZone(); 
+        bool betweenZones();
+        int locateZone(); 
 		bColour getBlockColour();
 		bColour getBayColour();
 		bSize getBlockSize(bColour colour);
 		void getTrackingData(bColour colour);
 		void getTrackingData();
 	private:
+		int trackX1;
+		int trackX2;
+		int trackY1;
+		int trackY2;
+
 		bColour curColour;
 		bay curBay;
 		void trackColour(bColour colour);
 		void setWindow(bay b);
-                int cmToPx(float cm);
+        int cmToPx(float cm);
 		CMUcam4* cmuCam;
 		CMUcam4_tracking_data_t tData; //stands for Travis Data
 };

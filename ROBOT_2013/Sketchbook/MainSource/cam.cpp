@@ -64,39 +64,49 @@ bool cam::inZone(){
 		}
 		return 1;
     }*/
-    if(tData.x1 < (BOX_X1+BOX_UNC) && (tData.x2+BOX_UNC) > BOX_X1 && tData.x2 < (BOX_X2+BOX_UNC) && (tData.x2+BOX_UNC) > BOX_X2){
-        if(tData.y1 < (BOX_Y1+BOX_UNC) && (tData.y2+BOX_UNC) > BOX_Y1 && tData.y2 < (BOX_Y2+BOX_UNC) && (tData.y2+BOX_UNC) > BOX_Y2){
+
+    //if(tData.x1 < (BOX_X1+BOX_UNC) && (tData.x2+BOX_UNC) > BOX_X1 && tData.x2 < (BOX_X2+BOX_UNC) && (tData.x2+BOX_UNC) > BOX_X2){
+    if((tData.x2-tData.x1)+UNCERTAINTY_ALLOWANCE>cmToPx(BAY_WIDTH+LINE_WIDTH*2)){
+        //if(tData.y1 < (BOX_Y1+BOX_UNC) && (tData.y2+BOX_UNC) > BOX_Y1 && tData.y2 < (BOX_Y2+BOX_UNC) && (tData.y2+BOX_UNC) > BOX_Y2){
             Serial.println("BILLY BAYS HERE");
             return 1;
-        }
+        //}
     }
 	
     return 0;
 }
 
 //true if there is only one line on the screen
-bool cam::betweenZones()  {
+side cam::betweenZones()  {
 	getTrackingData(WHITE);
-	#define MAX_WIDTH 50
-	#define MIN_HEIGHT 200
 	
-	/*if((tData.x2-tData.x1)<WIDTH && (tData.y2-tData.y1)>MIN_HEIGHT)  {
-		return 1;
+	if((tData.x2-tData.x1) < cmToPx(LINE_WIDTH) + UNCERTAINTY_ALLOWANCE)  {
+		if(tData.mx > (trackX2 - trackX1) / 2)  {
+      return RIGHT;
+    }
+    else  {
+      return LEFT;
+    }
 	}
 	else  {
-		return 0;
-	}*/
-    return 0;	
+		return CENTER;
+	}
+	
 }
 
 //Returns positive if need to move right and negative if need to move left
-int cam::locateZone()  {
-	//getTrackingData(WHITE);
-	#define WIDTH 200
-	/*if(((tData.x2-tData.x1)>WIDTH-UNCERTAINTY_ALLOWANCE && (tData.x2-tData.x1)<WIDTH+UNCERTAINTY_ALLOWANCE))  {
-		return tData.x2-LOWER_RIGHT_CORNER;
-	}*/
-    return 0;
+side cam::locateZone()  {
+	getTrackingData(WHITE);
+
+	if(((tData.x2-tData.x1)> cmToPx(BAY_WIDTH + 2*LINE_WIDTH)-UNCERTAINTY_ALLOWANCE) && 
+    ((tData.x2-tData.x1)< cmToPx(BAY_WIDTH + 2)+UNCERTAINTY_ALLOWANCE))  {
+		if (tData.x2-LOWER_RIGHT_CORNER > 0)
+			return RIGHT;
+		else if (tdata.x2-LOWER_RIGHT_CORNER < 0)
+			return LEFT;
+		else
+			return CENTER;
+	}
 }
 
 void cam::getTrackingData(bColour colour){
@@ -126,7 +136,11 @@ void cam::setWindow(bay b){
   if(curBay != b){
     switch(b){
       case LOADING:
-          cmuCam->setTrackingWindow(0,20,140,100);
+          trackX1 = 0;
+          trackY1 = 20;
+          trackX2 = BAY_WIDTH+LINE_WIDTH*2;
+          trackY2 = 100;
+          cmuCam->setTrackingWindow(0,20,cmToPx(BAY_WIDTH+LINE_WIDTH*2),100);
       break;
     }
   }  
@@ -183,6 +197,6 @@ void cam::trackColour(bColour colour){
 }
 
 int cam::cmToPx(float cm){
-  #define CM_TO_PIX_CONV 17
+  #define CM_TO_PIX_CONV 15
   return cm*CM_TO_PIX_CONV;
 }
