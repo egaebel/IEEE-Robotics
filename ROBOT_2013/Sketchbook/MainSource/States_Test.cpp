@@ -63,8 +63,6 @@ void state1Update() {
 						move.stop();
 						Serial.println(camR.getBlockColour());
 						internalState++;
-		    	} else if(betweenZones() != dir && inBetween)  {
-
 		    	}
 		    	move.setSpeed(.25,0,-.1,-.1);
             }
@@ -85,32 +83,6 @@ void state1Update() {
             	internalState = 0;
            	}
         break;
-        /**case 3:
-        	if(digitalRead(52)&&digitalRead(53)){
-		    	if(camR.betweenZones() != dir){
-		    			dir = betweenZones();
-		    			inBetween = true;
-						internalState = 1;
-		    	}
-		    	move.setSpeed(.25,0,-.1,-.1);
-            }
-            else{
-            	move.stop();
-            	internalState = 0;
-           	}
-        break;*/
-        /**case 3:
-        	if(digitalRead(52)&&digitalRead(53)){
-		    	if(!camR.betweenZones()){
-						internalState = 1;
-		    	}
-		    	move.setSpeed(.25,0,-.1,-.1);
-            }
-            else{
-            	move.stop();
-            	internalState = 0;
-           	}
-        break;*/
 	}
 }
 
