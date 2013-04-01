@@ -64,7 +64,9 @@ bool cam::inZone(){
 		}
 		return 1;
     }*/
-    if(tData.x1 < (BOX_X1+BOX_UNC) && (tData.x2+BOX_UNC) > BOX_X1 && tData.x2 < (BOX_X2+BOX_UNC) && (tData.x2+BOX_UNC) > BOX_X2){
+
+    //if(tData.x1 < (BOX_X1+BOX_UNC) && (tData.x2+BOX_UNC) > BOX_X1 && tData.x2 < (BOX_X2+BOX_UNC) && (tData.x2+BOX_UNC) > BOX_X2){
+    if((tData.x2-tData.x1)+UNCERTAINTY_ALLOWANCE>cmToPx(BAY_WIDTH+LINE_WIDTH*2)){
         //if(tData.y1 < (BOX_Y1+BOX_UNC) && (tData.y2+BOX_UNC) > BOX_Y1 && tData.y2 < (BOX_Y2+BOX_UNC) && (tData.y2+BOX_UNC) > BOX_Y2){
             Serial.println("BILLY BAYS HERE");
             return 1;
@@ -78,7 +80,7 @@ bool cam::inZone(){
 bool cam::betweenZones()  {
 	getTrackingData(WHITE);
 	
-	if((tData.x2-tData.x1)< cmToPx(BAY_WIDTH))  {
+	if((tData.x2-tData.x1) < cmToPx(LINE_WIDTH)+UNCERTAINTY_ALLOWANCE)  {
 		return 1;
 	}
 	else  {
@@ -128,7 +130,11 @@ void cam::setWindow(bay b){
   if(curBay != b){
     switch(b){
       case LOADING:
-          cmuCam->setTrackingWindow(0,20,140,100);
+          trackX1 = 0;
+          trackY1 = 20;
+          trackX2 = BAY_WIDTH+LINE_WIDTH*2;
+          trackY2 = 100;
+          cmuCam->setTrackingWindow(0,20,cmToPx(BAY_WIDTH+LINE_WIDTH*2),100);
       break;
     }
   }  
@@ -185,6 +191,6 @@ void cam::trackColour(bColour colour){
 }
 
 int cam::cmToPx(float cm){
-  #define CM_TO_PIX_CONV 17
+  #define CM_TO_PIX_CONV 15
   return cm*CM_TO_PIX_CONV;
 }

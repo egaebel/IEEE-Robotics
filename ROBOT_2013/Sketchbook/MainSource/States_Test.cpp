@@ -37,7 +37,7 @@ void state1Enter() {
 
 void state1Update() {
 	switch(internalState){
-		case 34:
+		case 45:
 			camR.inZone();
 			break;
 		case 69:
@@ -61,8 +61,9 @@ void state1Update() {
 		    	if(camR.inZone()){
 						move.stop();
 						Serial.println(camR.getBlockColour());
+						internalState++;
 		    	}
-		    	move.setSpeed(.25,0,-1,-1);
+		    	move.setSpeed(.25,0,-.1,-.1);
             }
             else{
             	move.stop();
@@ -71,11 +72,15 @@ void state1Update() {
 		break;
 		case 2:
 			if(digitalRead(52)&&digitalRead(53)){
-		    	if(camR.inBetweenZone()){
+		    	if(camR.betweenZones()){
 						internalState = 1;
 		    	}
-		    	move.setSpeed(.25,0,-1,-1);
+		    	move.setSpeed(.25,0,-.1,-.1);
             }
+            else{
+            	move.stop();
+            	internalState = 0;
+           	}
         break;
 	}
 }
