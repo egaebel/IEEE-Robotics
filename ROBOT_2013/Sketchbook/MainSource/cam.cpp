@@ -75,23 +75,29 @@ bool cam::inZone(){
 }
 
 //true if there is only one line on the screen
-bool cam::betweenZones()  {
+side cam::betweenZones()  {
 	getTrackingData(WHITE);
 	
-	if((tData.x2-tData.x1)< cmToPx(BAY_WIDTH))  {
-		return 1;
+	if((tData.x2-tData.x1) < cmToPx(LINE_WIDTH) + UNCERTAINTY_ALLOWANCE)  {
+		if(tData.mx > (trackX2 - trackX1) / 2)  {
+      return RIGHT;
+    }
+    else  {
+      return LEFT;
+    }
 	}
 	else  {
-		return 0;
+		return CENTER;
 	}
-    return 0;	
+	
 }
 
 //Returns positive if need to move right and negative if need to move left
-/*side cam::locateZone()  {
+side cam::locateZone()  {
 	getTrackingData(WHITE);
 
-	if(((tData.x2-tData.x1)> cmToPx(BAY_WIDTH)-UNCERTAINTY_ALLOWANCE) && ((tData.x2-tData.x1)< cmToPx(BAY_WIDTH)+UNCERTAINTY_ALLOWANCE))  {
+	if(((tData.x2-tData.x1)> cmToPx(BAY_WIDTH + 2*LINE_WIDTH)-UNCERTAINTY_ALLOWANCE) && 
+    ((tData.x2-tData.x1)< cmToPx(BAY_WIDTH + 2)+UNCERTAINTY_ALLOWANCE))  {
 		if (tData.x2-LOWER_RIGHT_CORNER > 0)
 			return RIGHT;
 		else if (tdata.x2-LOWER_RIGHT_CORNER < 0)
@@ -99,7 +105,7 @@ bool cam::betweenZones()  {
 		else
 			return CENTER;
 	}
-}*/
+}
 
 void cam::getTrackingData(bColour colour){
   if(curColour != colour){
