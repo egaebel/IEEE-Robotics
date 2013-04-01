@@ -36,8 +36,6 @@ void state1Enter() {
 
 
 void state1Update() {
-	side dir;
-	bool inBetween = false;
 
 	switch(internalState){
 		case 45:
@@ -64,7 +62,6 @@ void state1Update() {
 		    	if(camR.inZone()){
 						move.stop();
 						Serial.println(camR.getBlockColour());
-						dir = betweenZones();
 						internalState++;
 		    	} else if(betweenZones() != dir && inBetween)  {
 
@@ -79,8 +76,7 @@ void state1Update() {
 		case 2:
 			if(digitalRead(52)&&digitalRead(53)){
 		    	if(camR.betweenZones()){
-		    			dir = betweenZones();
-						internalState++;
+						internalState--;
 		    	}
 		    	move.setSpeed(.25,0,-.1,-.1);
             }
