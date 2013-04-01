@@ -1,40 +1,61 @@
 #include "Sonar.h"
 
-Sonar::Sonar() {
+Sonar::Sonar(int address, int interruptPin) {
+  addr = address;
+  intPin = interruptPin;
+  distance = -2;
 }
 
-int Sonar::getLeftDistance() {
-
-  return leftDistance;
+int Sonar::getDistance() {
+  return distance;
 }
 
-int Sonar::getRightDistance() {
-
-  return rightDistance;
+boolean Sonar::update() {
+  if( intPin == -1 ){ //No Interrupts
+    if( i2cRequest() == 0){
+      //Serial.println("Delay Start");
+      delay(100);
+      //Serial.println("Delay End");
+      int dist = i2cRead();
+      if( dist == -1 ){
+        return true; //ERROR - no data
+      }
+      distance = dist;
+    }
+    return false; //SUCCESS
+  }
+  else{ //Interrupts
+     if(dataReady){
+       //Get Data
+       sonarISR(this);
+     }
+     else{
+        //Request Data
+        i2cRequest(); //Could use some work... Sends excessive requests
+     }
+     return false; //SUCCESS  
+  }
 }
 
-void Sonar::read() {
-
-  leftDistance = i2cRead(SONAR_LEFT);
-  rightDistance = i2cRead(SONAR_RIGHT);
+int Sonar::i2cRequest(){
+  //Serial.println("Requesting");
+  Wire.beginTransmission(addr);
+  Wire.write(0x51);
+  return (Wire.endTransmission());
 }
 
-int Sonar::i2cRead(int address) {
-
+int Sonar::i2cRead() {
+  //Serial.println("Reading");
   int data = -1;
 
-  Wire.beginTransmission(address);
-  Wire.write(0x51);
-  //Wire.endTransmission();
-  delay(100);
-  //Wire.beginTransmission(address);
-  Wire.requestFrom(address, 2);
+  Wire.beginTransmission(addr);
+  Wire.requestFrom(addr, 2);
   if (Wire.available() >= 2) {
     data = Wire.read() << 8;
     data |= Wire.read();
   }
   Wire.endTransmission();
-  //delay(25);
+  
   return data;
 }
 
@@ -50,5 +71,23 @@ void Sonar::changeAddress(byte oldAddress, byte newAddress){
  
        Wire.write(newAddress<<1);                                          //Send the new address to change to 
        Wire.endTransmission();
+}
+
+/* To be called from actual ISR so that we don't have to duplicate code.
+    See SonarTest.ino for example.
+*/
+int sonarISR(Sonar* sensor){
+       sensor->setDataReady(false);
+       //Get values
+       int dist = sensor->i2cRead();
+       if( dist != -1 ){
+         sensor->distance = dist;
+       }
+       //Request again
+       return sensor->i2cRequest();
+}
+
+void Sonar::setDataReady(boolean val){
+  dataReady = val;
 }
 

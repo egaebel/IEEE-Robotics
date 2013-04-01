@@ -10,6 +10,9 @@
 #include "Sonar.h"
 #include "SimpleFunctions.h"
 
+static Sonar sonarLeft(SONAR_LEFT,SONAR_LEFT_INT);
+static Sonar sonarRight(SONAR_RIGHT,SONAR_RIGHT_INT);
+
 //Prototypes
 void initEnter();
 void initUpdate();

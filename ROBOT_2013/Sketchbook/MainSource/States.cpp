@@ -8,8 +8,6 @@ static Movement move;
 static cam leftCam = cam(LCAM_PIN);
 static cam rightCam = cam(RCAM_PIN);
 
-static Sonar sonar;
-
 //positions used for the state machine
 static POSITION curPos = POS_START;
 static POSITION nextPos;
@@ -253,7 +251,7 @@ void moveToUpdate() {
             case 3:
                 move.slideLeft(0.1);
                 //we want to be a certain distance from the back wall
-                if (rightCam.inZone() && (sonar.getRightDistance() == SEA_START_LEFT_DIST)) {
+                if (rightCam.inZone() && (sonarRight.getDistance() == SEA_START_LEFT_DIST)) {
                     move.stop();
                     rBlockPos = 0;
                     lBlockPos = -1;
