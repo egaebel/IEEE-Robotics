@@ -2,6 +2,7 @@
 #include "States.h"
 #include "States_TEST.h"
 #include <Servo.h>
+#include <Wire.h>
 
 
 #define DEBUG_FSM 1

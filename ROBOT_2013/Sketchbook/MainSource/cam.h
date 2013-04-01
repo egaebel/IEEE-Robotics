@@ -39,8 +39,8 @@ class cam{
 		cam(int pin);
 		void init();
 		bool inZone();
-        bool betweenZones();
-        int locateZone(); 
+        int betweenZones();
+        side locateZone(); 
 		bColour getBlockColour();
 		bColour getBayColour();
 		bSize getBlockSize(bColour colour);
