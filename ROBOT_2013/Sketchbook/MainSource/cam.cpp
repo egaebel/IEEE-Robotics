@@ -100,7 +100,7 @@ int cam::betweenZones()  {
 side cam::locateZone()  {
 	getTrackingData(WHITE);
 
-	if(((tData.x2-tData.x1)> cmToPx(BAY_WIDTH + 2*LINE_WIDTH)-UNCERTAINTY_ALLOWANCE) && 
+/*	if(((tData.x2-tData.x1)> cmToPx(BAY_WIDTH + 2*LINE_WIDTH)-UNCERTAINTY_ALLOWANCE) && 
     ((tData.x2-tData.x1)< cmToPx(BAY_WIDTH + 2)+UNCERTAINTY_ALLOWANCE))  {
 		if (tData.x2-LOWER_RIGHT_CORNER_X > 0)
 			return RIGHT;
@@ -108,7 +108,8 @@ side cam::locateZone()  {
 			return LEFT;
 		else
 			return CENTER;
-	}
+	}*/
+    return CENTER;
 }
 
 void cam::getTrackingData(bColour colour){
@@ -116,8 +117,8 @@ void cam::getTrackingData(bColour colour){
     trackColour(colour);
   }
   cmuCam->getTypeTDataPacket(&tData); // Get a tracking packet
-  //Serial.print("pixels");Serial.println(tData.pixels);
-  //Serial.print("confidence");Serial.println(tData.confidence);
+  Serial.print("pixels");Serial.println(tData.pixels);
+  Serial.print("confidence");Serial.println(tData.confidence);
 }
 void cam::getTrackingData(){
   cmuCam->getTypeTDataPacket(&tData);
@@ -129,10 +130,11 @@ bColour cam::getBlockColour(){
   for(i=((int)WHITE)+1;i<(int)BLACK;i++){
     getTrackingData((bColour)i);
     //if we see enough pixels of that colour, we found the block
-    if(tData.pixels>cmToPx(BLOCK_WIDTH)){
+    if(tData.pixels>30){
       return (bColour)i;
     }
   }
+  return BROWN;
 }
 void cam::setWindow(bay b){
   if(curBay != b){
