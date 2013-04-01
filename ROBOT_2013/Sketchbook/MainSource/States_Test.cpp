@@ -37,6 +37,9 @@ void state1Enter() {
 
 void state1Update() {
 	switch(internalState){
+		case 0:
+			camR.getTrackingData(YELLOW);
+		break;
 		case 45:
 			camR.inZone();
 			break;
@@ -50,7 +53,7 @@ void state1Update() {
 				//move.closeClaw(RIGHT);
 			}
 		break;
-		case 0:
+		case 32:
 			if(goToWall(&move)){
 				move.stop();
 				internalState++;
