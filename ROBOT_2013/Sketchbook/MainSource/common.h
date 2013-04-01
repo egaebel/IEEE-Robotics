@@ -83,4 +83,10 @@ typedef struct block_t {
 
 #define BUMPER_L 53
 #define BUMPER_R 52
+    //Sonar - Addresses
+#define SONAR_LEFT 0x34 //0x70
+#define SONAR_RIGHT 0x36 //0x70
+    //Sonar - Interrupts
+#define SONAR_LEFT_INT 4  //PIN 19
+#define SONAR_RIGHT_INT 5 //PIN 18
 #endif

@@ -12,7 +12,18 @@ FiniteStateMachine fsm_debug(state1);
 extern State initState;
 FiniteStateMachine fsm(initState);
 
+void handleSonarLeft(){
+  sonarLeft.setDataReady(true);
+}
+
+void handleSonarRight(){
+  sonarRight.setDataReady(false);
+}
+
 void setup() {
+        delay(100); //Make sure we don't catch the PWM from POR of Sonar
+        attachInterrupt(SONAR_LEFT_INT,handleSonarLeft,FALLING);
+        attachInterrupt(SONAR_RIGHT_INT,handleSonarRight,FALLING);
 	//setup claws
 	//lClaw.init(LCLAW_EXTEND_SERVO, LCLAW_SERVO);
 	//rClaw.init(RCLAW_EXTEND_SERVO, RCLAW_SERVO);
@@ -21,9 +32,11 @@ void setup() {
 }
 
 void loop() {
+    sonarLeft.update();
+    sonarRight.update();
 #if DEBUG_FSM ==0
     fsm.update();
 #else
-	fsm_debug.update();
+    fsm_debug.update();
 #endif
 }

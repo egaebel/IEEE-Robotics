@@ -2,19 +2,40 @@
 #include <Wire.h>
 #include "Sonar.h"
 
-Sonar sensor;
+#define SONAR_LEFT 0x34 //0x70
+#define SONAR_RIGHT 0x36 //0x70
+
+#define SONAR_LEFT_INT 4  //PIN 19
+#define SONAR_RIGHT_INT 5 //PIN 18
+
+static Sonar left(SONAR_LEFT,SONAR_LEFT_INT);
+static Sonar right(SONAR_RIGHT,SONAR_RIGHT_INT);
+
+void handleSonarLeft(){
+  left.setDataReady(true);
+}
+
+void handleSonarRight(){
+  right.setDataReady(false);
+}
 
 void setup(){
   Serial.begin(9600);
   Wire.begin();
-  //TWBR=25000L;
-  //sensor.changeAddress(0x70,SONAR_LEFT);
+  delay(100); //Make sure we don't catch the PWM from POR of Sonar
+  attachInterrupt(SONAR_LEFT_INT,handleSonarLeft,FALLING);
+  attachInterrupt(SONAR_RIGHT_INT,handleSonarRight,FALLING);
+  
+  //TWBR=25000L; //Set I2C clock to 25k Hz
+  //sensor.changeAddress(0x70,SONAR_LEFT); //Set address of Sonar with address 0x70 to SONAR_LEFT
 }
 
 void loop(){;
-    sensor.read();
-    Serial.print("Left: 0x");
-    Serial.println(sensor.getLeftDistance(),HEX);
+    left.update();
+    right.update();
+  
+    Serial.print("Left:  0x");
+    Serial.println(left.getDistance(),HEX);
     Serial.print("Right: 0x");
-    Serial.println(sensor.getRightDistance(),HEX);
+    Serial.println(right.getDistance(),HEX);
 }
