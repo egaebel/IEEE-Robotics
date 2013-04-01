@@ -1,6 +1,12 @@
 #include "FiniteStateMachine.h"
 #include "States.h"
+#include "States_TEST.h"
 #include <Servo.h>
+
+
+#define DEBUG_FSM 1
+extern State state1;
+FiniteStateMachine fsm_debug(state1);
 
 extern State initState;
 FiniteStateMachine fsm(initState);
@@ -14,5 +20,9 @@ void setup() {
 }
 
 void loop() {
+#if DEBUG_FSM ==0
     fsm.update();
+#else
+	fsm_debug.update();
+#endif
 }
