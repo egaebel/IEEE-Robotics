@@ -77,19 +77,21 @@ bool cam::inZone(){
 }
 
 //true if there is only one line on the screen
-side cam::betweenZones()  {
+int cam::betweenZones()  {
 	getTrackingData(WHITE);
 	
 	if((tData.x2-tData.x1) < cmToPx(LINE_WIDTH) + UNCERTAINTY_ALLOWANCE)  {
-		if(tData.mx > (trackX2 - trackX1) / 2)  {
+		/**if(tData.mx > (trackX2 - trackX1) / 2)  {
       return RIGHT;
     }
     else  {
       return LEFT;
-    }
+    }*/
+    return 1;
 	}
 	else  {
-		return CENTER;
+    //return CENTER;
+    return 0;
 	}
 	
 }
@@ -100,9 +102,9 @@ side cam::locateZone()  {
 
 /*	if(((tData.x2-tData.x1)> cmToPx(BAY_WIDTH + 2*LINE_WIDTH)-UNCERTAINTY_ALLOWANCE) && 
     ((tData.x2-tData.x1)< cmToPx(BAY_WIDTH + 2)+UNCERTAINTY_ALLOWANCE))  {
-		if (tData.x2-LOWER_RIGHT_CORNER > 0)
+		if (tData.x2-LOWER_RIGHT_CORNER_X > 0)
 			return RIGHT;
-		else if (tdata.x2-LOWER_RIGHT_CORNER < 0)
+		else if (tData.x2-LOWER_RIGHT_CORNER_X < 0)
 			return LEFT;
 		else
 			return CENTER;
