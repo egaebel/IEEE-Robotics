@@ -33,19 +33,8 @@ void cam::init(){
 
 side cam::inZone(){
     setWindow(LOADING);
-  	getTrackingData(WHITE);
-  	#define CENTROID_X_MIN 70
-  	#define CENTROID_X_MAX 95
-  	#define CENTROID_Y_MIN 45`
-  	#define CENTROID_Y_MAX 75
-  	#define BAY_AREA_MIN 14000
-  	#define BAY_AREA_MAX 20000
-
-    #define BOX_X1 14
-    #define BOX_X2 137
-    #define BOX_Y1 30
-    #define BOX_Y2 90
-    #define BOX_UNC 10
+    getTrackingData(WHITE);
+    
     //Serial.print("X:");Serial.println(tData.mx);
     //Serial.print("Y:");Serial.println(tData.my);
     int area = (tData.x2-tData.x1)*(tData.y2-tData.y1);
@@ -58,19 +47,8 @@ side cam::inZone(){
     int boundingCentroidX = (tData.x2 - tData.x1) / 2;
     int windowCentroidX = (trackX2 - trackX1) / 2;
     
-    /*if(tData.mx>CENTROID_X_MIN && tData.mx<CENTROID_X_MAX && tData.my>CENTROID_Y_MIN && tData.my<CENTROID_Y_MAX && area>BAY_AREA_MIN && area<BAY_AREA_MAX)  {
-		//tdata1 is point at upper left corner and tdata2 is point at lower right corner
-		if(abs(tData.x1 - UPPER_LEFT_CORNER_X) < UNCERTAINTY_ALLOWANCE && abs(tData.x2 - LOWER_RIGHT_CORNER_X) < UNCERTAINTY_ALLOWANCE
-			&& abs(tData.y1 - UPPER_LEFT_CORNER_Y) < UNCERTAINTY_ALLOWANCE && abs(tData.y2 - LOWER_RIGHT_CORNER_Y) < UNCERTAINTY_ALLOWANCE)  {
-				Serial.println("WE FOUND MICHEAL BAY\n\n\n");
-				return 1;
-		}
-		return 1;
-    }*/
 
-    //if(tData.x1 < (BOX_X1+BOX_UNC) && (tData.x2+BOX_UNC) > BOX_X1 && tData.x2 < (BOX_X2+BOX_UNC) && (tData.x2+BOX_UNC) > BOX_X2){
     if((tData.x2-tData.x1)+UNCERTAINTY_ALLOWANCE > cmToPx(BAY_WIDTH+LINE_WIDTH*2))  {
-        //if(tData.y1 < (BOX_Y1+BOX_UNC) && (tData.y2+BOX_UNC) > BOX_Y1 && tData.y2 < (BOX_Y2+BOX_UNC) && (tData.y2+BOX_UNC) > BOX_Y2){
         if(boundingCentroidX > windowCentroidX + UNCERTAINTY_ALLOWANCE)  {
             return RIGHT;
         }
@@ -147,12 +125,7 @@ void cam::setWindow(bay b){
           trackY1 = 20;
           trackX2 = BAY_WIDTH+LINE_WIDTH*4;
           trackY2 = 100;
-<<<<<<< HEAD
           break;
-=======
-          cmuCam->setTrackingWindow(trackX1,trackY1,cmToPx(trackX2),trackY2);
-      break;
->>>>>>> be26576ad123e0ff3c98170f92acc56863884579
     }
     cmuCam->setTrackingWindow(trackX1,trackY1,trackX2,trackY2);
   }  
