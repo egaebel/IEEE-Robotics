@@ -62,12 +62,31 @@ void state1Update() {
 			break;
 		case 1:
             if(digitalRead(52)&&digitalRead(53)){
-		    	if(camR.inZone()){
+		    	switch(camR.inZone())  {
+		    		case CENTER:
+		    			move.stop();
+						Serial.println(camR.getBlockColour());
+						internalState++;
+						move.setSpeed(.25,0,-.1,-.1);
+		    		break;
+		    		case LEFT:
+		    			move.setSpeed(.25,0,.05,.05);
+		    		break;
+		    		case RIGHT:
+		    			move.setSpeed(.25,0,-.05,-.05);
+		    		break;
+		    		case NO_SIDE:
+		    			move.setSpeed(.25,0,-.1,-.1);
+		    		break;
+		    	}
+
+
+		    	/**if(camR.inZone() != NO_SIDE){
 						move.stop();
 						Serial.println(camR.getBlockColour());
 						internalState++;
 		    	}
-		    	move.setSpeed(.25,0,-.1,-.1);
+		    	move.setSpeed(.25,0,-.1,-.1);*/
             }
             else{
             	move.stop();

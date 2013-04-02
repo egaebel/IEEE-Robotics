@@ -38,8 +38,8 @@ class cam{
 	public:
 		cam(int pin);
 		void init();
-		bool inZone();
-        int betweenZones();
+		side inZone();
+        bool betweenZones();
         side locateZone(); 
 		bColour getBlockColour();
 		bColour getBayColour();

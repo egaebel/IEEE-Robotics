@@ -46,7 +46,8 @@ typedef enum SIZE{
 typedef enum side_t{
 	LEFT,
 	RIGHT,
-	CENTER
+	CENTER,
+	NO_SIDE
 } side;
 
 typedef struct block_t {
