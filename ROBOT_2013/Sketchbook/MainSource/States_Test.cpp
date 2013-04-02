@@ -3,6 +3,7 @@
 #include "FiniteStateMachine.h"
 #include "Movement.h"
 #include "cam.h"
+#include "Sonar.h"
 using namespace std;
 
 UART_STRUCT uart;
@@ -22,6 +23,8 @@ void state2Exit();
 State state1 = State(state1Enter, state1Update, state1Exit);
 State state2 = State(state2Enter, state2Update, state2Exit);
 
+
+extern Sonar sonarRight;
 extern FiniteStateMachine fsm_test;
 
 int internalState;
@@ -38,9 +41,9 @@ void state1Enter() {
 void state1Update() {
 
 	switch(internalState){
-		case 0:
-			camR.getTrackingData(BROWN);
-		break;
+		case 21321:
+			Serial.println(sonarRight.getDistance());
+			break;
 		case 45:
 			camR.inZone();
 			break;
@@ -54,7 +57,7 @@ void state1Update() {
 				//move.closeClaw(RIGHT);
 			}
 		break;
-		case 32:
+		case 0:
 			if(goToWall(&move)){
 				move.stop();
 				internalState++;

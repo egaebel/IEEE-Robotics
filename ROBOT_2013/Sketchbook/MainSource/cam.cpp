@@ -32,7 +32,7 @@ void cam::init(){
 }
 
 bool cam::inZone(){
-    setWindow(LOADING);
+    //setWindow(LOADING);
   	getTrackingData(WHITE);
   	#define CENTROID_X_MIN 70
   	#define CENTROID_X_MAX 95
@@ -144,9 +144,9 @@ void cam::setWindow(bay b){
           trackY1 = 20;
           trackX2 = BAY_WIDTH+LINE_WIDTH*2;
           trackY2 = 100;
-          cmuCam->setTrackingWindow(0,20,cmToPx(BAY_WIDTH+LINE_WIDTH*2),100);
-      break;
+          break;
     }
+    cmuCam->setTrackingWindow(trackX1,trackY1,trackX2,trackY2);
   }  
 }
 /**
@@ -201,6 +201,6 @@ void cam::trackColour(bColour colour){
 }
 
 int cam::cmToPx(float cm){
-  #define CM_TO_PIX_CONV 15
+  #define CM_TO_PIX_CONV 14
   return cm*CM_TO_PIX_CONV;
 }

@@ -1,6 +1,9 @@
 #include "States.h"
 
 extern FiniteStateMachine fsm;
+extern Sonar sonarRight;
+extern Sonar sonarLeft;
+
 
 //Hardware classes----
 static Movement move;

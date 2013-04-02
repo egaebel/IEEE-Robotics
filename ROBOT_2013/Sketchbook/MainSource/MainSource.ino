@@ -6,8 +6,13 @@
 
 
 #define DEBUG_FSM 1
+
+Sonar sonarLeft(SONAR_LEFT,SONAR_LEFT_INT);
+//Sonar sonarRight(SONAR_RIGHT,SONAR_RIGHT_INT);
+Sonar sonarRight(SONAR_RIGHT);
 extern State state1;
 FiniteStateMachine fsm_debug(state1);
+
 
 extern State initState;
 FiniteStateMachine fsm(initState);
