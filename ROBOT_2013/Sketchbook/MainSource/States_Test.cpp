@@ -39,7 +39,7 @@ void state1Update() {
 
 	switch(internalState){
 		case 0:
-			camR.getTrackingData(YELLOW);
+			camR.getTrackingData(BROWN);
 		break;
 		case 45:
 			camR.inZone();

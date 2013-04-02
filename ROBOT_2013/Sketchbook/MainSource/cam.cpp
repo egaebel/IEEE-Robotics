@@ -11,7 +11,7 @@ void cam::init(){
   	// Wait for auto gain and auto white balance to run.
     cmuCam->autoGainControl(false);
     cmuCam->autoWhiteBalance(false);
-    cmuCam->cameraBrightness(50);
+    cmuCam->cameraBrightness(35);
     cmuCam->cameraContrast(31);
   	cmuCam->LEDOn(LED_BLINK);
   	//delay(WAIT_TIME);

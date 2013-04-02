@@ -18,4 +18,44 @@ r:104	g:113	b:175
 
 
 
+Color Testing (from live reads)
+=============
+BLUE
+45p
+120 confidence
 
+BLUE
+Purple
+40 px and above
+130 confidence and above
+
+YELLOW (FUCK YEAH!)
+
+RED (CAN BE IMPROVED UPON!)
+30s px
+60s confidence
+
+BROWN (CAN BE IMPROVED UPON A LOT,LIKE... A LOT)
+
+GREEN (this sucks)
+
+
+Color Reading (from picturez)
+=============================
+Green:
+R--G--B
+66|97|82
+
+Brightness=35
+--------------
+Brown:
+R--G--B
+57|56|49
+
+Black
+R--G--B
+66|85|82
+
+Green
+----
+||

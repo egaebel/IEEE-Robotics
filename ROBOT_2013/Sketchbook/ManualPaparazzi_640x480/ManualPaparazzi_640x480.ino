@@ -21,7 +21,7 @@
 #define POSE_TIME 5000 // 5 seconds
 #define WAIT_TIME 5000 // 5 seconds
 
-CMUcam4 cam(1);
+CMUcam4 cam(3);
 
 void setup()
 {
@@ -34,8 +34,8 @@ void setup()
   cam.LEDOn(LED_SETUP);
   cam.autoGainControl(false);
   cam.autoWhiteBalance(false);
-  cam.cameraBrightness(50);
-  cam.cameraContrast(10);
+  cam.cameraBrightness(35);
+  cam.cameraContrast(31);
   delay(WAIT_TIME);
 
   cam.LEDOn(CMUCAM4_LED_ON);
