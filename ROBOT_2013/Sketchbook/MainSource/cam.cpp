@@ -34,9 +34,8 @@ void cam::init(){
     curColour = BLACK;
     curBay = NONE;
 }
-
-side cam::inZone(){
-    //setWindow(LOADING);
+side cam::inZone(bay b){
+    setWindow(b);
     getTrackingData(WHITE);
     
     //Serial.print("X:");Serial.println(tData.mx);
@@ -141,6 +140,12 @@ void cam::setWindow(bay b){
           trackY1 = 20;
           trackX2 = BAY_WIDTH+LINE_WIDTH*4;
           trackY2 = 100;
+          break;
+      case SEA:
+          trackX1 = 0;
+          trackX2 = 159;
+          trackY1 = 0;
+          trackY2 = 50;
           break;
     }
     cmuCam->setTrackingWindow(trackX1,trackY1,trackX2,trackY2);

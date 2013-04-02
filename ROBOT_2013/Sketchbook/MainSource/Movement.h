@@ -10,6 +10,7 @@
 class Movement {
 public:
 		void init();
+		void slideWall(side s);
 		void slideLeft(float speed);
 		void slideRight(float speed);
 		void turnLeft(float speed);

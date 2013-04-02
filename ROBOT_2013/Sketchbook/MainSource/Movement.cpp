@@ -188,3 +188,13 @@ void Movement::setSpeed(Servo motor, float speed, bool inverted){
 
 	motor.write(speed); //set speed
 }
+void Movement::slideWall(side s){
+	switch(s){
+		case RIGHT:
+			setSpeed(.25,0,-.1,-.1);
+		break;
+		case LEFT:
+    		setSpeed(.25,0,.1,.1);
+		break;
+	}
+}

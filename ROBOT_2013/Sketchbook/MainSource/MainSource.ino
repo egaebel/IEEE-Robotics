@@ -42,8 +42,9 @@ void setup() {
 }
 
 void loop() {
-    sonarLeft.update();
-    sonarRight.update();
+    Serial.println("Herp");
+    //sonarLeft.update();
+    //sonarRight.update();
 #if DEBUG_FSM ==0
     fsm.update();
 #else

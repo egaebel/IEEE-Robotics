@@ -1,6 +1,7 @@
 #include "SimpleFunctions.h"
 
 extern Movement move;
+extern cam rightCam;
 bool fullOfBlocks(Block blocks[], int numBlocks) {
 
 	for (int i = 0; i < numBlocks; i++) {
@@ -35,6 +36,28 @@ bool getBayPos(Block blocks[], int numBlocks, bColour leftColor, bColour rightCo
 
 	return haveInfo;
 }
+
+bool centerBay(side strafeDir, bay b){
+	if(goToWall()){
+		switch(rightCam.inZone(b))  {
+			case CENTER:
+				move.stop();
+				return true;
+    		break;
+    		case LEFT:
+    			move.setSpeed(0,.25,.05,.05); //SLOW
+    		break;
+    		case RIGHT:
+    			move.setSpeed(.25,0,-.05,-.05); //SLOW
+    		break;
+    		case NO_SIDE:
+    			move.slideWall(strafeDir);
+    		break;
+    	}
+    }
+    return false;
+}
+
 bool goToWall()
 {
   	if(digitalRead(53)&&digitalRead(52)){

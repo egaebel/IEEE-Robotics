@@ -59,35 +59,18 @@ void state1Update() {
 			}
 		break;
 		case 0:
-            if(goToWall()){
-		    	switch(rightCam.inZone())  {
-		    		case CENTER:
-		    			Serial.println("CENTER");
-		    			move.stop();
-						Serial.println(rightCam.getBlockColour());
-						internalState++;
-		    		break;
-		    		case LEFT:
-		    			Serial.println("LEFT");
-		    			move.setSpeed(0,.25,.05,.05);
-		    		break;
-		    		case RIGHT:
-		    			Serial.println("RIGHT");
-		    			move.setSpeed(.25,0,-.05,-.05);
-		    		break;
-		    		case NO_SIDE:
-		    			Serial.println("NO_SIDE");
-		    			move.setSpeed(.25,0,-.1,-.1);
-		    		break;
-		    	}
-            }
+			if(centerBay(RIGHT,SEA)){
+				move.stop();
+				Serial.print("COLOUR: ");Serial.println(rightCam.getBlockColour());
+				internalState++;
+			}
 		break;
 		case 1:
 			if(goToWall()){
 		    	if(rightCam.betweenZones()){
 						internalState--;
 		    	}
-		    	move.setSpeed(.25,0,-.1,-.1);
+		    	move.slideWall(RIGHT);
             }
         break;
 	}
