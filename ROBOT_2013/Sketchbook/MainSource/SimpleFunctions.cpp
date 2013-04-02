@@ -77,6 +77,14 @@ bool leftIRHangingOffEdge()  {
 	return false;
 }
 
+bool rightIRHangingOffEdge()  {
+	/* !!! */	/* !!! */	/* !!! */	/* !!! */	/* !!! */
+	//TO BE IMPLEMENTED (USE IR TO DETERMINE DISTANCE TO GROUND)
+	//TO BE IMPLEMENTED (USE IR TO DETERMINE DISTANCE TO GROUND)
+	//TO BE IMPLEMENTED (USE IR TO DETERMINE DISTANCE TO GROUND)
+	return false;
+}
+
 Block* getZoneByPos(bPosition pos, Block * seaZone, Block * railZone, Block * loadingZone) {
 
 	if (pos == POS_SEA) {

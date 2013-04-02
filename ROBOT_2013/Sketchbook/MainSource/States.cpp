@@ -234,7 +234,7 @@ void scanUpdate() {
 				rBlockPos++;
 				if(lBlockPos > 1){
 					//Done, Now check if bay order is same as order of blocks in arms
-					if(rBlock.colour == airZone[2]) { //Same order
+					if(rBlock.colour == airZone[2].colour) { //Same order
 						airOrderSame = true;
 						fsm.transitionTo(dropState); 
 					} else {
@@ -243,7 +243,8 @@ void scanUpdate() {
 					}
 				}
 				break;
-    }
+			}
+	}
 }
 
 //moveToState
@@ -676,8 +677,8 @@ void moveToUpdate() {
 			case 8: //Keep moving backwards until the timer is done, meaning the robot is centered enough, when it is, turn 90 deg to face air loading zone
 				if(timer.isDone()) {
 					move.stop();
-					turn90(LEFT);
-					internalState++
+					move.turn90(LEFT);
+					internalState++;
 					break;
 				} else  {
 					move.backward(VERY_SLOW);
