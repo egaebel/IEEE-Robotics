@@ -216,7 +216,6 @@ void moveToUpdate() {
             case 0:
                 move.slideRight(0.25);
                 if(rightCam.inZone()){
-                    move.stop();
                     internalState++;
                 }
                 break;
@@ -238,15 +237,11 @@ void moveToUpdate() {
                 internalState++;
                 break;
             case 1:
-                move.stop();
-                //TODO: figure out the speed needed, or get stopping condition
-                move.turnRight(0.1);
+                move.turn90();
                 internalState++;
                 break;
             case 2:
-                move.stop();
                 if (goToWall(&move)) {
-                    move.stop();
                     internalState++;
                 }
                 break;
@@ -255,7 +250,6 @@ void moveToUpdate() {
                 move.slideLeft(0.1);
                 //we want to be a certain distance from the back wall
                 if (rightCam.inZone() && (sonarRight.getDistance() == SEA_START_LEFT_DIST)) {
-                    move.stop();
                     rBlockPos = 0;
                     lBlockPos = -1;
                     internalState++;
@@ -267,7 +261,6 @@ void moveToUpdate() {
                 //make it so the cams can both read a zone
                 if (rightCam.inZone() 
                     /*&& leftCam.inZone()*/) {
-                    move.stop();
                     rBlockPos++;
                     lBlockPos++;
                     internalState++;
@@ -278,7 +271,6 @@ void moveToUpdate() {
                 move.slideRight(0.1);
                 if (rightCam.inZone()/* && leftCam.inZone() */
                     && leftCam.getBayColour() != loadingZone[rBlockPos].colour) {
-                    move.stop();
                     rBlockPos += 2;
                     lBlockPos += 2;
                     internalState++;
@@ -303,15 +295,12 @@ void moveToUpdate() {
                 break;
             //turn around
             case 1:
-                move.stop();
                 move.turnAround();
                 internalState++;
                 break;
             //and hit the wall
             case 2:
-                move.stop();
                 if(goToWall(&move)) {
-                    move.stop();
                     internalState++;
                 }
                 break;
@@ -321,7 +310,6 @@ void moveToUpdate() {
                 move.slideRight(0.25);
                 //TODO: MAKE "IFBLACK" FUNCTION
                 if(!rightCam.inZone()) {
-                    move.stop();
                     internalState++;
                 }
                 break;
@@ -329,7 +317,6 @@ void moveToUpdate() {
             case 4: 
                 move.slideLeft(0.25);
                 if (leftCam.inZone()) {
-                    move.stop();
                     internalState++;
                 }
                 break;
@@ -352,7 +339,7 @@ void moveToUpdate() {
                 internalState++;
                 break;
             case 2:
-                move.turnLeft(0.1);
+                move.turn90();
                 internalState++;
                 break;
             //move to wall
@@ -423,7 +410,7 @@ void moveToUpdate() {
                 break;
             //turn right
             case 2:
-                move.turnRight(0.1);
+                move.turn90();
                 internalState++;
                 break;
             //move to wall
@@ -435,7 +422,6 @@ void moveToUpdate() {
             case 4: 
                 move.slideRight(0.25);
                 if (rightCam.betweenZones()) {
-                    move.stop();
                     internalState++;
                 }
                 break;
@@ -485,14 +471,11 @@ void moveToUpdate() {
                 internalState++;
                 break;
             case 1:
-                move.stop();
                 move.turnAround();
                 internalState++;
                 break;
             case 2:
-                move.stop();
                 if(goToWall(&move)) {
-                    move.stop();
                     internalState++;
                 }
                 break;
@@ -511,7 +494,6 @@ void moveToUpdate() {
             case 4:
                 move.slideLeft(0.25);
                 if (leftCam.inZone()) {
-                    move.stop();
                     internalState += 2;
                 }
                 break;
@@ -519,7 +501,6 @@ void moveToUpdate() {
             case 5:
                 move.slideRight(0.25);
                 if (rightCam.inZone() && rBlockPos == 0) {
-                    move.stop();
                     internalState++;
                 }
                 break;
