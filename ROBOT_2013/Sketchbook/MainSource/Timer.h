@@ -10,6 +10,7 @@ class Timer {
 
 	public:
 		Timer(int endDur);
+		void init(int endDuration);
 		bool isDone();
 		//will start the timer, if not already started. So it's safe to keep calling
 		void start();
