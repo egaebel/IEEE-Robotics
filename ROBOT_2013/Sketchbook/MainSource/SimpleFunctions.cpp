@@ -39,7 +39,6 @@ bool getBayPos(Block blocks[], int numBlocks, bColour leftColor, bColour rightCo
 bool goToWall()
 {
   	if(digitalRead(53)&&digitalRead(52)){
-		move.stop();
 		return true;
 	}
     else if( digitalRead(53)){
