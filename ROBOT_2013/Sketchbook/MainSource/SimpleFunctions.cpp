@@ -37,9 +37,9 @@ bool getBayPos(Block blocks[], int numBlocks, bColour leftColor, bColour rightCo
 	return haveInfo;
 }
 
-bool centerBay(side strafeDir, bay b){
+bool centerBay(side strafeDir, bPosition pos, cam* c){
 	if(goToWall()){
-		switch(rightCam.inZone(b))  {
+		switch(c->inZone(pos))  {
 			case CENTER:
 				move.stop();
 				return true;

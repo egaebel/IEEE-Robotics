@@ -59,19 +59,13 @@ void state1Update() {
 			}
 		break;
 		case 0:
-			if(centerBay(RIGHT,SEA)){
+			if(centerBay(RIGHT,POS_SEA, &rightCam)){
 				move.stop();
 				Serial.print("COLOUR: ");Serial.println(rightCam.getBlockColour());
 				internalState++;
 			}
 		break;
 		case 1:
-			if(goToWall()){
-		    	if(rightCam.betweenZones()){
-						internalState--;
-		    	}
-		    	move.slideWall(RIGHT);
-            }
         break;
 	}
 }

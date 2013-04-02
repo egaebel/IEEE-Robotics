@@ -112,70 +112,50 @@ void scanEnter() {
 }
 
 void scanUpdate() {
-    
     //Perform the scanning actions
     switch(internalState){
         //Move until hitting a colour
         case 0:
-            //scanning sea (state transition 2 in state diagram)
             if (curPos == POS_SEA) {
-
-                move.slideRight(0.25);
-
                 //focused on bay, read colour
-                if(rightCam.inZone()){
+                if(centerBay(RIGHT,curPos,&rightCam)){
                     move.stop();             
                     loadingZone[rBlockPos].colour = rightCam.getBlockColour(); 
                     loadingZone[rBlockPos].size = rightCam.getBlockSize(loadingZone[rBlockPos].colour);
                     rBlockPos++;
-                    if(rBlockPos > 5){
-                        //we are done lets moveTo the next place
+                    if(rBlockPos > 5)
                         internalState = 2;
-                    }
-                    else{
+                    else
                         internalState = 1;
-                    }
                 }
             }
             //scanning rail (state transition 6)
             else if (curPos == POS_RAIL) {
-
-                move.slideLeft(0.25);
-
                 //if we're focused on a bay, read colour
-                if (leftCam.inZone()) {
-                    
+                if (centerBay(LEFT,curPos,&leftCam)) {
                     move.stop();
                     loadingZone[lBlockPos].colour = leftCam.getBlockColour(); 
                     loadingZone[lBlockPos].size = leftCam.getBlockSize(loadingZone[lBlockPos].colour);
                     lBlockPos++;
-                    if(lBlockPos > 5){
-                        //we are done lets moveTo the next place
+                    if(lBlockPos > 5)
                         internalState = 2;
-                    }
-                    else{
+                    else
                         internalState = 1;
-                    }
                 }
             }
             //scanning pickup (state transition 4)
             else if (curPos == POS_PICK_UP) {
-
-                move.slideRight(0.25);
                 //TODO: change to "onBlock" or something?
-                if (rightCam.inZone()) {
+                if (centerBay(RIGHT,curPos,&rightCam)) {
                     move.stop();
                     loadingZone[rBlockPos].colour = rightCam.getBlockColour(); 
     	            loadingZone[rBlockPos].size = rightCam.getBlockSize(loadingZone[rBlockPos].colour);
                     loadingZone[rBlockPos].present = true;
                     rBlockPos++;
-                    if(rBlockPos > 13){
-                        //we are done lets moveTo the next place
+                    if(rBlockPos > 13)
                         internalState = 2;
-                    }
-                    else{
+                    else
                         internalState = 1;
-                    }
                 }
             }
             
@@ -198,28 +178,18 @@ void scanUpdate() {
             break;
         //We already read this colour, so just keep moving until white
         case 1:
-            //move right
-            if (curPos == POS_SEA || curPos == POS_PICK_UP) {
-                move.slideRight(0.25);
-                if(rightCam.betweenZones()){
-                    move.stop();
-                    internalState = 0;
-                }
-            }
-            //move left
-            else {
-                move.slideLeft(0.25);
-                if(leftCam.betweenZones()){
-                    move.stop();
-                    internalState = 0;
-                }
+            if(goToWall()){
+                if(rightCam.betweenZones())
+                        internalState = 0;
+                if(curPos== POS_RAIL)
+                    move.slideWall(LEFT);
+                else
+                    move.slideWall(RIGHT);
             }
             break;
         case 2:
             //nextPos and curPos transitions were handled in most recent moveTo call
             fsm.transitionTo(moveToState);
-            //TODO: not sure if we need to change enter...it currently takes a *fsm...
-            //fsm.enter();
             break;
         
         case 10:

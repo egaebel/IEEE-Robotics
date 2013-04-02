@@ -32,10 +32,10 @@ void cam::init(){
     trackY1 = 0;
     trackY2 = 119;
     curColour = BLACK;
-    curBay = NONE;
+    curPos = POS_START;
 }
-side cam::inZone(bay b){
-    setWindow(b);
+side cam::inZone(bPosition pos){
+    setWindow(pos);
     getTrackingData(WHITE);
     
     //Serial.print("X:");Serial.println(tData.mx);
@@ -132,16 +132,16 @@ bColour cam::getBlockColour(){
   }
   return BROWN;
 }
-void cam::setWindow(bay b){
-  if(curBay != b){
-    switch(b){
-      case LOADING:
+void cam::setWindow(bPosition pos){
+  if(curPos != pos){
+    switch(pos){
+      case POS_PICK_UP:
           trackX1 = 0;
           trackY1 = 20;
           trackX2 = BAY_WIDTH+LINE_WIDTH*4;
           trackY2 = 100;
           break;
-      case SEA:
+      case POS_SEA:
           trackX1 = 0;
           trackX2 = 159;
           trackY1 = 0;
