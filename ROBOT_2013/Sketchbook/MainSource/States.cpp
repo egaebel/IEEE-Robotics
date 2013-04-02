@@ -38,10 +38,16 @@ static Block loadingZone[14];
 static Block seaZone[6]; 
 //Rail zone colours, listed west to east. 
 static Block railZone[6]; 
+//Air zone colours, listed west to east. 
+static Block airZone[2]; 
+
 
 //Drop-off zones complete
 static bool railDone;
 static bool seaDone;
+
+//Whether order of bays in air and whats in hand is the same
+bool airOrderSame;
 
 static const int PICKUP_SIZE = 14;
 static const int RAIL_SEA_SIZE = 6;
@@ -176,12 +182,13 @@ void scanUpdate() {
             //Scanning Air
             else if (curPos == POS_AIR) {
 				if(leftIRHangingOffEdge()) {
-					timer.init(500);
-					timer.start();
-					fsm.transitionTo(dropState);
+					rBlockPos = 0; //Reinitalize to use as index for airZone[2] iteration
+					internalState = 10;
+					
 				} else {
 					move.slideLeft(VERY_SLOW);
 				}
+				break;
 			}
 			
 			else {
@@ -214,6 +221,28 @@ void scanUpdate() {
             //TODO: not sure if we need to change enter...it currently takes a *fsm...
             //fsm.enter();
             break;
+        
+        case 10:
+			move.slideRight(VERY_SLOW);
+
+			//if we're focused on a bay, read colour
+			if (rightCam.inZone()) {
+				move.slideRight(VERY_SLOW);
+					//TODO: change to "onBlock" or something?
+				move.stop();
+				airZone[rBlockPos].colour = rightCam.getBlockColour(); 
+				rBlockPos++;
+				if(lBlockPos > 1){
+					//Done, Now check if bay order is same as order of blocks in arms
+					if(rBlock.colour == airZone[2]) { //Same order
+						airOrderSame = true;
+						fsm.transitionTo(dropState); 
+					} else {
+						airOrderSame = false;
+						fsm.transitionTo(dropState);
+					}
+				}
+				break;
     }
 }
 
