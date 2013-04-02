@@ -1,15 +1,11 @@
 #include <Arduino.h>
 #include <Wire.h>
+#include "common.h"
 #include "Sonar.h"
 
-#define SONAR_LEFT 0x34 //0x70
-#define SONAR_RIGHT 0x36 //0x70
+Sonar left(SONAR_LEFT,SONAR_LEFT_INT);
+Sonar right(SONAR_RIGHT,SONAR_RIGHT_INT);
 
-#define SONAR_LEFT_INT 4  //PIN 19
-#define SONAR_RIGHT_INT 5 //PIN 18
-
-static Sonar left(SONAR_LEFT,SONAR_LEFT_INT);
-static Sonar right(SONAR_RIGHT,SONAR_RIGHT_INT);
 
 void handleSonarLeft(){
   left.setDataReady(true);
