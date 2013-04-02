@@ -8,8 +8,8 @@ using namespace std;
 
 UART_STRUCT uart;
 
-Movement move;
-cam camR(3);
+extern Movement move;
+extern cam rightCam;
 
 //Prototypes
 void state1Enter();
@@ -34,7 +34,7 @@ void state1Enter() {
 	internalState = 0;
 	pinMode(53, INPUT);
 	move.init();
-	camR.init();
+	rightCam.init();
 }
 
 
@@ -45,7 +45,7 @@ void state1Update() {
 			Serial.println(sonarRight.getDistance());
 			break;
 		case 45:
-			camR.inZone();
+			rightCam.inZone();
 			break;
 		case 69:
 			if(digitalRead(53)){
@@ -58,17 +58,17 @@ void state1Update() {
 			}
 		break;
 		case 0:
-			if(goToWall(&move)){
+			if(goToWall()){
 				move.stop();
 				internalState++;
 			}
 			break;
 		case 1:
             if(digitalRead(52)&&digitalRead(53)){
-		    	switch(camR.inZone())  {
+		    	switch(rightCam.inZone())  {
 		    		case CENTER:
 		    			move.stop();
-						Serial.println(camR.getBlockColour());
+						Serial.println(rightCam.getBlockColour());
 						internalState++;
 						move.setSpeed(.25,0,-.1,-.1);
 		    		break;
@@ -84,9 +84,9 @@ void state1Update() {
 		    	}
 
 
-		    	/**if(camR.inZone() != NO_SIDE){
+		    	/**if(rightCam.inZone() != NO_SIDE){
 						move.stop();
-						Serial.println(camR.getBlockColour());
+						Serial.println(rightCam.getBlockColour());
 						internalState++;
 		    	}
 		    	move.setSpeed(.25,0,-.1,-.1);*/
@@ -98,7 +98,7 @@ void state1Update() {
 		break;
 		case 2:
 			if(digitalRead(52)&&digitalRead(53)){
-		    	if(camR.betweenZones()){
+		    	if(rightCam.betweenZones()){
 						internalState--;
 		    	}
 		    	move.setSpeed(.25,0,-.1,-.1);

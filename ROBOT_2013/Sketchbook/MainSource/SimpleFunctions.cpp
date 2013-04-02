@@ -1,5 +1,6 @@
 #include "SimpleFunctions.h"
 
+extern Movement move;
 bool fullOfBlocks(Block blocks[], int numBlocks) {
 
 	for (int i = 0; i < numBlocks; i++) {
@@ -34,20 +35,20 @@ bool getBayPos(Block blocks[], int numBlocks, bColour leftColor, bColour rightCo
 
 	return haveInfo;
 }
-bool goToWall(Movement *move)
+bool goToWall()
 {
   	if(digitalRead(53)&&digitalRead(52)){
-		move->stop();
+		move.stop();
 		return true;
 	}
     else if( digitalRead(53)){
-      	move->setSpeed(0,.25,0,-1);
+      	move.setSpeed(0,.25,0,-1);
     }
     else if( digitalRead(52)){
-      	move->setSpeed(.25,0,1,0);
+      	move.setSpeed(.25,0,1,0);
     }
     else{
-       	move->forward(0.10);
+       	move.forward(0.10);
     }
     return false;
 }

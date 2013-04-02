@@ -10,10 +10,15 @@
 Sonar sonarLeft(SONAR_LEFT,SONAR_LEFT_INT);
 //Sonar sonarRight(SONAR_RIGHT,SONAR_RIGHT_INT);
 Sonar sonarRight(SONAR_RIGHT);
+
+Movement move;
+
+cam leftCam = cam(LCAM_PIN);
+cam rightCam = cam(RCAM_PIN);
+
+
 extern State state1;
 FiniteStateMachine fsm_debug(state1);
-
-
 extern State initState;
 FiniteStateMachine fsm(initState);
 

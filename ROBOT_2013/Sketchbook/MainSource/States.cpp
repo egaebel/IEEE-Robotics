@@ -6,10 +6,11 @@ extern Sonar sonarLeft;
 
 
 //Hardware classes----
-static Movement move;
+extern Movement move;
 
-static cam leftCam = cam(LCAM_PIN);
-static cam rightCam = cam(RCAM_PIN);
+extern cam leftCam;
+extern cam rightCam;
+
 
 //positions used for the state machine
 static POSITION curPos = POS_START;
@@ -84,7 +85,7 @@ void initUpdate() {
             internalState++;
             break;
         case 1:
-            if(goToWall(&move)){
+            if(goToWall()){
                 curPos = POS_START;
                 nextPos = POS_SEA;
                 fsm.transitionTo(moveToState);
@@ -241,7 +242,7 @@ void moveToUpdate() {
                 internalState++;
                 break;
             case 2:
-                if (goToWall(&move)) {
+                if (goToWall()) {
                     internalState++;
                 }
                 break;
@@ -300,7 +301,7 @@ void moveToUpdate() {
                 break;
             //and hit the wall
             case 2:
-                if(goToWall(&move)) {
+                if(goToWall()) {
                     internalState++;
                 }
                 break;
@@ -344,7 +345,7 @@ void moveToUpdate() {
                 break;
             //move to wall
             case 3:
-                if (goToWall(&move)) {
+                if (goToWall()) {
                     internalState++;
                 }
                 break;
@@ -415,7 +416,7 @@ void moveToUpdate() {
                 break;
             //move to wall
             case 3:
-                if (goToWall(&move)) {
+                if (goToWall()) {
                     internalState++;
                 }
                 break;
@@ -475,7 +476,7 @@ void moveToUpdate() {
                 internalState++;
                 break;
             case 2:
-                if(goToWall(&move)) {
+                if(goToWall()) {
                     internalState++;
                 }
                 break;
@@ -537,7 +538,7 @@ void moveToUpdate() {
                 internalState++;
                 break;
             case 3:
-                if (goToWall(&move)) {
+                if (goToWall()) {
                     internalState++;
                 }
                 break;
