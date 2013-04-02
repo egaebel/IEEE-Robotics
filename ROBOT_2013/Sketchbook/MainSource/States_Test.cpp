@@ -41,8 +41,9 @@ void state1Enter() {
 void state1Update() {
 
 	switch(internalState){
-		case 21321:
+		case 320:
 			Serial.println(sonarRight.getDistance());
+			move.setSpeed(.25,0,-.1,-.1);
 			break;
 		case 45:
 			rightCam.inZone();
@@ -58,55 +59,36 @@ void state1Update() {
 			}
 		break;
 		case 0:
-			if(goToWall()){
-				move.stop();
-				internalState++;
-			}
-			break;
-		case 1:
-            if(digitalRead(52)&&digitalRead(53)){
+            if(goToWall()){
 		    	switch(rightCam.inZone())  {
 		    		case CENTER:
+		    			Serial.println("CENTER");
 		    			move.stop();
 						Serial.println(rightCam.getBlockColour());
 						internalState++;
-						move.setSpeed(.25,0,-.1,-.1);
 		    		break;
 		    		case LEFT:
-		    			move.setSpeed(.25,0,.05,.05);
+		    			Serial.println("LEFT");
+		    			move.setSpeed(0,.25,.05,.05);
 		    		break;
 		    		case RIGHT:
+		    			Serial.println("RIGHT");
 		    			move.setSpeed(.25,0,-.05,-.05);
 		    		break;
 		    		case NO_SIDE:
+		    			Serial.println("NO_SIDE");
 		    			move.setSpeed(.25,0,-.1,-.1);
 		    		break;
 		    	}
-
-
-		    	/**if(rightCam.inZone() != NO_SIDE){
-						move.stop();
-						Serial.println(rightCam.getBlockColour());
-						internalState++;
-		    	}
-		    	move.setSpeed(.25,0,-.1,-.1);*/
-            }
-            else{
-            	move.stop();
-                internalState = 0;
             }
 		break;
-		case 2:
-			if(digitalRead(52)&&digitalRead(53)){
+		case 1:
+			if(goToWall()){
 		    	if(rightCam.betweenZones()){
 						internalState--;
 		    	}
 		    	move.setSpeed(.25,0,-.1,-.1);
             }
-            else{
-            	move.stop();
-            	internalState = 0;
-           	}
         break;
 	}
 }
