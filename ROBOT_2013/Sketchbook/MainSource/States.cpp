@@ -4,6 +4,8 @@ extern FiniteStateMachine fsm;
 extern Sonar sonarRight;
 extern Sonar sonarLeft;
 
+//Timer Time needed to center in Air State
+extern Timer timer(1000);
 
 //Hardware classes----
 extern Movement move;
@@ -565,6 +567,64 @@ void moveToUpdate() {
                 break;
         }
     }
+    
+    //Moving from Pick_Up to Air
+    else if (curPos == POS_PICK_UP && nextPos == POS_AIR) {
+		switch (internalState) {
+			case 1:
+				move.turnAround();
+				internalState++;
+				break;
+			case 2:
+				if(goToWall()) {
+					internalState++;
+				} 
+				break;
+			case 3:
+				move.turn90(LEFT);
+				internalState++;
+				break;
+			case 4:
+				if(goToWall()) {
+					internalState++;
+				} 
+				break;
+				
+			case 5:
+				move.turn90(LEFT);
+				internalState++;
+				break;
+				
+			case 6:
+				if(frontHangingOffEdge()) { //To Be Implemented
+					move.stop();
+					internalState++;
+					break;
+				} else {
+					move.forward(0.05);
+				}
+				
+			case 7:	
+				timer.init(1000);
+				timer.start();
+				internalState++;
+				break;
+			case 8:
+				if(timer.isDone()) {
+					move.stop();
+					turn90(LEFT);
+					internalState++
+					break;
+				} else  {
+					move.backward();
+				}
+			case 9:
+				if(
+				
+				
+		}
+	}
+    
     else {
         //shouldn't be here, maybe make another case?
         //assert(0);
@@ -578,15 +638,6 @@ void pickUpEnter() {
   	//Figure out which blocks you need to pick up
 	if(!seaDone) {
 		for(int i = 0; i < 6; i++) {
-			if(!railZone[i].present == false) {
-				lTargetBlock = railZone[i];
-				rTargetBlock = railZone[++i];
-                break;
-			}
-		}
-	}
-	else if(!railDone) {
-		for(int i = 0; i < 6; i++) {
 			if(seaZone[i].present == false) {
 				lTargetBlock = seaZone[i];
 				rTargetBlock = seaZone[++i];
@@ -594,6 +645,17 @@ void pickUpEnter() {
 			}
 		}
 	}
+	
+	else if(!railDone) {
+		for(int i = 0; i < 6; i++) {
+			if(!railZone[i].present == false) {
+				lTargetBlock = railZone[i];
+				rTargetBlock = railZone[++i];
+                break;
+			}
+		}
+	}
+	
 	else {
 	    int i = 0;
 		for(i = 0; i < 14; i++) {

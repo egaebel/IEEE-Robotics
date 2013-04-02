@@ -5,6 +5,11 @@ Timer::Timer(int end) {
 	started = false;
 }
 
+void Timer::init(int end)  {
+	endDuration = end;
+	started = false;
+}
+	
 bool Timer::isDone(){
 	if(started&&(millis()>endTime)){
 		return true;

@@ -35,10 +35,10 @@ bool getBayPos(Block blocks[], int numBlocks, bColour leftColor, bColour rightCo
 
 	return haveInfo;
 }
+
 bool goToWall()
 {
   	if(digitalRead(53)&&digitalRead(52)){
-		move.stop();
 		return true;
 	}
     else if( digitalRead(53)){
@@ -51,6 +51,16 @@ bool goToWall()
        	move.forward(0.10);
     }
     return false;
+}
+
+/** Used only in Air state */
+bool frontHangingOffEdge()  {
+	/* !!! */	/* !!! */	/* !!! */	/* !!! */	/* !!! */
+	//TO BE IMPLEMENTED (USE IR TO DETERMINE DISTANCE TO GROUND)
+	//TO BE IMPLEMENTED (USE IR TO DETERMINE DISTANCE TO GROUND)
+	//TO BE IMPLEMENTED (USE IR TO DETERMINE DISTANCE TO GROUND)
+	
+	return false;
 }
 
 Block* getZoneByPos(bPosition pos, Block * seaZone, Block * railZone, Block * loadingZone) {
@@ -68,3 +78,4 @@ Block* getZoneByPos(bPosition pos, Block * seaZone, Block * railZone, Block * lo
 		return NULL;
 	}
 }
+

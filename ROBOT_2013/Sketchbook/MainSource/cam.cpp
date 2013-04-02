@@ -27,28 +27,44 @@ void cam::init(){
   	cmuCam->colorTracking(YUV_MODE);
 
   	cmuCam->noiseFilter(NOISE_FILTER);
+    trackX1 = 0;
+    trackX2 = 159;
+    trackY1 = 0;
+    trackY2 = 119;
     curColour = BLACK;
     curBay = NONE;
 }
 
 side cam::inZone(){
-    setWindow(LOADING);
+    //setWindow(LOADING);
     getTrackingData(WHITE);
     
     //Serial.print("X:");Serial.println(tData.mx);
     //Serial.print("Y:");Serial.println(tData.my);
     int area = (tData.x2-tData.x1)*(tData.y2-tData.y1);
     //Serial.print("area:");Serial.println(area);
-    Serial.print("X1:");Serial.println(tData.x1);
+/*    Serial.print("X1:");Serial.println(tData.x1);
     Serial.print("X2:");Serial.println(tData.x2);
     Serial.print("Y1:");Serial.println(tData.y1);
-    Serial.print("Y2:");Serial.println(tData.y2);
+    Serial.print("Y2:");Serial.println(tData.y2);*/
 
-    int boundingCentroidX = (tData.x2 - tData.x1) / 2;
+    int boundingCentroidX = ((tData.x2 - tData.x1) / 2)+tData.x1;
     int windowCentroidX = (trackX2 - trackX1) / 2;
     
+    Serial.print("bounding:");Serial.println(boundingCentroidX);
+    Serial.print("window:");Serial.println(windowCentroidX);
 
     if((tData.x2-tData.x1)+UNCERTAINTY_ALLOWANCE > cmToPx(BAY_WIDTH+LINE_WIDTH*2))  {
+/*        if((windowCentroidX-UNCERTAINTY_ALLOWANCE) < boundingCentroidX && boundingCentroidX < (windowCentroidX+UNCERTAINTY_ALLOWANCE)){
+          return CENTER;
+        }
+        else if((windowCentroidX-UNCERTAINTY_ALLOWANCE) < boundingCentroidX){
+          return RIGHT;
+        }
+        else if(boundingCentroidX < (windowCentroidX+UNCERTAINTY_ALLOWANCE)){
+          return LEFT;
+        }*/
+
         if(boundingCentroidX > windowCentroidX + UNCERTAINTY_ALLOWANCE)  {
             return RIGHT;
         }
@@ -98,8 +114,8 @@ void cam::getTrackingData(bColour colour){
     trackColour(colour);
   }
   cmuCam->getTypeTDataPacket(&tData); // Get a tracking packet
-  Serial.print("pixels");Serial.println(tData.pixels);
-  Serial.print("confidence");Serial.println(tData.confidence);
+  //Serial.print("pixels");Serial.println(tData.pixels);
+  //Serial.print("confidence");Serial.println(tData.confidence);
 }
 void cam::getTrackingData(){
   cmuCam->getTypeTDataPacket(&tData);
