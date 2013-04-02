@@ -75,13 +75,35 @@ bool goToWall()
     return false;
 }
 
-/** Used only in Air state */
+/** Used only in Air state 
+ *  If the front two IR sensors is hanging of the edge of the elevated ramp/air area
+ */
 bool frontHangingOffEdge()  {
 	/* !!! */	/* !!! */	/* !!! */	/* !!! */	/* !!! */
 	//TO BE IMPLEMENTED (USE IR TO DETERMINE DISTANCE TO GROUND)
 	//TO BE IMPLEMENTED (USE IR TO DETERMINE DISTANCE TO GROUND)
 	//TO BE IMPLEMENTED (USE IR TO DETERMINE DISTANCE TO GROUND)
 	
+	return false;
+}
+
+/** Used only in Air state
+ *  If the left IR sensor is hanging of the edge of the elevated ramp/air area
+ */
+bool leftIRHangingOffEdge()  {
+	/* !!! */	/* !!! */	/* !!! */	/* !!! */	/* !!! */
+	//TO BE IMPLEMENTED (USE IR TO DETERMINE DISTANCE TO GROUND)
+	//TO BE IMPLEMENTED (USE IR TO DETERMINE DISTANCE TO GROUND)
+	//TO BE IMPLEMENTED (USE IR TO DETERMINE DISTANCE TO GROUND)
+	
+	return false;
+}
+
+bool rightIRHangingOffEdge()  {
+	/* !!! */	/* !!! */	/* !!! */	/* !!! */	/* !!! */
+	//TO BE IMPLEMENTED (USE IR TO DETERMINE DISTANCE TO GROUND)
+	//TO BE IMPLEMENTED (USE IR TO DETERMINE DISTANCE TO GROUND)
+	//TO BE IMPLEMENTED (USE IR TO DETERMINE DISTANCE TO GROUND)
 	return false;
 }
 

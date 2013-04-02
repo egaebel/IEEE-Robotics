@@ -38,10 +38,16 @@ static Block loadingZone[14];
 static Block seaZone[6]; 
 //Rail zone colours, listed west to east. 
 static Block railZone[6]; 
+//Air zone colours, listed west to east. 
+static Block airZone[2]; 
+
 
 //Drop-off zones complete
 static bool railDone;
 static bool seaDone;
+
+//Whether order of bays in air and whats in hand is the same
+bool airOrderSame;
 
 static const int PICKUP_SIZE = 14;
 static const int RAIL_SEA_SIZE = 6;
@@ -153,7 +159,7 @@ void scanUpdate() {
                 }
             }
             //scanning pickup (state transition 4)
-            else {
+            else if (curPos == POS_PICK_UP) {
 
                 move.slideRight(0.25);
                 //TODO: change to "onBlock" or something?
@@ -172,6 +178,22 @@ void scanUpdate() {
                     }
                 }
             }
+            
+            //Scanning Air
+            else if (curPos == POS_AIR) {
+				if(leftIRHangingOffEdge()) {
+					rBlockPos = 0; //Reinitalize to use as index for airZone[2] iteration
+					internalState = 10;
+					
+				} else {
+					move.slideLeft(VERY_SLOW);
+				}
+				break;
+			}
+			
+			else {
+				//Not in any of specified positions
+			}
 
             break;
         //We already read this colour, so just keep moving until white
@@ -199,7 +221,30 @@ void scanUpdate() {
             //TODO: not sure if we need to change enter...it currently takes a *fsm...
             //fsm.enter();
             break;
-    }
+        
+        case 10:
+			move.slideRight(VERY_SLOW);
+
+			//if we're focused on a bay, read colour
+			if (rightCam.inZone()) {
+				move.slideRight(VERY_SLOW);
+					//TODO: change to "onBlock" or something?
+				move.stop();
+				airZone[rBlockPos].colour = rightCam.getBlockColour(); 
+				rBlockPos++;
+				if(lBlockPos > 1){
+					//Done, Now check if bay order is same as order of blocks in arms
+					if(rBlock.colour == airZone[2].colour) { //Same order
+						airOrderSame = true;
+						fsm.transitionTo(dropState); 
+					} else {
+						airOrderSame = false;
+						fsm.transitionTo(dropState);
+					}
+				}
+				break;
+			}
+	}
 }
 
 //moveToState
@@ -571,57 +616,82 @@ void moveToUpdate() {
     //Moving from Pick_Up to Air
     else if (curPos == POS_PICK_UP && nextPos == POS_AIR) {
 		switch (internalState) {
-			case 1:
+			
+			case 1: //Turn around to face wall oposite pick_up area
 				move.turnAround();
 				internalState++;
 				break;
-			case 2:
+				
+			case 2: //Once reached wall go to next internalState
 				if(goToWall()) {
 					internalState++;
-				} 
-				break;
-			case 3:
-				move.turn90(LEFT);
-				internalState++;
-				break;
-			case 4:
-				if(goToWall()) {
-					internalState++;
-				} 
+				}
 				break;
 				
-			case 5:
+			case 3: 
 				move.turn90(LEFT);
 				internalState++;
 				break;
 				
-			case 6:
+			case 4: 
+				if(goToWall()) { //When reach the wall, turn 90 degrees to face the ramp
+					internalState++;
+				}
+				break;
+				
+			case 5: 
+				if(true) /* SONAR distance check (if < vvvvvv*/  {
+					move.stop();
+					move.turn90(LEFT);
+					internalState++;
+					break;
+				} else { 
+					move.backward(VERY_SLOW);
+				} 
+								
+			case 6: //Move forward until reaching the mid-point ramp's overhang
 				if(frontHangingOffEdge()) { //To Be Implemented
 					move.stop();
 					internalState++;
 					break;
-				} else {
-					move.forward(0.05);
+				} 
+				else if (leftIRHangingOffEdge()) {
+					//Do corrective actions
+					
+				} 
+				
+				else if (rightIRHangingOffEdge()) {
+					//Do corrective actions
+					
+				}
+				else {
+					move.forward(VERY_SLOW);
 				}
 				
-			case 7:	
+			case 7:	//Start timer (which determines how long to move backwards, in order to 'center' the robot on the ramp)
 				timer.init(1000);
 				timer.start();
 				internalState++;
 				break;
-			case 8:
+				
+			case 8: //Keep moving backwards until the timer is done, meaning the robot is centered enough, when it is, turn 90 deg to face air loading zone
 				if(timer.isDone()) {
 					move.stop();
-					turn90(LEFT);
-					internalState++
+					move.turn90(LEFT);
+					internalState++;
 					break;
 				} else  {
-					move.backward();
+					move.backward(VERY_SLOW);
 				}
-			case 9:
-				if(
 				
-				
+			case 9: //Move forward until the air loading zone is reached. Once reached, transition to scanning state.
+				if(frontHangingOffEdge()) { //To Be Implemented
+					move.stop();
+					fsm.transitionTo(scanState);
+					break;
+				} else {
+					move.forward(VERY_SLOW);
+				}
 		}
 	}
     

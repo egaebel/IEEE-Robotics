@@ -1,15 +1,16 @@
 #include "FiniteStateMachine.h"
 #include "States.h"
-#include "States_TEST.h"
+#include "States_Test.h"
 #include <Servo.h>
 #include <Wire.h>
 
 
 #define DEBUG_FSM 1
 
-Sonar sonarLeft(SONAR_LEFT,SONAR_LEFT_INT);
-//Sonar sonarRight(SONAR_RIGHT,SONAR_RIGHT_INT);
-Sonar sonarRight(SONAR_RIGHT);
+//Sonar sonarLeft(SONAR_LEFT,SONAR_LEFT_INT);
+Sonar sonarRight(SONAR_RIGHT,SONAR_RIGHT_INT);
+Sonar sonarLeft(SONAR_LEFT);
+//Sonar sonarRight(SONAR_RIGHT);
 
 Movement move;
 
@@ -34,6 +35,7 @@ void setup() {
         delay(100); //Make sure we don't catch the PWM from POR of Sonar
         attachInterrupt(SONAR_LEFT_INT,handleSonarLeft,FALLING);
         attachInterrupt(SONAR_RIGHT_INT,handleSonarRight,FALLING);
+        Wire.begin();
 	//setup claws
 	//lClaw.init(LCLAW_EXTEND_SERVO, LCLAW_SERVO);
 	//rClaw.init(RCLAW_EXTEND_SERVO, RCLAW_SERVO);
@@ -42,9 +44,10 @@ void setup() {
 }
 
 void loop() {
-    Serial.println("Herp");
-    //sonarLeft.update();
-    //sonarRight.update();
+    sonarLeft.update();
+    sonarRight.update();
+    Serial.print("Sonar Left: 0x");
+    Serial.println(sonarLeft.getDistance(),HEX);
 #if DEBUG_FSM ==0
     fsm.update();
 #else
