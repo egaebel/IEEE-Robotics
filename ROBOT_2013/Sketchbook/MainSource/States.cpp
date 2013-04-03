@@ -233,6 +233,7 @@ void moveToUpdate() {
             //move to first bay in sea
             case 0:
                 move.slideRight(0.25);
+                //SONAR
                 if(rightCam.inZone()){
                     internalState++;
                 }
@@ -242,108 +243,6 @@ void moveToUpdate() {
                 fsm.transitionTo(scanState); 
                 curPos = nextPos;
                 nextPos = POS_PICK_UP;
-                break;
-        }
-    }
-    //sea to pickup (scanning) (3 in the state diagram)
-    else if (isScanning && curPos == POS_SEA && nextPos == POS_PICK_UP) {
-        switch(internalState) {
-            //internal states 0-2 backup, turn, and move to the wall
-            case 0:
-                //TODO: figure out the speed needed, or get stopping condition
-                move.backward(0.1);
-                internalState++;
-                break;
-            case 1:
-                move.turn90();
-                internalState++;
-                break;
-            case 2:
-                if (goToWall()) {
-                    internalState++;
-                }
-                break;
-            //ensure we are the start of the zone
-            case 3:
-                move.slideLeft(0.1);
-                //we want to be a certain distance from the back wall
-                if (rightCam.inZone() && (sonarRight.getDistance() == SEA_START_LEFT_DIST)) {
-                    rBlockPos = 0;
-                    lBlockPos = -1;
-                    internalState++;
-                }
-                break;
-            //slide into position
-            case 4:
-                move.slideRight(0.25);
-                //make it so the cams can both read a zone
-                if (rightCam.inZone() 
-                    /*&& leftCam.inZone()*/) {
-                    rBlockPos++;
-                    lBlockPos++;
-                    internalState++;
-                }
-                break;
-            //slide two spaces
-            case 5:
-                move.slideRight(0.1);
-                if (rightCam.inZone()/* && leftCam.inZone() */
-                    && leftCam.getBayColour() != loadingZone[rBlockPos].colour) {
-                    rBlockPos += 2;
-                    lBlockPos += 2;
-                    internalState++;
-                }
-                break;
-            //transition to scan
-            case 6:
-                curPos = nextPos;
-                nextPos = POS_RAIL;
-                fsm.transitionTo(scanState);
-                break;
-        }
-    }
-    //pickup to rail (scanning) (5 in the state diagram)
-    else if(isScanning && curPos == POS_PICK_UP && nextPos == POS_RAIL){
-
-        switch(internalState){    
-            //backup from wall
-            case 0:
-                move.backward(0.25);
-                internalState++;
-                break;
-            //turn around
-            case 1:
-                move.turnAround();
-                internalState++;
-                break;
-            //and hit the wall
-            case 2:
-                if(goToWall()) {
-                    internalState++;
-                }
-                break;
-            //move to the right of the zone
-            //slide Right until we are past the first bay
-            case 3:
-                move.slideRight(0.25);
-                //TODO: MAKE "IFBLACK" FUNCTION
-                if(!rightCam.inZone()) {
-                    internalState++;
-                }
-                break;
-            //slide left until we are IN the first bay
-            case 4: 
-                move.slideLeft(0.25);
-                if (leftCam.inZone()) {
-                    internalState++;
-                }
-                break;
-            case 5:
-                //We are done scanning after this last scan!
-                isScanning = false;
-                curPos = nextPos;
-                nextPos = POS_PICK_UP;
-                fsm.transitionTo(scanState);
                 break;
         }
     }
@@ -384,8 +283,7 @@ void moveToUpdate() {
             //determine position
             case 6:
                 //returns if the robot is in a bay (true if it is, false if not) sets lBlockPos and rBlockPos if over bay
-                if (getBayPos(seaZone, RAIL_SEA_SIZE, 
-                        leftCam.getBayColour(), rightCam.getBayColour(), 
+                if (getBayPos(sonarRight.getDistance(), SEA_SAFE_ZONE,  
                         &lBlockPos, &rBlockPos)) {
                     internalState++;
                 }
@@ -405,15 +303,10 @@ void moveToUpdate() {
             //check if we need to move sector in zone
             case 0:
                 //check if we are safe to turn around
-                if (rBlockPos > 2) {
+                if (sonarRight.getDistance() >= SEA_SAFE_ZONE) {
                     move.slideLeft(0.1);
-                    //if we are now inZone
-                    if (rightCam.inZone()) {
-                        rBlockPos--;
-                        lBlockPos--;
-                    }
-                    //if we are at the block at index 2, then we're safe
-                    if (rBlockPos < 3) {
+                    //check if we're in the safe zone now
+                    if (sonarRight.getDistance() >= SEA_SAFE_ZONE) {
                         internalState++;
                     }
                 }
@@ -428,7 +321,7 @@ void moveToUpdate() {
                 break;
             //turn right
             case 2:
-                move.turn90();
+                move.turn90(RIGHT);
                 internalState++;
                 break;
             //move to wall
@@ -437,34 +330,14 @@ void moveToUpdate() {
                     internalState++;
                 }
                 break;
-            case 4: 
-                move.slideRight(0.25);
-                if (rightCam.betweenZones()) {
-                    internalState++;
-                }
+            case 4:
+                //if sonar is at beginning of pickup=>internalState++
+                //else if INSIDE pickup 
+                    //if we're scanning move.slideLeft
+                    //else, discover location etc.
+                //else if to left of pickup move.slideRight
                 break;
             case 5:
-                //center over block or sector (if not off the edge)
-                //if centered internalState += 2;
-                //if not over zone internalState++;
-                break;
-            //
-            case 6:
-                //moving left
-                move.slideLeft(0.1);
-                //if both cameras are in zones (make possible....)
-                if (leftCam.inZone() /*&& rightCam.inZone()*/) {
-                    internalState--;
-                }
-                break;
-            //determine position
-            case 7:
-                //returns if the robot is in a bay (true if it is, false if not) sets lBlockPos and rBlockPos if over bay
-                if (getBayPos(seaZone, RAIL_SEA_SIZE, leftCam.getBayColour(), rightCam.getBayColour(), &lBlockPos, &rBlockPos)) {
-                    internalState++;
-                }
-                break;
-            case 8:
                 curPos = nextPos;
                 
                 if (!seaDone) { 
@@ -474,7 +347,14 @@ void moveToUpdate() {
                 else {
                     nextPos = POS_RAIL;
                 }
-                fsm.transitionTo(pickUpState);
+
+                //if we need to scan pickup
+                if (isScanning) {
+                    fsm.transitionTo(scanState);
+                }
+                else {
+                    fsm.transitionTo(pickUpState);
+                }
 
                 break;
         }
@@ -500,7 +380,8 @@ void moveToUpdate() {
             //figure out whether to go left or right based on location in rail
             case 3:
                 //returns if the robot is in a bay (true if it is, false if not) sets lBlockPos and rBlockPos if over bay
-                if (getBayPos(seaZone, RAIL_SEA_SIZE, leftCam.getBayColour(), rightCam.getBayColour(), &lBlockPos, &rBlockPos)) {
+                //TODO: change to sonar.....
+                if (getBayPos(sonarRight.getDistance(), PICKUP_START_LEFT_DIST, &lBlockPos, &rBlockPos)) {
                     internalState++;
                 }
                 //to the left of the sea zone
@@ -523,18 +404,25 @@ void moveToUpdate() {
                 }
                 break;
             case 6:
-                //if rail isn't full
-                if (!fullOfBlocks(railZone, RAIL_SEA_SIZE)) {
+                if (isScanning) {
                     curPos = nextPos;
                     nextPos = POS_PICK_UP;
-                    fsm.transitionTo(dropState);
+                    fsm.transitionTo(scanState);
                 }
-                //if air isn't full (which it won't be)
                 else {
-                    //TODO: Kickstart the air states
-                    curPos = nextPos;
-                    nextPos = POS_AIR;
-                    fsm.transitionTo(moveToState);
+                    //if rail isn't full
+                    if (!fullOfBlocks(railZone, RAIL_SEA_SIZE)) {
+                        curPos = nextPos;
+                        nextPos = POS_PICK_UP;
+                        fsm.transitionTo(dropState);
+                    }
+                    //if air isn't full (which it won't be)
+                    else {
+                        //TODO: Kickstart the air states
+                        curPos = nextPos;
+                        nextPos = POS_AIR;
+                        fsm.transitionTo(moveToState);
+                    }
                 }
                 //TODO: not sure if we need to change enter...it currently takes a *fsm...
                 //fsm.enter();
@@ -561,7 +449,8 @@ void moveToUpdate() {
                 break;
             case 4:
                  //returns if the robot is in a bay (true if it is, false if not) sets lBlockPos and rBlockPos if over bay
-                if (getBayPos(seaZone, RAIL_SEA_SIZE, leftCam.getBayColour(), rightCam.getBayColour(), &lBlockPos, &rBlockPos)) {
+                if (getBayPos(sonarRight.getDistance(), SEA_SAFE_ZONE,  
+                        &lBlockPos, &rBlockPos)) {
                     internalState++;
                 }
                 //to the left of the sea zone
@@ -582,7 +471,6 @@ void moveToUpdate() {
                 break;
         }
     }
-    
     //Moving from Pick_Up to Air
     else if (curPos == POS_PICK_UP && nextPos == POS_AIR) {
 		switch (internalState) {
