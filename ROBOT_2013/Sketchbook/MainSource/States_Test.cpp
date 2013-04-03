@@ -10,7 +10,7 @@ UART_STRUCT uart;
 
 extern Movement move;
 extern cam rightCam;
-
+extern cam leftCam;
 //Prototypes
 void state1Enter();
 void state1Update();
@@ -35,13 +35,17 @@ void state1Enter() {
 	pinMode(53, INPUT);
 	move.init();
 	rightCam.init();
+    leftCam.init();
 }
 
 
 void state1Update() {
 
 	switch(internalState){
-		case 320:
+		case 0:
+			rightCam.getTrackingData(BLUE);
+			break;
+		case 123:
 			Serial.println(sonarRight.getDistance());
 			move.setSpeed(.25,0,-.1,-.1);
 			break;
@@ -58,7 +62,7 @@ void state1Update() {
 				//move.closeClaw(RIGHT);
 			}
 		break;
-		case 0:
+		case 10:
 			if(centerBay(RIGHT,POS_SEA, &rightCam)){
 				move.stop();
 				Serial.print("COLOUR: ");Serial.println(rightCam.getBlockColour());

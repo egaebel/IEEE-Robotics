@@ -9,6 +9,8 @@
 #include "Movement.h"
 #include "Sonar.h"
 #include "SimpleFunctions.h"
+#include "IRlib.h"
+
 
 //Prototypes
 void initEnter();
