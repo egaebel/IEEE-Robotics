@@ -166,20 +166,19 @@ void scanUpdate() {
             
             //Scanning Air
             else if (curPos == POS_AIR) {
-				if(leftIR.getIR() > 10.0 && rightIR.getIR() < 10.0) { //If only left IR hanging off edge
-					move.stop();
-					internalState = 10;	
-				} else {
-					move.slideLeft(VERY_SLOW);
-				}
+				internalState = 10;
+				timer.init(500);  
+				timer.start();
+				move.backward(VERY_SLOW);
 				break;
 			}
 			
 			else {
 				//Not in any of specified positions
 			}
-
             break;
+            
+            
         //We already read this colour, so just keep moving until white
         case 1:
             if(goToWall()){
@@ -196,13 +195,27 @@ void scanUpdate() {
             fsm.transitionTo(moveToState);
             break;
         
-        case 10: //Strafe right until leftCam.inZone() of left most bay -> then read color
+        case 10:
+			if(timer.isDone() && leftIR.getIR() < 10.0 && rightIR.getIR() < 10.0) { //When timer is over and both IR's back on land
+				move.stop();
+				internalState++;
+				move.slideLeft(VERY_SLOW); //Start strafing left
+			}
+			
+        case 11:
+			if(leftIR.getIR() > 10.0) { //If left IR hanging off edge
+				move.stop();
+				internalState++;
+				move.slideRight(VERY_SLOW);	
+			}
+			break;
+        
+        
+        case 12: //Strafe right until leftCam.inZone() of left most bay -> then read color
 			if (leftCam.inZone()) { /**ASSUMING CAM WORKS FOR BAYS ON THE AIR PLATFORM**/
 				move.stop();
 				airOrderSame = (lBlock.colour == (airZoneLeft.colour = leftCam.getBlockColour())); //Assigns cam's detected color to left bay's color in airZone and tests whether it's equal to left held block's color
 				fsm.transitionTo(dropState);	
-			} else {
-				move.slideRight(VERY_SLOW);
 			}
 			break;
 	}
@@ -466,42 +479,35 @@ void moveToUpdate() {
     else if (curPos == POS_PICK_UP && nextPos == POS_AIR) {
 		switch (internalState) {
 			
-			case 1: //Turn around to face wall oposite pick_up area
+			case 0: //Turn around to face wall oposite pick_up area
 				move.turnAround();
-				internalState++;
+				internalState = 2;
 				break;
 				
-			case 2: //Once reached wall go to next internalState
+			case 1: //Once reached wall go to next internalState
 				if(goToWall()) {
 					internalState++;
+					move.slideRight(FAST);
 				}
 				break;
 				
-			case 3: 
-				move.turn90(LEFT);
-				internalState++;
-				break;
-				
-			case 4: 
-				if(goToWall()) { //When reach the wall go to next state
-					internalState++;
-				}
-				break;
-				
-			case 5: 
-				if(true) /* SONAR distance check (if < vvvvvv*/  {
+			case 2: 
+				if(true /*SONAR DISTANCE FROM WALL CERTAIN DISTANCE*/) {
 					move.stop();
-					move.turn90(LEFT);
+					move.turnAround();
+					move.stop();
+					move.forward(MEDIUM);
 					internalState++;
-				} else { 
-					move.backward(VERY_SLOW);
-				} 
+				}
 				break;
-								
-			case 6: //Move forward until reaching the mid-point ramp's overhang
+						
+			case 3: //Move forward until reaching the mid-point ramp's overhang
 				if(leftIR.getIR() > 10.0 && rightIR.getIR() > 10.0) { //If front is off edge
 					move.stop();
 					internalState++;
+					timer.init(1000);
+					timer.start();
+					move.backward(VERY_SLOW);
 				} 
 				else if (leftIR.getIR() > 10.0) { //If right IR off ledge
 					//Do corrective actions
@@ -512,37 +518,27 @@ void moveToUpdate() {
 					//Do corrective actions
 					
 				}
-				else {
-					move.forward(VERY_SLOW);
-				}
 				break;
 				
-			case 7:	//Start timer (which determines how long to move backwards, in order to 'center' the robot on the ramp)
-				timer.init(1000);
-				timer.start();
-				internalState++;
-				break;
-				
-			case 8: //Keep moving backwards until the timer is done, meaning the robot is centered enough, when it is, turn 90 deg to face air loading zone
+			case 4: //Keep moving backwards until the timer is done, meaning the robot is centered enough, when it is, turn 90 deg to face air loading zone
 				if(timer.isDone()) {
 					move.stop();
 					move.turn90(LEFT);
 					internalState++;
-				} else  {
-					move.backward(VERY_SLOW);
+					move.forward(MEDIUM);
 				}
 				break;
 				
-			case 9: //Move forward until the air loading zone is reached. Once reached, transition to scanning state.
-				if(leftIR.getIR() > 10.0 && rightIR.getIR() > 10.0) { //To Be Implemented
+			case 5: //Move forward until the air loading zone is reached. Once reached, transition to scanning state.
+				if(leftIR.getIR() > 10.0 && rightIR.getIR() > 10.0) { //Front (both IR's) hanging off front edge of Air platform
 					move.stop();
+					internalState++;
 					fsm.transitionTo(scanState);
+					curPos = POS_AIR; //Now at air
 				} else if(leftIR.getIR() > 10.0) {
 					
 				} else if(rightIR.getIR() > 10.0) {
 					
-				} else {
-					move.forward(VERY_SLOW);
 				}
 				break;
 		}
@@ -798,19 +794,39 @@ void dropUpdate() {
 			}
 		}
 		
-		else {
+		else { //Order of bay colors not same as order of blocks in hand
 			switch (internalState) {
-				case 0: //Strafe to left edge
-					if(leftIR.getIR() > 10.00) {
+				case 0:
+					internalState++;
+					timer.init(500);
+					timer.start();
+					move.backward(VERY_SLOW);
+					break;
+					
+				case 1:
+					if(timer.isDone() && leftIR.getIR() < 10.00 && rightIR.getIR() < 10.00) {
 						move.stop();
 						internalState++;	
-						move.slideRight(VERY_SLOW);
-					} else {
 						move.slideLeft(VERY_SLOW);
 					}
 					break;
+					
+				case 2: //Strafe to left edge
+					if(leftIR.getIR() > 10.00) {
+						move.stop();
+						internalState++;	
+						move.forward(VERY_SLOW);
+					}
+					break;
 				
-				case 1: //Strafe right until right arm is over the air's left bay and drop the block
+				case 3:
+					if(rightIR.getIR() > 10.00)  { //If right IR is over the edge of the platform (because left already is over)
+						internalState++;
+						move.slideRight(VERY_SLOW); //start right strafe
+					} 
+					break;
+				
+				case 4: //Strafe right until right arm is over the air's left bay and drop the block
 					if (rightCam.inZone()) { //right cam over left bay (b/c rightcam will hit the left bay first)
 						move.stop();
 						move.extendClaw(RIGHT);
@@ -819,20 +835,20 @@ void dropUpdate() {
 						move.closeClaw(RIGHT);
 						internalState++;
 						move.backward(VERY_SLOW);
-						timer.init(1000); //Set timer for moving back slightly (to avoid hitting placed block)
+						timer.init(2000); //Set timer for moving back enough (to avoid hitting placed block)
 						timer.start();
 					}
 					break;
 					
-				case 2: //BackUp (to avoid hitting placed block in upcoming next internal-state's right strafe)
-					if(timer.isDone()) {
+				case 5: //BackUp (to avoid hitting placed block in upcoming next internal-state's right strafe)
+					if(timer.isDone() && rightIR.getIR() > 10.00 && leftIR.getIR() > 10.00) {
 						move.stop();
 						move.slideRight(VERY_SLOW);
 						internalState++;
 					}
 					break;
 				
-				case 3:
+				case 6:
 					if(rightIR.getIR() > 10.00) { //When reaches the right edge
 						move.stop();
 						move.forward(VERY_SLOW);
@@ -840,15 +856,15 @@ void dropUpdate() {
 					}
 					break;
 				
-				case 4:
+				case 7:
 					if(leftIR.getIR() > 10.0 && rightIR.getIR() > 10.0) { //If at front edge of the air platform
 						move.stop();
-						move.slideLeft(VERY_SLOW);
+						move.slideLeft(VERY_SLOW); //start left strafe
 						internalState++;
 					}
 					break;
 					
-				case 5:
+				case 8:
 					if (rightCam.inZone()) { //left cam over right bay (b/c left cam will hit the right bay first (coming left from the left edge))
 						move.stop();
 						move.extendClaw(LEFT);
@@ -857,6 +873,7 @@ void dropUpdate() {
 						move.closeClaw(LEFT);
 						internalState++;
 					}
+					break;
 			}	
 		}
 	}    
