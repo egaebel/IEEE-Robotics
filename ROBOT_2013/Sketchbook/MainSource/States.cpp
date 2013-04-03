@@ -39,7 +39,7 @@ static Block seaZone[6];
 //Rail zone colours, listed west to east. 
 static Block railZone[6]; 
 //Air zone colours, listed west to east. 
-static Block airZone[2]; 
+static Block airZoneLeft; 
 
 
 //Drop-off zones complete
@@ -162,9 +162,9 @@ void scanUpdate() {
             //Scanning Air
             else if (curPos == POS_AIR) {
 				if(leftIRHangingOffEdge()) {
+					move.stop();
 					rBlockPos = 0; //Reinitalize to use as index for airZone[2] iteration
-					internalState = 10;
-					
+					internalState = 10;	
 				} else {
 					move.slideLeft(VERY_SLOW);
 				}
@@ -192,28 +192,15 @@ void scanUpdate() {
             fsm.transitionTo(moveToState);
             break;
         
-        case 10:
-			move.slideRight(VERY_SLOW);
-
-			//if we're focused on a bay, read colour
-			if (rightCam.inZone()) {
-				move.slideRight(VERY_SLOW);
-					//TODO: change to "onBlock" or something?
+        case 10: //Strafe right until leftCam.inZone() of left most bay -> then read color
+			if (leftCam.inZone()) { /**ASSUMING CAM WORKS FOR BAYS ON THE AIR PLATFORM**/
 				move.stop();
-				airZone[rBlockPos].colour = rightCam.getBlockColour(); 
-				rBlockPos++;
-				if(lBlockPos > 1){
-					//Done, Now check if bay order is same as order of blocks in arms
-					if(rBlock.colour == airZone[2].colour) { //Same order
-						airOrderSame = true;
-						fsm.transitionTo(dropState); 
-					} else {
-						airOrderSame = false;
-						fsm.transitionTo(dropState);
-					}
-				}
-				break;
+				airOrderSame = (lBlock.colour == (airZoneLeft.colour = leftCam.getBlockColour())); //Assigns cam's detected color to left pos in airZone and tests whether it's equal to left held block's color
+				fsm.transitionTo(dropState);	
+			} else {
+				move.slideRight(VERY_SLOW);
 			}
+			break;
 	}
 }
 
@@ -860,7 +847,6 @@ void dropEnter() {
 }
 
 void dropUpdate() {
-    
     //we aren't at air (phew!)
     if (curPos != POS_AIR) {    
         //scan and move until the second colour is encountered (main case)
@@ -892,8 +878,56 @@ void dropUpdate() {
                 break;
         }
     }
-    //we are at air
+    
+    //we are at air and at right edge of air platform
     else {
+		if(airOrderSame)  {
+			case 0://Assume that when right block over right target bay, left held block over left target bay
+				move.extendClaw(LEFT);
+				move.openClaw(LEFT);
+				move.retractClaw(LEFT);
+				move.closeClaw(LEFT);
+				
+				move.extendClaw(RIGHT);
+				move.openClaw(RIGHT);
+				move.retractClaw(RIGHT);
+				move.closeClaw(RIGHT);
+				
+				internalState++;
+			
+			case 1:
+				//Not needed unless above assumption (in  comment true)
+		}
+		
+		else {
+			case 0: //Strafe to left edge
+				if(leftIRHangingOffEdge()) {
+					move.stop();
+					internalState++;	
+				} else {
+					move.slideLeft(VERY_SLOW);
+				}
+				break;
+			
+			case 1: //Strafe right until right arm over air's left bay
+                if (rightCam.inZone()) { //right cam over left bay (b/c rightcam will hit the left bay first)
+					move.stop();
+					move.extendClaw(RIGHT);
+					move.openClaw(RIGHT);
+					move.retractClaw(RIGHT);
+					move.closeClaw(RIGHT);
+					internalState++;
+				} else {
+					move.slideRight(VERY_SLOW);
+				}
+                break;
+				
+				
+			
+		}
+			
+			
+		}
         //scan both spaces in air
         //....
         switch (internalState) {

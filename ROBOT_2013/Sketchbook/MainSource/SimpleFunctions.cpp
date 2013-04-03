@@ -58,6 +58,38 @@ bool centerBay(side strafeDir, bPosition pos, cam* c){
     return false;
 }
 
+bool airCenterBay(side strafeDir, cam* c)  {
+	switch(c->inZone(POS_AIR))  {
+			case CENTER:
+				move.stop();
+				return true;
+    		break;
+    		case LEFT:
+    			move.setSpeed(0,.25,.05,.05); //SLOW
+    		break;
+    		case RIGHT:
+    			move.setSpeed(.25,0,-.05,-.05); //SLOW
+    		break;
+    		case NO_SIDE:
+    			move.slideWall(strafeDir);
+    		break;
+    	}
+
+	case CENTER:
+				move.stop();
+				return true;
+    		break;
+    		case LEFT:
+    			move.setSpeed(0,.25,.05,.05); //SLOW
+    		break;
+    		case RIGHT:
+    			move.setSpeed(.25,0,-.05,-.05); //SLOW
+    		break;
+    		case NO_SIDE:
+    			move.slideWall(strafeDir);
+    		break;
+}
+
 bool goToWall()
 {
   	if(digitalRead(53)&&digitalRead(52)){
