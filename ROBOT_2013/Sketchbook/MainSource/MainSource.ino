@@ -12,6 +12,9 @@ Sonar sonarRight(SONAR_RIGHT,SONAR_RIGHT_INT);
 Sonar sonarLeft(SONAR_LEFT);
 //Sonar sonarRight(SONAR_RIGHT);
 
+IRAverager leftIR;
+IRAverager rightIR;
+
 Movement move;
 
 cam leftCam = cam(LCAM_PIN);
@@ -46,6 +49,8 @@ void setup() {
 void loop() {
     sonarLeft.update();
     sonarRight.update();
+    leftIR.updateIR();
+    rightIR.updateIR();
     Serial.print("Sonar Left: 0x");
     Serial.println(sonarLeft.getDistance(),HEX);
 #if DEBUG_FSM ==0
