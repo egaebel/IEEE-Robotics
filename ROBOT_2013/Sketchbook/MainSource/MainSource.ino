@@ -8,7 +8,7 @@
 #define DEBUG_FSM 1
 
 //Sonar sonarLeft(SONAR_LEFT,SONAR_LEFT_INT);
-Sonar sonarRight(SONAR_RIGHT,SONAR_RIGHT_INT);
+Sonar sonarRight(SONAR_RIGHT);
 Sonar sonarLeft(SONAR_LEFT);
 //Sonar sonarRight(SONAR_RIGHT);
 
@@ -51,8 +51,10 @@ void loop() {
     sonarRight.update();
     leftIR.updateIR();
     rightIR.updateIR();
-    Serial.print("Sonar Left: 0x");
-    Serial.println(sonarLeft.getDistance(),HEX);
+    Serial.print("Sonar L: ");
+    Serial.print(sonarLeft.getDistance());
+    Serial.print("\tSonar R: ");
+    Serial.println(sonarRight.getDistance());
 #if DEBUG_FSM ==0
     fsm.update();
 #else
