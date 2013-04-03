@@ -59,8 +59,9 @@ int Movement::turnAround(side s) {
 	return 0;
 }
 
-void Movement::extendClaw(side s){
+bool Movement::extendClaw(side s){
 	rightExtendMotor.write(180);
+	return false;
 }
 bool Movement::retractClaw(side s){
 	if(!(digitalRead(22))){
@@ -120,13 +121,16 @@ void Movement::setDown() {
 	goToDeg(topMotor,180);
 }
 
-void Movement::openClaw(side clawSide){
+bool Movement::openClaw(side clawSide){
 	if(clawSide==RIGHT)
 		rightClawMotor.write(120);
+	
+	return 0;
 }
-void Movement::closeClaw(side clawSide){
+bool Movement::closeClaw(side clawSide){
 	if(clawSide==RIGHT)
 		rightClawMotor.write(90);
+	return 0;
 }
 bool Movement::goToDeg(Servo motor, int d){
 	static int curD = 0;
@@ -194,7 +198,11 @@ void Movement::slideWall(side s){
 			setSpeed(.25,0,-.1,-.1);
 		break;
 		case LEFT:
-    		setSpeed(.25,0,.1,.1);
+    		setSpeed(0,.25,.1,.1);
 		break;
 	}
+}
+
+bool Movement::backOffWall(){
+
 }

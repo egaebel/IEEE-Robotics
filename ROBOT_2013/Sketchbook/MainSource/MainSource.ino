@@ -7,11 +7,8 @@
 
 #define DEBUG_FSM 1
 
-//Sonar sonarLeft(SONAR_LEFT,SONAR_LEFT_INT);
-Sonar sonarRight(SONAR_RIGHT);
-Sonar sonarLeft(SONAR_LEFT);
-//Sonar sonarRight(SONAR_RIGHT);
-
+Sonar sonarLeft(SONAR_LEFT,SONAR_LEFT_INT);
+Sonar sonarRight(SONAR_RIGHT,SONAR_RIGHT_INT);
 IRAverager leftIR;
 IRAverager rightIR;
 
@@ -31,7 +28,7 @@ void handleSonarLeft(){
 }
 
 void handleSonarRight(){
-  sonarRight.setDataReady(false);
+  sonarRight.setDataReady(true);
 }
 
 void setup() {
@@ -49,8 +46,8 @@ void setup() {
 void loop() {
     sonarLeft.update();
     sonarRight.update();
-    leftIR.updateIR();
-    rightIR.updateIR();
+    //leftIR.updateIR();
+    //rightIR.updateIR();
     Serial.print("Sonar L: ");
     Serial.print(sonarLeft.getDistance());
     Serial.print("\tSonar R: ");

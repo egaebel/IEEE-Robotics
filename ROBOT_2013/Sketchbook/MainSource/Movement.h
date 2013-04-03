@@ -20,14 +20,15 @@ public:
 		void stop();
 		int turn90(side s = LEFT);
 		int turnAround(side s = LEFT);
-		void openClaw(side s);
-		void closeClaw(side s);
-		void extendClaw(side s);
+		bool openClaw(side s);
+		bool closeClaw(side s);
+		bool extendClaw(side s);
 		bool retractClaw(side s);
     //Used for complex movements
 		bool setSpeed(float speedFL,float speedFR, float speedBL, float speedBR);
 		void liftUp();
 		void setDown();
+		bool backOffWall();
 private:
 		bool setSpeed(int servo, float speed);
 

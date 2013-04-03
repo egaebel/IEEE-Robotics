@@ -68,6 +68,10 @@ static int internalState;
 //boolean used to indicate between states if we are scanning zones
 static bool isScanning;
 
+
+Block *blocks;
+
+
 //State objects
 //Put it here since it needs to know that the functions exist
 State initState = State(initEnter, initUpdate, defExit);
@@ -124,7 +128,7 @@ void scanUpdate() {
         case 0:
             if (curPos == POS_SEA) {
                 //focused on bay, read colour
-                if(centerBay(RIGHT,curPos,&rightCam)){
+                if(centerBay(RIGHT,curPos,RIGHT)){
                     move.stop();             
                     loadingZone[rBlockPos].colour = rightCam.getBlockColour(); 
                     loadingZone[rBlockPos].size = rightCam.getBlockSize(loadingZone[rBlockPos].colour);
@@ -138,7 +142,7 @@ void scanUpdate() {
             //scanning rail (state transition 6)
             else if (curPos == POS_RAIL) {
                 //if we're focused on a bay, read colour
-                if (centerBay(LEFT,curPos,&leftCam)) {
+                if (centerBay(LEFT,curPos,LEFT)) {
                     move.stop();
                     loadingZone[lBlockPos].colour = leftCam.getBlockColour(); 
                     loadingZone[lBlockPos].size = leftCam.getBlockSize(loadingZone[lBlockPos].colour);
@@ -152,7 +156,7 @@ void scanUpdate() {
             //scanning pickup (state transition 4)
             else if (curPos == POS_PICK_UP) {
                 //TODO: change to "onBlock" or something?
-                if (centerBay(RIGHT,curPos,&rightCam)) {
+                if (centerBay(RIGHT,curPos,RIGHT)) {
                     move.stop();
                     loadingZone[rBlockPos].colour = rightCam.getBlockColour(); 
     	            loadingZone[rBlockPos].size = rightCam.getBlockSize(loadingZone[rBlockPos].colour);
@@ -223,21 +227,8 @@ void moveToUpdate() {
 
     //Start to sea (1 in state diagram) 
     if(curPos == POS_START && nextPos == POS_SEA){
-        switch(internalState) {
-            //move to first bay in sea
-            case 0:
-                move.slideRight(0.25);
-                //SONAR
-                if(rightCam.inZone()){
-                    internalState++;
-                }
-                break;
-            //transition to scanning
-            case 1:
-                fsm.transitionTo(scanState); 
-                curPos = nextPos;
-                nextPos = POS_PICK_UP;
-                break;
+        if(goToBay(POS_SEA,0,RIGHT)){
+            fsm.transitionTo(scanState);
         }
     }
     //pickup to sea (10 in state diagram)
@@ -246,46 +237,18 @@ void moveToUpdate() {
         switch (internalState) {
 
             case 1:
-                move.backward(0.1);
-                internalState++;
+                if(move.backOffWall())
+                    internalState++;
                 break;
             case 2:
-                move.turn90();
-                internalState++;
+                if(move.turn90(LEFT))
+                    internalState++;
                 break;
             //move to wall
             case 3:
                 if (goToWall()) {
-                    internalState++;
+                    fsm.transitionTo(dropState);  
                 }
-                break;
-            //center OR slide Left
-            case 4:
-                //center over block or sector (if not off the edge)
-                //if centered internalState += 2;
-                //if not over zone internalState++;
-                break;
-            //not in the zone fully, need to slide
-            case 5:
-                //moving left
-                move.slideLeft(0.1);
-                //if both cameras are in zones
-                if (leftCam.inZone() && rightCam.inZone()) {
-                    internalState--;
-                }
-                break;
-            //determine position
-            case 6:
-                //returns if the robot is in a bay (true if it is, false if not) sets lBlockPos and rBlockPos if over bay
-                if (getBayPos(sonarRight.getDistance(), SEA_SAFE_ZONE,  
-                        &lBlockPos, &rBlockPos)) {
-                    internalState++;
-                }
-                break;
-            case 7:
-                curPos = nextPos;
-                nextPos = POS_PICK_UP;
-                fsm.transitionTo(dropState);
                 break;
         }
     }
@@ -310,8 +273,8 @@ void moveToUpdate() {
                 break;
             //move back..and
             case 1:
-                move.backward(0.1);
-                internalState++;
+                if(move.backOffWall())
+                    internalState++;
                 break;
             //turn right
             case 2:
@@ -324,14 +287,8 @@ void moveToUpdate() {
                     internalState++;
                 }
                 break;
+            //TODO: Review this
             case 4:
-                //if sonar is at beginning of pickup=>internalState++
-                //else if INSIDE pickup 
-                    //if we're scanning move.slideLeft
-                    //else, discover location etc.
-                //else if to left of pickup move.slideRight
-                break;
-            case 5:
                 curPos = nextPos;
                 
                 if (!seaDone) { 
@@ -359,12 +316,12 @@ void moveToUpdate() {
         switch(internalState) {
             //backup 
             case 0:
-                move.backward(0.1);
-                internalState++;
+                if(move.backOffWall())
+                    internalState++;
                 break;
             case 1:
-                move.turnAround();
-                internalState++;
+                if(move.turnAround())
+                    internalState++;
                 break;
             case 2:
                 if(goToWall()) {
@@ -372,32 +329,8 @@ void moveToUpdate() {
                 }
                 break;
             //figure out whether to go left or right based on location in rail
+            //TODO: review this
             case 3:
-                //returns if the robot is in a bay (true if it is, false if not) sets lBlockPos and rBlockPos if over bay
-                //TODO: change to sonar.....
-                if (getBayPos(sonarRight.getDistance(), PICKUP_START_LEFT_DIST, &lBlockPos, &rBlockPos)) {
-                    internalState++;
-                }
-                //to the left of the sea zone
-                else {
-                    internalState += 2;
-                }
-                break;
-            //move left until in first rail bay
-            case 4:
-                move.slideLeft(0.25);
-                if (leftCam.inZone()) {
-                    internalState += 2;
-                }
-                break;
-            //move right until in first rail bay
-            case 5:
-                move.slideRight(0.25);
-                if (rightCam.inZone() && rBlockPos == 0) {
-                    internalState++;
-                }
-                break;
-            case 6:
                 if (isScanning) {
                     curPos = nextPos;
                     nextPos = POS_PICK_UP;
@@ -428,32 +361,21 @@ void moveToUpdate() {
 
         switch (internalState) {
 
+            case 0:
+                if(move.backOffWall())
+                    internalState++;
+                break;
             case 1:
-                move.backward(0.1);
-                internalState++;
+                if(move.turnAround())
+                    internalState++;
                 break;
             case 2:
-                move.turnAround();
-                internalState++;
-                break;
-            case 3:
                 if (goToWall()) {
                     internalState++;
                 }
                 break;
-            case 4:
-                 //returns if the robot is in a bay (true if it is, false if not) sets lBlockPos and rBlockPos if over bay
-                if (getBayPos(sonarRight.getDistance(), SEA_SAFE_ZONE,  
-                        &lBlockPos, &rBlockPos)) {
-                    internalState++;
-                }
-                //to the left of the sea zone
-                else {
-                    internalState += 2;
-                }
-                break;
-            //TODO: we may need to add a case in case the robot goes ridiculously diagonal to the right
-            case 5:
+            //TODO: REVIEW THIs
+            case 3:
                 curPos = nextPos;
                 if (!seaDone) {
                   nextPos = POS_SEA;
@@ -714,11 +636,10 @@ void pickUpUpdate() {
 //dropState
 void dropEnter() {
     internalState = 0;
-
-    Block * blocks = getZoneByPos(curPos, seaZone, railZone, loadingZone);
+    blocks = getZoneByPos(curPos, seaZone, railZone, loadingZone);
 
     //Set target positions of blocks in loading
-    for(int i = 0; i < 14; i++) {
+    for(int i = 0; i < 6; i++) {
         if(blocks[i].colour == lBlock.colour) {
             lTargetPos = i;
         }
@@ -729,34 +650,50 @@ void dropEnter() {
 }
 
 void dropUpdate() {
+    static side activeClaw;
     //we aren't at air (phew!)
     if (curPos != POS_AIR) {    
         //scan and move until the second colour is encountered (main case)
         switch (internalState) {
             case 0:
-                move.slideLeft(0.25);
-                if (lBlock.colour == leftCam.getBayColour()) {
-                    internalState++;            
+                if(!blocks[lTargetPos].present)
+                    if(goToBay(curPos,lTargetPos,LEFT)){
+                        activeClaw = LEFT;
+                        blocks[lTargetPos].present = 1;
+                        internalState++;
+                    }
+
+                else if (!blocks[rTargetPos].present){
+                    if(goToBay(curPos,rTargetPos,RIGHT)){
+                        activeClaw = LEFT;
+                        blocks[rTargetPos].present = 1;
+                        internalState++;
+                    }
+                }
+                else{
+                    fsm.transitionTo(moveToState);
+                    nextPos = POS_PICK_UP;
                 }
                 break;
             case 1:
-                //drop blocks
-                move.extendClaw(LEFT);
-                move.openClaw(LEFT);
-                move.retractClaw(LEFT);
-                move.closeClaw(LEFT);
-
-                move.extendClaw(RIGHT);
-                move.openClaw(RIGHT);
-                move.retractClaw(RIGHT);
-                move.closeClaw(RIGHT);
-
-                internalState++;
+                if(centerBay(RIGHT,curPos,RIGHT))
+                    internalState++;
                 break;
             case 2:
-                //transition to move
-                fsm.transitionTo(moveToState);
-                nextPos = POS_PICK_UP;
+                if(move.extendClaw(activeClaw))
+                    internalState++;
+                break;
+            case 3:
+                if(move.openClaw(activeClaw))
+                    internalState++;
+                break;
+            case 4:
+                if(move.retractClaw(activeClaw))
+                    internalState++;
+                break;
+            case 5:
+                if(move.closeClaw(activeClaw))
+                    internalState = 0;
                 break;
         }
     }
