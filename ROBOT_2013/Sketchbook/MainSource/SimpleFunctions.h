@@ -10,8 +10,5 @@ bool fullOfBlocks(Block blocks[], int numBlocks);
 bool getBayPos(int distance, int safeDistance, int * lBlockPos, int * rBlockPos);
 bool goToWall();
 bool centerBay(side strafeDir, bPosition pos ,cam* c);
-bool frontHangingOffEdge();  //If front 2 IR's hanging off elevated part
-bool rightIRHangingOffEdge(); //If right IR hanging off elevated part
-bool leftIRHangingOffEdge(); //If left IR hanging off elevated part
 Block* getZoneByPos(bPosition pos, Block * seaZone, Block * railZone, Block * loadingZone);
 #endif
