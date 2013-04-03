@@ -25,13 +25,6 @@
 #define PIXELS_THRESHOLD 1
 #define CONFIDENCE_THRESHOLD 50
 
-typedef enum bay_t{
-	LOADING, 
-	AIR, 
-	RAIL,
-	SEA,
-	NONE
-} bay;
 
 class cam{
 

@@ -2,6 +2,8 @@
 
 extern Movement move;
 extern cam rightCam;
+extern Sonar sonarRight;
+extern Sonar sonarLeft;
 bool fullOfBlocks(Block blocks[], int numBlocks) {
 
 	for (int i = 0; i < numBlocks; i++) {
@@ -118,3 +120,39 @@ Block* getZoneByPos(bPosition pos, Block * seaZone, Block * railZone, Block * lo
 	}
 }
 
+bool goToBay(bPosition bay, int nBay, side clawSide) {
+	Sonar *tempSonar;
+	side posSide;
+	int dist;
+	switch(bay){
+		case POS_PICK_UP:
+			tempSonar = &sonarRight;
+			dist = 122 - (nBay*7);
+			break;
+		case POS_RAIL:
+			tempSonar = &sonarRight;
+			dist = 104 - (nBay*7);
+			break;
+		case POS_SEA:
+			tempSonar = &sonarLeft;
+			dist =  37 + (nBay*7);
+			break;
+	}
+	if(tempSonar->getDistance()>dist){
+		if(bay==POS_SEA)
+			move.slideWall(LEFT);
+		else
+			move.slideWall(RIGHT);
+		return 0;
+	}
+	else if(tempSonar->getDistance()<dist){
+		if(bay==POS_SEA)
+			move.slideWall(RIGHT);
+		else
+			move.slideWall(LEFT);
+		return 0;
+	}
+	else
+		return 1;
+
+}
