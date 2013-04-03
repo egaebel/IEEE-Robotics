@@ -1,5 +1,4 @@
-
-#include "IRLib.h"
+#include "IRlib.h"
 #include <math.h>
 
 IRAverager::IRAverager()

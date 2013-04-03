@@ -775,59 +775,52 @@ void dropUpdate() {
     //we are at air and at right edge of air platform
     else {
 		if(airOrderSame)  {
-			case 0://Assume that when right block over right target bay, left held block over left target bay
-				move.extendClaw(LEFT);
-				move.openClaw(LEFT);
-				move.retractClaw(LEFT);
-				move.closeClaw(LEFT);
-				
-				move.extendClaw(RIGHT);
-				move.openClaw(RIGHT);
-				move.retractClaw(RIGHT);
-				move.closeClaw(RIGHT);
-				
-				internalState++;
-			
-			case 1:
-				//Not needed unless above assumption (in  comment true)
-		}
-		
-		else {
-			case 0: //Strafe to left edge
-				if(leftIRHangingOffEdge()) {
-					move.stop();
-					internalState++;	
-				} else {
-					move.slideLeft(VERY_SLOW);
-				}
-				break;
-			
-			case 1: //Strafe right until right arm over air's left bay
-                if (rightCam.inZone()) { //right cam over left bay (b/c rightcam will hit the left bay first)
-					move.stop();
+			switch (internalState) {
+				case 0://Assume that when right block over right target bay, left held block over left target bay
+					move.extendClaw(LEFT);
+					move.openClaw(LEFT);
+					move.retractClaw(LEFT);
+					move.closeClaw(LEFT);
+					
 					move.extendClaw(RIGHT);
 					move.openClaw(RIGHT);
 					move.retractClaw(RIGHT);
 					move.closeClaw(RIGHT);
+					
 					internalState++;
-				} else {
-					move.slideRight(VERY_SLOW);
-				}
-                break;
 				
+				case 1:
+					//Not needed unless above assumption (in  comment true)
+					break;
+			}
+		}
+		
+		else {
+			switch (internalState) {
+				case 0: //Strafe to left edge
+					if(leftIRHangingOffEdge()) {
+						move.stop();
+						internalState++;	
+					} else {
+						move.slideLeft(VERY_SLOW);
+					}
+					break;
 				
-			
+				case 1: //Strafe right until right arm over air's left bay
+					if (rightCam.inZone()) { //right cam over left bay (b/c rightcam will hit the left bay first)
+						move.stop();
+						move.extendClaw(RIGHT);
+						move.openClaw(RIGHT);
+						move.retractClaw(RIGHT);
+						move.closeClaw(RIGHT);
+						internalState++;
+					} else {
+						move.slideRight(VERY_SLOW);
+					}
+					break;
+			}	
 		}
-			
-			
-		}
-        //scan both spaces in air
-        //....
-        switch (internalState) {
-            case 0:
-                  break;
-        }      
-    }
+	}    
 }
 
 
