@@ -658,7 +658,7 @@ void moveToUpdate() {
 				}
 				
 			case 9: //Move forward until the air loading zone is reached. Once reached, transition to scanning state.
-				if(frontHangingOffEdge()) { //To Be Implemented
+				if(leftIR.getIR() > 10.0 && rightIR.getIR() > 10.0) { //To Be Implemented
 					move.stop();
 					fsm.transitionTo(scanState);
 					break;
