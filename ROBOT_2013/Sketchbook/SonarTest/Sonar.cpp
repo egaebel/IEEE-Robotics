@@ -64,13 +64,13 @@ oldAddress must be the 7-bit form of the address that is used by Wire
 7BitHuh determines whether newAddress is given as the new 7 bit version or the 8 bit version of the address 
 \ If true, if is the 7 bit version, if false, it is the 8 bit version 
 */
-void Sonar::changeAddress(byte oldAddress, byte newAddress){ 
+int Sonar::changeAddress(byte oldAddress, byte newAddress){ 
        Wire.beginTransmission(oldAddress);                 //Begin addressing
        Wire.write(0xAA);              //Send first change address command
        Wire.write(0xA5);              //Send second change address command 
  
        Wire.write(newAddress<<1);                                          //Send the new address to change to 
-       Wire.endTransmission();
+       return Wire.endTransmission();
 }
 
 /* To be called from actual ISR so that we don't have to duplicate code.

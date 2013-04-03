@@ -11,7 +11,7 @@ class Sonar {
 		int getDistance();
 		boolean update();
                 void setDataReady(boolean val);
-                void changeAddress(byte oldAddress, byte newAddress);
+                static int changeAddress(byte oldAddress, byte newAddress);
 	private:
                 boolean dataReady;
                 int addr;
