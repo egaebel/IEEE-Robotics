@@ -83,6 +83,8 @@ void initEnter() {
     //initialize necessary variables
     internalState = 0;
     move.init();
+    rightCam.init();
+    leftCam.init();
     isScanning = true;
 }
 

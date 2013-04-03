@@ -5,28 +5,15 @@ cam::cam(int pin){
 }
 
 void cam::init(){
-    cmuCam->autoGainControl(false);
-    cmuCam->autoWhiteBalance(false);
     cmuCam->begin();
-  	// Wait for auto gain and auto white balance to run.
     cmuCam->autoGainControl(false);
     cmuCam->autoWhiteBalance(false);
     cmuCam->cameraBrightness(35);
     cmuCam->cameraContrast(31);
-  	cmuCam->LEDOn(LED_BLINK);
-  	//delay(WAIT_TIME);
-
-  	// Turn auto gain and auto white balance off.
-
-  	//cmuCam->autoGainControl(false);
-  	//cmuCam->autoWhiteBalance(false);
-
-  	cmuCam->LEDOn(CMUCAM4_LED_ON);
-
   	cmuCam->pollMode(POLL_MODE);
-  	cmuCam->colorTracking(YUV_MODE);
+  	//cmuCam->colorTracking(YUV_MODE);
 
-  	cmuCam->noiseFilter(NOISE_FILTER);
+  	//cmuCam->noiseFilter(NOISE_FILTER);
     trackX1 = 0;
     trackX2 = 159;
     trackY1 = 0;
