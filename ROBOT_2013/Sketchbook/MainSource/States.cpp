@@ -4,6 +4,9 @@ extern FiniteStateMachine fsm;
 extern Sonar sonarRight;
 extern Sonar sonarLeft;
 
+extern IRAverager leftIR;
+extern IRAverager rightIR;
+
 //Timer Time needed to center in Air State
 extern Timer timer(1000);
 
@@ -508,17 +511,17 @@ void moveToUpdate() {
 				} 
 								
 			case 6: //Move forward until reaching the mid-point ramp's overhang
-				if(frontHangingOffEdge()) { //To Be Implemented
+				if(leftIR.getIR() > 10.0 && rightIR.getIR() > 10.0) { //To Be Implemented
 					move.stop();
 					internalState++;
 					break;
 				} 
-				else if (leftIRHangingOffEdge()) {
+				else if (leftIR.getIR() > 10.0) {
 					//Do corrective actions
 					
 				} 
 				
-				else if (rightIRHangingOffEdge()) {
+				else if (rightIR.getIR() > 10.0) {
 					//Do corrective actions
 					
 				}
@@ -543,7 +546,7 @@ void moveToUpdate() {
 				}
 				
 			case 9: //Move forward until the air loading zone is reached. Once reached, transition to scanning state.
-				if(frontHangingOffEdge()) { //To Be Implemented
+				if(leftIR.getIR() > 10.0 && rightIR.getIR() > 10.0) { //To Be Implemented
 					move.stop();
 					fsm.transitionTo(scanState);
 					break;
