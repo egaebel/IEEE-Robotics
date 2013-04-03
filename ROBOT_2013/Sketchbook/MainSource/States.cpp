@@ -7,14 +7,14 @@ extern Sonar sonarLeft;
 extern IRAverager leftIR;
 extern IRAverager rightIR;
 
-//Timer Time needed to center in Air State
-extern Timer timer(1000);
-
 //Hardware classes----
-extern Movement move;
+static Movement move;
 
 extern cam leftCam;
 extern cam rightCam;
+
+//Timer Time needed to center in Air State
+static Timer timer(1000);
 
 
 //positions used for the state machine

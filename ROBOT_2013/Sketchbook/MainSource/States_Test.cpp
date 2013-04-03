@@ -43,7 +43,7 @@ void state1Update() {
 
 	switch(internalState){
 		case 0:
-			rightCam.getTrackingData(BLUE);
+			rightCam.getTrackingData(WHITE);
 			break;
 		case 123:
 			Serial.println(sonarRight.getDistance());

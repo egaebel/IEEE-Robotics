@@ -7,10 +7,12 @@
 
 #define DEBUG_FSM 1
 
+extern Movement move;
+
 //Sonar sonarLeft(SONAR_LEFT,SONAR_LEFT_INT);
-Sonar sonarRight(SONAR_RIGHT,SONAR_RIGHT_INT);
+//Sonar sonarRight(SONAR_RIGHT,SONAR_RIGHT_INT);
 Sonar sonarLeft(SONAR_LEFT);
-//Sonar sonarRight(SONAR_RIGHT);
+Sonar sonarRight(SONAR_RIGHT);
 
 IRAverager leftIR;
 IRAverager rightIR;
@@ -35,10 +37,10 @@ void handleSonarRight(){
 }
 
 void setup() {
-        delay(100); //Make sure we don't catch the PWM from POR of Sonar
-        attachInterrupt(SONAR_LEFT_INT,handleSonarLeft,FALLING);
-        attachInterrupt(SONAR_RIGHT_INT,handleSonarRight,FALLING);
-        Wire.begin();
+    delay(100); //Make sure we don't catch the PWM from POR of Sonar
+    //attachInterrupt(SONAR_LEFT_INT,handleSonarLeft,FALLING);
+    //attachInterrupt(SONAR_RIGHT_INT,handleSonarRight,FALLING);
+    Wire.begin();
 	//setup claws
 	//lClaw.init(LCLAW_EXTEND_SERVO, LCLAW_SERVO);
 	//rClaw.init(RCLAW_EXTEND_SERVO, RCLAW_SERVO);
@@ -47,12 +49,14 @@ void setup() {
 }
 
 void loop() {
-    sonarLeft.update();
+    /*sonarLeft.update();
     sonarRight.update();
     leftIR.updateIR();
     rightIR.updateIR();
-    Serial.print("Sonar Left: 0x");
-    Serial.println(sonarLeft.getDistance(),HEX);
+    Serial.print("Sonar Left:");
+    Serial.println(sonarLeft.getDistance());*/
+    //move.forward(0.1);
+
 #if DEBUG_FSM ==0
     fsm.update();
 #else
