@@ -10,15 +10,15 @@ class Sonar {
 		Sonar(int address,int interruptPin = -1);
 		int getDistance();
 		boolean update();
-                void setDataReady(boolean val);
-                void changeAddress(byte oldAddress, byte newAddress);
+        void setDataReady(boolean val);
+        void changeAddress(byte oldAddress, byte newAddress);
 	private:
-                boolean dataReady;
-                int addr;
-                int intPin;
+	    boolean dataReady;
+        int addr;
+        int intPin;
 		volatile int distance;
 		int i2cRead();
-                int i2cRequest();
+        int i2cRequest();
                 
         friend int sonarISR(Sonar* sensor);
 };

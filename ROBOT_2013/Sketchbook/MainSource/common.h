@@ -4,6 +4,10 @@
 //Sonar Distances
 #define SEA_START_LEFT_DIST 0
 #define SEA_START_RIGHT_DIST 0
+#define SONAR_BLOCK_WIDTH 6
+#define SEA_SAFE_ZONE 0
+#define PICKUP_START_LEFT_DIST 0
+//#define 
 //in centimeters
 #define BAY_WIDTH 6.5
 #define BAY_DEPTH 15.5

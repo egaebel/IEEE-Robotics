@@ -14,24 +14,19 @@ bool fullOfBlocks(Block blocks[], int numBlocks) {
 	return true;
 }
 
-//blocks should not have ANY NULL elements
-//returns false if no information was obtained
-bool getBayPos(Block blocks[], int numBlocks, bColour leftColor, bColour rightColor, int * lBlockPos, int * rBlockPos) {
+/* Sets lBlockPos and rBlockPos if we are within the safeDistance, returns false if we are not, true if we are*/
+bool getBayPos(int distance, int safeDistance, int * lBlockPos, int * rBlockPos) {
 
 	bool haveInfo = false;
 
-	for (int i = 0; i < numBlocks; i++) {
+	//check if we're past the beginning of the begin rail zone
+	if (distance >= safeDistance) {
 
-		if (blocks[i].colour == rightColor) {
-
-			*rBlockPos = i;
-			haveInfo = true;
-		}
-		else if (blocks[i].colour == leftColor) {
-
-			*lBlockPos = i;
-			haveInfo = true;
-		}
+		haveInfo = true;
+		distance -= safeDistance;
+		distance /= SONAR_BLOCK_WIDTH;
+		*rBlockPos = distance;
+		*lBlockPos = *lBlockPos + 1;
 	}
 
 	return haveInfo;
