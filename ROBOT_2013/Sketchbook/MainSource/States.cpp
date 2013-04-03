@@ -1,21 +1,22 @@
 #include "States.h"
 
 extern FiniteStateMachine fsm;
+
+//Externed hardwares
 extern Sonar sonarRight;
 extern Sonar sonarLeft;
 
 extern IRAverager leftIR;
 extern IRAverager rightIR;
 
-//Timer Time needed to center in Air State
-extern Timer timer(1000);
-
-//Hardware classes----
-extern Movement move;
-
 extern cam leftCam;
 extern cam rightCam;
 
+//Hardware classes----
+static Movement move;
+
+//Timer Time needed to center in Air State
+static Timer timer(1000);
 
 //positions used for the state machine
 static POSITION curPos = POS_START;
@@ -162,8 +163,7 @@ void scanUpdate() {
                     else
                         internalState = 1;
                 }
-            }
-            
+            }           
             //Scanning Air
             else if (curPos == POS_AIR) {
 				internalState = 10;
@@ -172,13 +172,6 @@ void scanUpdate() {
 				move.backward(VERY_SLOW);
 				break;
 			}
-			
-			else {
-				//Not in any of specified positions
-			}
-            break;
-            
-            
         //We already read this colour, so just keep moving until white
         case 1:
             if(goToWall()){
@@ -194,14 +187,13 @@ void scanUpdate() {
             //nextPos and curPos transitions were handled in most recent moveTo call
             fsm.transitionTo(moveToState);
             break;
-        
         case 10:
 			if(timer.isDone() && leftIR.getIR() < 10.0 && rightIR.getIR() < 10.0) { //When timer is over and both IR's back on land
 				move.stop();
 				internalState++;
 				move.slideLeft(VERY_SLOW); //Start strafing left
 			}
-			
+            break;
         case 11:
 			if(leftIR.getIR() > 10.0) { //If left IR hanging off edge
 				move.stop();
@@ -209,8 +201,6 @@ void scanUpdate() {
 				move.slideRight(VERY_SLOW);	
 			}
 			break;
-        
-        
         case 12: //Strafe right until leftCam.inZone() of left most bay -> then read color
 			if (leftCam.inZone()) { /**ASSUMING CAM WORKS FOR BAYS ON THE AIR PLATFORM**/
 				move.stop();

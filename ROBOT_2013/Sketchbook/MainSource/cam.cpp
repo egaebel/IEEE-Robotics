@@ -10,7 +10,8 @@ void cam::init(){
     cmuCam->autoWhiteBalance(false);
     cmuCam->cameraBrightness(45);
     cmuCam->cameraContrast(15);
-  	cmuCam->pollMode(POLL_MODE);
+    cmuCam->pollMode(0);
+
   	//cmuCam->colorTracking(YUV_MODE);
 
   	//cmuCam->noiseFilter(NOISE_FILTER);
@@ -100,8 +101,8 @@ void cam::getTrackingData(bColour colour){
     trackColour(colour);
   }
   cmuCam->getTypeTDataPacket(&tData); // Get a tracking packet
-  //Serial.print("pixels");Serial.println(tData.pixels);
-  //Serial.print("confidence");Serial.println(tData.confidence);
+  Serial.print("pixels");Serial.println(tData.pixels);
+  Serial.print("confidence");Serial.println(tData.confidence);
 }
 void cam::getTrackingData(){
   cmuCam->getTypeTDataPacket(&tData);
