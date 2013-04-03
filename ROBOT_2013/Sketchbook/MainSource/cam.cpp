@@ -8,9 +8,10 @@ void cam::init(){
     cmuCam->begin();
     cmuCam->autoGainControl(false);
     cmuCam->autoWhiteBalance(false);
-    cmuCam->cameraBrightness(60);
-    cmuCam->cameraContrast(31);
-  	cmuCam->pollMode(0);
+    cmuCam->cameraBrightness(45);
+    cmuCam->cameraContrast(15);
+    cmuCam->pollMode(0);
+
   	//cmuCam->colorTracking(YUV_MODE);
 
   	//cmuCam->noiseFilter(NOISE_FILTER);

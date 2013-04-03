@@ -1,6 +1,7 @@
-#define WHITE_R_MIN 210
+#define WHITE_R_MIN 225
 #define WHITE_R_MAX 255
-#define WHITE_G_MIN 220
+#define WHITE_G_MIN 250
+
 #define WHITE_G_MAX 255
 #define WHITE_B_MIN 220
 #define WHITE_B_MAX 255
