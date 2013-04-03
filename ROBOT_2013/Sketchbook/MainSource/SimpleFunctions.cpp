@@ -99,7 +99,7 @@ bool goToBay(bPosition bay, int nBay, side clawSide) {
 			break;
 		case POS_RAIL:
 			tempSonar = &sonarRight;
-			dist = 104 - (nBay*7);
+			dist = 142 - (nBay*7);
 			break;
 		case POS_SEA:
 			tempSonar = &sonarLeft;
