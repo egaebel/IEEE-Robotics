@@ -59,7 +59,7 @@ void moveToAirPlatform() {
 			break;
 			
 		case 2: 
-			if(true /*SONAR DISTANCE FROM WALL CERTAIN DISTANCE*/) {
+			if(sonarLeft.getDistance() < 20) /*SONAR DISTANCE FROM WALL CERTAIN DISTANCE*/) {
 				move.stop();
 				move.turnAround();
 				move.stop();
