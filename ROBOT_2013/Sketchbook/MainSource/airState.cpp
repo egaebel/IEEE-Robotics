@@ -5,7 +5,8 @@ extern FiniteStateMachine fsm;
 //Timer Time needed to center in Air State
 static Timer timer(1000);
 
-//Externed hardwares
+//Externed hardwares-----------------------//
+//-----------------------------------------//
 extern Sonar sonarRight;
 extern Sonar sonarLeft;
 
@@ -15,8 +16,13 @@ extern IRAverager rightIR;
 extern cam leftCam;
 extern cam rightCam;
 
-//Hardware classes----
 extern Movement move;
+//-----------------------------------------//
+//End Externed Hardwares-------------------//
+
+//Variables for blocks currently held
+extern Block lBlock; //Block held by the left claw.
+extern Block rBlock; //Block held by the right claw.
 
 //Whether order of bays in air and whats in hand is the same
 static bool airOrderSame;
@@ -24,14 +30,10 @@ static bool airOrderSame;
 //Air zone colours, listed west to east. 
 static Block airZoneLeft; 
 
-//Variables for blocks currently held
-extern Block lBlock; //Block held by the left claw.
-extern Block rBlock; //Block held by the right claw.
+static int airInternalState;
 
 State scanAirPlatformState = State(scanAirPlatformEnter, scanAirPlatform, scanAP_cleanUp);
 State dropAirBlocksState = State(dropAirBlocksEnter, dropAirBlocks, dropAP_cleanUp);
-
-int airInternalState;
 
 /**
  * called once when entering moveToPlatformEnterState
@@ -47,13 +49,14 @@ void moveToAirPlatform() {
 	switch (airInternalState) {
 		
 		case 0: //Turn around to face wall oposite pick_up area
-			move.turnAround();
-			airInternalState++;
+			if (move.turnAround())
+				airInternalState++;
 			break;
 			
 		case 1: //Once reached wall go to next internalState
 			if(goToWall()) {
 				airInternalState++;
+				//TODO:whaaaat???????
 				move.slideRight(FAST);
 			}
 			break;
@@ -165,23 +168,28 @@ void dropAirBlocksEnter() {
  *  Drop blocks in air bays
  */
 void dropAirBlocks() {
-	if(airOrderSame)  { //If order same as blocks in the hand
+	if(airOrderSame)  { 
 			switch (airInternalState) {
-				case 0://Assume that when right block over right target bay, left held block over left target bay
-					move.extendClaw(LEFT);
-					move.openClaw(LEFT);
-					move.retractClaw(LEFT);
-					move.closeClaw(LEFT);
-					
-					move.extendClaw(RIGHT);
-					move.openClaw(RIGHT);
-					move.retractClaw(RIGHT);
-					move.closeClaw(RIGHT);
+				//If order same as blocks in the hand
+				case 0:
+					//Assume that when right block over right target bay, left held block over left target bay
+					move.dropClaw(LEFT);
+					move.dropClaw(RIGHT);
 					
 					airInternalState++;
+					break;
 				
+				//if the blocks are NOT in the same order of the 
 				case 1:
-					//Not needed unless above assumption (in  comment above) is false
+					
+					//move slightly left
+					//drop right claw
+
+					//move even more slightly right
+					//drop left claw
+
+
+					//VICTORY DANCE!!!
 					break;
 			}
 		}

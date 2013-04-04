@@ -318,7 +318,7 @@ void Movement::slideWall(side s){
 bool Movement::backOffWall(){
 	
 	//static Timer timer(WALL_BACKUP_TIME);
-	static Timer theTime(3000);
+	static Timer theTime(1000);
 
 	if(!theTime.isStarted()){
 		// leftMotor.detach();

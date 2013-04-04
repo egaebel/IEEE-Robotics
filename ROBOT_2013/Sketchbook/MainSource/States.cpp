@@ -3,7 +3,8 @@
 
 extern FiniteStateMachine fsm;
 
-//Externed hardwares
+//Externed hardwares-----------------------//
+//-----------------------------------------//
 extern Sonar sonarRight;
 extern Sonar sonarLeft;
 
@@ -13,8 +14,9 @@ extern IRAverager rightIR;
 extern cam leftCam;
 extern cam rightCam;
 
-//Hardware classes----
 extern Movement move;
+//-----------------------------------------//
+//End Externed Hardwares-------------------//
 
 //Timer Time needed to center in Air State
 static Timer timer(1000);
@@ -29,6 +31,7 @@ static Block rTargetBlock;
 static int lTargetPos;
 static int rTargetPos;
 
+//Non-Static
 //Variables for blocks currently held
 Block lBlock; //Block held by the left claw.
 Block rBlock; //Block held by the right claw.
@@ -51,6 +54,7 @@ static bool seaDone;
 //Whether order of bays in air and whats in hand is the same
 static bool airOrderSame;
 
+//The sizes of the zones
 const int PICKUP_SIZE = 14;
 const int RAIL_SEA_SIZE = 6;
 const int AIR_SIZE = 2;
@@ -63,14 +67,10 @@ static int lBlockPos;
 static int rBlockPos;
 //a sub-state used in each state, state-ception
 static int internalState;
-
-bool isScanning; 
-
-
-Block *blocks;
-
-
-static int STATE;
+//boolean indicating if the robot is scanning zones
+static bool isScanning; 
+//pointer used to point to one of the bays
+static Block *blocks;
 
 //State objects
 //Put it here since it needs to know that the functions exist
@@ -93,8 +93,6 @@ void initEnter() {
     //TODO: SKIP THE FIRST STATE FOR NOW
     internalState = 1;
     move.init();
-    //rightCam.init();
-    //leftCam.init();
     isScanning = true;
 }
 
@@ -134,8 +132,6 @@ void scanUpdate() {
     switch(internalState){
         //Move until hitting a colour
         case 0:
-            break;
-        case 340:
 			Serial.println("Reached case 1");
             if (curPos == POS_SEA) {
                 //focused on bay, read colour
@@ -144,7 +140,7 @@ void scanUpdate() {
                     loadingZone[rBlockPos].colour = rightCam.getBlockColour(); 
                     loadingZone[rBlockPos].size = rightCam.getBlockSize(loadingZone[rBlockPos].colour);
                     rBlockPos++;
-                    if(rBlockPos > 5)
+                    if(rBlockPos == 5)
                         internalState = 2;
                     else
                         internalState = 1;
@@ -158,7 +154,7 @@ void scanUpdate() {
                     loadingZone[lBlockPos].colour = leftCam.getBlockColour(); 
                     loadingZone[lBlockPos].size = leftCam.getBlockSize(loadingZone[lBlockPos].colour);
                     lBlockPos++;
-                    if(lBlockPos > 5)
+                    if(lBlockPos == 5)
                         internalState = 2;
                     else
                         internalState = 1;
@@ -169,11 +165,11 @@ void scanUpdate() {
                 //TODO: change to "onBlock" or something?
                 if (centerBay(RIGHT,curPos,RIGHT)) {
                     move.stop();
-                    loadingZone[rBlockPos].colour = rightCam.getBlockColour(); 
-    	            loadingZone[rBlockPos].size = rightCam.getBlockSize(loadingZone[rBlockPos].colour);
-                    loadingZone[rBlockPos].present = true;
-                    rBlockPos++;
-                    if(rBlockPos > 13) {
+                    loadingZone[lBlockPos].colour = leftCam.getBlockColour(); 
+    	            loadingZone[lBlockPos].size = leftCam.getBlockSize(loadingZone[rBlockPos].colour);
+                    loadingZone[lBlockPos].present = true;
+                    lBlockPos++;
+                    if(lBlockPos == 13) {
                         internalState = 2;
                         isScanning = false;
 					}
@@ -216,9 +212,9 @@ void moveToUpdate() {
         Serial.println("GOING TO SEA");
         if(goToBay(POS_SEA,0,RIGHT)){
 			Serial.println("grreg");
-            curPos = POS_PICK_UP;
-            nextPos = POS_SEA;
-            //fsm.transitionTo(scanState);
+            curPos = nextPos;
+            nextPos = POS_RAIL;
+            fsm.transitionTo(scanState);
         }
     }
     //pickup to sea (10 in state diagram)
@@ -249,10 +245,8 @@ void moveToUpdate() {
     else if (curPos == POS_SEA && nextPos == POS_PICK_UP) {
 
         switch (internalState) {
-            case 0:
-                internalState++;
             //check if we need to move sector in zone
-            case 2310:
+            case 0:
                 //check if we are safe to turn around
                 if (sonarRight.getDistance() >= SEA_SAFE_ZONE) {
                     move.slideLeft(0.1);
@@ -390,16 +384,13 @@ void moveToUpdate() {
                 break;
             case 1:
                 if(move.turn90(LEFT)){
-                    curPos = POS_RAIL;
+                    curPos = nextPos;
                     nextPos = POS_PICK_UP;
                     fsm.transitionTo(scanState);
                 }
                 break;
-
         }
-
     }
-    
     else {
         //shouldn't be here, maybe make another case?
         //assert(0);
@@ -547,9 +538,8 @@ void dropUpdate() {
                         internalState++;
                     }
                 }
-                else{
+                else {
                     fsm.transitionTo(moveToState);
-                    //nextPos = POS_PICK_UP;
                 }
                 break;
             //setup which claw to center over
@@ -560,11 +550,10 @@ void dropUpdate() {
             //drop the claw
             case 2:
                 if (move.dropClaw(activeClaw))
-                    fsm.transitionTo(moveToState);
+                    internalState = 0;
                 break;
         }
     }
-    
     //we are at air and at right edge of air platform
     else {
 		
