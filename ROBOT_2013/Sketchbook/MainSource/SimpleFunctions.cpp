@@ -141,5 +141,6 @@ int getBayDist(bPosition bay, int nBay, side clawSide) {
 			break;
 	}
 	
-	return dist;
+	return dist;
+
 }

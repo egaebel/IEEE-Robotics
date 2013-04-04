@@ -271,6 +271,6 @@ void dropAirBlocks() {
 	
 }
 
-void moveAP_cleanUp() {	}
-void scanAP_cleanUp() { }
-void dropAP_cleanUp() { }
+void moveAP_cleanUp() {	};
+void scanAP_cleanUp() { };
+void dropAP_cleanUp() { };

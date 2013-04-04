@@ -14,7 +14,7 @@ extern cam leftCam;
 extern cam rightCam;
 
 //Hardware classes----
-static Movement move;
+extern Movement move;
 
 //Timer Time needed to center in Air State
 static Timer timer(1000);
@@ -92,7 +92,7 @@ void initEnter() {
     //initialize necessary variables
     //TODO: SKIP THE FIRST STATE FOR NOW
     internalState = 1;
-    //move.init();
+    move.init();
     //rightCam.init();
     //leftCam.init();
     isScanning = true;
@@ -102,11 +102,15 @@ void initUpdate() {
     //setup wall follower
     switch(internalState){
         case 0:
-            move.backOffWall();
-            //move.setDown();
-            internalState++;
+            if (move.backOffWall()) {
+                internalState++;
+            }
             break;
         case 1:
+            if (move.setDown()) {
+                internalState++;
+            }
+        case 2:
             if(goToWall()){
                 curPos = POS_START;
                 nextPos = POS_SEA;
@@ -127,14 +131,12 @@ void scanEnter() {
 
 void scanUpdate() {
     //Perform the scanning actions
-    //TODO: LETS IGNORE SCANNING FOR NOW
-    fsm.transitionTo(moveToState);
-    /*switch(internalState){
+    switch(internalState){
         //Move until hitting a colour
         case 0:
             break;
         case 340:
-			Serial.println("Reached case 340");
+			Serial.println("Reached case 1");
             if (curPos == POS_SEA) {
                 //focused on bay, read colour
                 if(centerBay(RIGHT,curPos,RIGHT)){
@@ -197,7 +199,7 @@ void scanUpdate() {
             fsm.transitionTo(moveToState);
             break;
        
-	} */
+	}
 }
 
 //moveToState
@@ -208,22 +210,24 @@ void moveToEnter() {
 
 //Handles all the movement, set curPos and nextPos before entering
 void moveToUpdate() {
-
+    Serial.println("MOVE TO UPDATE");
     //Start to sea (1 in state diagram) 
     if(curPos == POS_START && nextPos == POS_SEA){
         Serial.println("GOING TO SEA");
-            if(goToBay(POS_SEA,0,RIGHT)){
-				Serial.println("grreg");
-                curPos = POS_SEA;
-                nextPos = POS_PICK_UP;
-                fsm.transitionTo(scanState);
-            }
+        if(goToBay(POS_SEA,0,RIGHT)){
+			Serial.println("grreg");
+            curPos = POS_PICK_UP;
+            nextPos = POS_SEA;
+            //fsm.transitionTo(scanState);
+        }
     }
     //pickup to sea (10 in state diagram)
     else if (curPos == POS_PICK_UP && nextPos == POS_SEA) {
+        Serial.println("POS_PICKUP && POS_SEA");
         switch (internalState) {
 
             case 0:
+                Serial.println("before backOffWall");
                 if(move.backOffWall())
                     internalState++;
                 break;
@@ -529,12 +533,13 @@ void dropUpdate() {
         //scan and move until the second colour is encountered (main case)
         switch (internalState) {
             case 0:
-                if(!blocks[lTargetPos].present)
+                if(!blocks[lTargetPos].present) {
                     if(goToBay(curPos,lTargetPos,LEFT)){
                         activeClaw = LEFT;
                         blocks[lTargetPos].present = 1;
                         internalState++;
                     }
+                }
                 else if (!blocks[rTargetPos].present){
                     if(goToBay(curPos,rTargetPos,RIGHT)){
                         activeClaw = RIGHT;

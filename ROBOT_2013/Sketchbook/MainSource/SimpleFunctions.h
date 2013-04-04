@@ -5,6 +5,7 @@
 #include "Movement.h"
 #include "cam.h"
 #include "Sonar.h"
+
 typedef struct block_t Block;
 
 bool fullOfBlocks(Block blocks[], int numBlocks);

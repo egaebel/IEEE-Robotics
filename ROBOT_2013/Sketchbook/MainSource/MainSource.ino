@@ -19,9 +19,6 @@ Movement move;
 cam leftCam = cam(LCAM_PIN);
 cam rightCam = cam(RCAM_PIN);
 
-
-extern State state1;
-FiniteStateMachine fsm_debug(state1);
 extern State initState;
 FiniteStateMachine fsm(initState);
 
@@ -45,10 +42,10 @@ void setup() {
 	//rClaw.init(RCLAW_EXTEND_SERVO, RCLAW_SERVO);
 	//fsm
 	Serial.begin(9600);
-        Serial.println("HEPR");
-        move.init();
+    Serial.println("HEPR");
+  //  move.init();
       
-      }
+}
 
 void loop() {
     sonarLeft.update();
@@ -56,8 +53,8 @@ void loop() {
     //Serial.println(sonarLeft.getDistance());
     //leftIR.updateIR();
     //rightIR.updateIR();
-    Serial.print("Sonar L: ");
-    Serial.print(sonarLeft.getDistance());
+    //Serial.print("Sonar L: ");
+    //Serial.print(sonarLeft.getDistance());
     /*Serial.print("\tSonar R: ");
     Serial.println(sonarRight.getDistance());*/
 #if DEBUG_FSM ==0

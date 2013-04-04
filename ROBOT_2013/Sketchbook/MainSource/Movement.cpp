@@ -318,23 +318,26 @@ void Movement::slideWall(side s){
 bool Movement::backOffWall(){
 	
 	//static Timer timer(WALL_BACKUP_TIME);
-	static Timer timer(1000);
-	if(!timer.isStarted()){
+	static Timer theTime(3000);
+
+	if(!theTime.isStarted()){
 		// leftMotor.detach();
 		// rightMotor.detach();
 		// leftMotor.attach(MOTOR_FRONT_L);
 		// rightMotor.attach(MOTOR_FRONT_R);
-		timer.start();
+		theTime.start();
 	}
-	if(timer.isDone()) {
-		timer.stop();
+	if(theTime.isDone()) {
+		theTime.stop();
+		theTime.reset();
+		Serial.println("WE'RE DONE HERE GENTLEMEN&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&");
 		return true;
 	}
 	else {
 		Serial.println("HERHRHRP");
 		//leftMotor.attach(MOTOR_FRONT_L);
 		//rightMotor.attach(MOTOR_FRONT_R);
-		backward(1);
+		this->backward(0.5);
 		return false;
 	}
 }
