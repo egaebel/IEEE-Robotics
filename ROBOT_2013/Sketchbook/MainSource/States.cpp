@@ -86,7 +86,8 @@ State dropState = State(dropEnter, dropUpdate, defExit);
 void initEnter() {
 
     //initialize necessary variables
-    internalState = 0;
+    //TODO: SKIP THE FIRST STATE FOR NOW
+    internalState = 1;
     move.init();
     rightCam.init();
     leftCam.init();
@@ -95,11 +96,10 @@ void initEnter() {
 
 void initUpdate() {
     //setup wall follower
-
     switch(internalState){
         case 0:
-            move.backward(0.25);
-            move.setDown();
+            move.backOffWall();
+            //move.setDown();
             internalState++;
             break;
         case 1:
@@ -123,6 +123,8 @@ void scanEnter() {
 
 void scanUpdate() {
     //Perform the scanning actions
+    //TODO: LETS IGNORE SCANNING FOR NOW
+    fsm.transitionTo(moveToState);
     switch(internalState){
         //Move until hitting a colour
         case 0:
@@ -228,6 +230,8 @@ void moveToUpdate() {
     //Start to sea (1 in state diagram) 
     if(curPos == POS_START && nextPos == POS_SEA){
         if(goToBay(POS_SEA,0,RIGHT)){
+            curPos = POS_SEA;
+            nextPos = POS_RAIL;
             fsm.transitionTo(scanState);
         }
     }
@@ -386,6 +390,23 @@ void moveToUpdate() {
                 fsm.transitionTo(pickUpState);
                 break;
         }
+    }
+    else if(curPos == POS_SEA && nextPos == POS_RAIL){
+        switch(internalState){
+            case 0:
+                if(move.backOffWall())
+                    internalState++;
+            break;
+            case 1:
+                if(move.turn90(LEFT)){
+                    curPos = POS_RAIL;
+                    nextPos = POS_PICK_UP;
+                    fsm.transitionTo(scanState);
+                }
+            break;
+
+        }
+
     }
     //Moving from Pick_Up to Air
     else if (curPos == POS_PICK_UP && nextPos == POS_AIR) {
