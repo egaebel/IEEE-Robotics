@@ -167,6 +167,7 @@ void scanUpdate() {
                     rBlockPos++;
                     if(rBlockPos > 13)
                         internalState = 2;
+                        isScanning = false;
                     else
                         internalState = 1;
                 }
@@ -274,7 +275,6 @@ void moveToUpdate() {
                 if (!seaDone) { 
                     nextPos = POS_SEA;
                 }
-                //else if (seaDone && railDone) {} //maybe....
                 else {
                     nextPos = POS_RAIL;
                 }
@@ -286,7 +286,6 @@ void moveToUpdate() {
                 else {
                     fsm.transitionTo(pickUpState);
                 }
-
                 break;
         }
     }
@@ -308,7 +307,6 @@ void moveToUpdate() {
                     internalState++;
                 }
                 break;
-            //figure out whether to go left or right based on location in rail
             //TODO: review this
             case 3:
                 if (isScanning) {
@@ -325,14 +323,11 @@ void moveToUpdate() {
                     }
                     //if air isn't full (which it won't be)
                     else {
-                        //TODO: Kickstart the air states
                         curPos = nextPos;
                         nextPos = POS_AIR;
                         fsm.transitionTo(moveToState);
                     }
                 }
-                //TODO: not sure if we need to change enter...it currently takes a *fsm...
-                //fsm.enter();
                 break;
         }
     }
@@ -363,23 +358,31 @@ void moveToUpdate() {
                 else {
                   nextPos = POS_RAIL;
                 }
-                fsm.transitionTo(pickUpState);
+
+                //check if we need to be scanning pickup
+                if (isScanning) {
+                    fsm.transitionTo(scanState);
+                }
+                else {
+                    fsm.transitionTo(pickUpState);
+                }
                 break;
         }
     }
+    //random stuff not in the state machine that travis decided it would be a good idea to add
     else if(curPos == POS_SEA && nextPos == POS_RAIL){
         switch(internalState){
             case 0:
                 if(move.backOffWall())
                     internalState++;
-            break;
+                break;
             case 1:
                 if(move.turn90(LEFT)){
                     curPos = POS_RAIL;
                     nextPos = POS_PICK_UP;
                     fsm.transitionTo(scanState);
                 }
-            break;
+                break;
 
         }
 
@@ -405,7 +408,6 @@ void pickUpEnter() {
 			}
 		}
 	}
-	
 	else if(!railDone) {
 		for(int i = 0; i < 6; i++) {
 			if(!railZone[i].present == false) {
@@ -415,7 +417,6 @@ void pickUpEnter() {
 			}
 		}
 	}
-	
 	else {
 	    int i = 0;
 		for(i = 0; i < 14; i++) {
@@ -450,113 +451,46 @@ void pickUpUpdate() {
 	switch(internalState) {
 		//Move to the left target
 		case 0:
-			if(lBlockPos == lTargetPos) {
-				internalState++;
-			} 
-            //if the block is to the right of the left claw
-            else if(lBlockPos < lTargetPos) {
-		        move.slideRight(0.25);
-                //TODO: change to "onBlock" or something?
-                if(leftCam.inZone())
-                {
-                    if(lBlockPos < 0)
-                    {
-                        lBlockPos = 0;
-                        rBlockPos = 1;
-                    }
-                    else if (leftCam.getBlockColour() != loadingZone[lBlockPos].colour
-                        || leftCam.getBlockSize(leftCam.getBlockColour()) != loadingZone[lBlockPos].size)
-                    {
-                        move.stop();
-                        lBlockPos++;
-                        rBlockPos++;
-                    }
-                }
-			} 
-            else if(lBlockPos > lTargetPos) {
-                move.slideLeft(0.25);
-                //TODO: change to "onBlock" or something?
-                if(leftCam.inZone())
-                {
-                    if(lBlockPos > 13)
-                    {
-                        lBlockPos = 13;
-                        rBlockPos = 14;
-                    }
-                    else if (leftCam.getBlockColour() != loadingZone[lBlockPos].colour 
-                        || leftCam.getBlockSize(leftCam.getBlockColour()) != loadingZone[lBlockPos].size)
-                    {
-                        move.stop();
-                        lBlockPos--;
-                        rBlockPos--;
-                    }
-                }
-			}
-			break;
+			if (goToBay(POS_PICK_UP, lTargetPos, LEFT)) {
+                internalState++;
+            }
+            break
+        //center over left bay
+        case 1:
+            if(centerBay(LEFT, curPos, LEFT)) {
+                internalState++;
+            }
+            break;
 		//Pick up left target
-		case 1:
-			move.openClaw(LEFT);
-			move.extendClaw(LEFT);
-			move.closeClaw(LEFT);
-                        move.retractClaw(LEFT);
-                        loadingZone[lTargetPos].present = false;
-       		        internalState++;
+		case 2:
+			if (move.pickupClaw(LEFT)) {
+                lBlock = loadingZone[lTargetPos];
+                loadingZone[lTargetPos].present = false;
+    	        internalState++;
+            }
 			break;
 		//Move to the right target
-		case 2:
-			if(rBlockPos == rTargetPos) {
-				internalState++;
-			} 
-            else if(rBlockPos < rTargetPos) {
-                move.slideRight(0.25);
-                //TODO: change to "onBlock" or something?
-                if(rightCam.inZone())
-                {
-                    if(rBlockPos < 0)
-                    {
-                        rBlockPos = 0;
-                        rBlockPos = -1;
-                    }
-                    else if (rightCam.getBlockColour() != loadingZone[rBlockPos].colour
-                        || rightCam.getBlockSize(rightCam.getBlockColour()) != loadingZone[rBlockPos].size)
-                    {
-                        move.stop();
-                        lBlockPos++;
-                        rBlockPos++;
-                    }
-                }
-			} 
-            else if(rBlockPos > rTargetPos) {
-				move.slideLeft(0.25);
-                //TODO: change to "onBlock" or something?
-                if(rightCam.inZone())
-                {
-                    if(rBlockPos > 13)
-                    {
-                        lBlockPos = 12;
-                        rBlockPos = 13;
-                    }
-                    else if (rightCam.getBlockColour() != loadingZone[rBlockPos].colour
-                        || rightCam.getBlockSize(rightCam.getBlockColour()) != loadingZone[rBlockPos].size)
-                    {
-                        move.stop();
-                        lBlockPos--;
-                        rBlockPos--;
-                    }
-                }
-			}
-			break;
-		
-		//Pick up right target
 		case 3:
-			move.openClaw(RIGHT);
-			move.extendClaw(RIGHT);
-			move.closeClaw(RIGHT);
-                        move.retractClaw(RIGHT);
-                        loadingZone[rTargetPos].present = false;
-			internalState++;
-			break;
+            if (goToBay(POS_PICK_UP, rTargetPos, RIGHT)) {
+                internalState++;
+            }
+            break;
+        //center over left bay
         case 4:
+            if(centerBay(RIGHT, curPos, RIGHT)) {
+                internalState++;
+            }
+            break;
+		//Pick up right target
+		case 5:
+			if(move.pickupClaw(RIGHT)) {
+                rBlock = loadingZone[rTargetPos];
+                loadingZone[rTargetPos].present = false;
+                internalState++;
+            }
+			break;
+        //transitioning
+        case 6:
             fsm.transitionTo(moveToState);
             break;
 	}
@@ -564,6 +498,7 @@ void pickUpUpdate() {
 
 //dropState
 void dropEnter() {
+
     internalState = 0;
     blocks = getZoneByPos(curPos, seaZone, railZone, loadingZone);
 
@@ -591,38 +526,27 @@ void dropUpdate() {
                         blocks[lTargetPos].present = 1;
                         internalState++;
                     }
-
                 else if (!blocks[rTargetPos].present){
                     if(goToBay(curPos,rTargetPos,RIGHT)){
-                        activeClaw = LEFT;
+                        activeClaw = RIGHT;
                         blocks[rTargetPos].present = 1;
                         internalState++;
                     }
                 }
                 else{
                     fsm.transitionTo(moveToState);
-                    nextPos = POS_PICK_UP;
+                    //nextPos = POS_PICK_UP;
                 }
                 break;
+            //setup which claw to center over
             case 1:
-                if(centerBay(RIGHT,curPos,RIGHT))
+                if(centerBay(activeClaw,curPos,activeClaw))
                     internalState++;
                 break;
+            //drop the claw
             case 2:
-                if(move.extendClaw(activeClaw))
-                    internalState++;
-                break;
-            case 3:
-                if(move.openClaw(activeClaw))
-                    internalState++;
-                break;
-            case 4:
-                if(move.retractClaw(activeClaw))
-                    internalState++;
-                break;
-            case 5:
-                if(move.closeClaw(activeClaw))
-                    internalState = 0;
+                if (move.dropClaw(activeClaw))
+                    fsm.transitionTo(moveToState);
                 break;
         }
     }
@@ -633,58 +557,4 @@ void dropUpdate() {
 	}    
 }
 
-
-//returns true if we are centered
-    //false if we are not
-bool center() {
-
-    //if in a bay on both {
-        //do stuff with white lines and bays to get a full bay in view of each cmu cam (equally)
-        //if the boxes are the same size and the space on the side of the boxes are the same (we're centered!)
-        //if (/*leftCam.getBoxWidth() == rightCam.getBoxWidth() 
-            //&& leftCam.getLeftOfBoxWidth() == rightCam.getLeftOfBoxWidth() 
-            //&& leftCam.getRightOfBoxWidth() == rightCam.getRightOfBoxWidth()*/) {
-
-            //return true;
-        //}
-        //if there are white lines in the center (not exactly centered) of the camera view
-            //and there are colors to the left of both white lines
-        //else if (/*(leftCam.hasWhiteLineInCenter() && leftCam.hasColorOnLeft()) 
-            //&& (rightCam.hasWhiteLineInCenter() && rightCam.hasColorOnLeft())*/) {
-            //go left
-        //}
-        //if there are white lines in the center (not exactly centered) of the camera view
-            //and there are colors to the right of both white lines.
-        //else if (/*(leftCam.hasWhiteLineInCenter() && leftCam.hasColorOnRight()) 
-            //&& (rightCam.hasWhiteLineInCenter() && rightCam.hasColorOnRight())*/) {
-            //go right
-        //}
-        //
-    //}
-    //else {
-        //return false;
-    //}
-
-    return false;
-}
-
-/*
-bool centered(cam &theCam)
-{
-	if(theCam.locateZone() > 0)
-	{
-		move.slideRight(0.1);
-	}
-	else
-	{
-		move.slideLeft(0.1);
-	}
-	if (theCam.inZone())
-	{
-		move.stop();
-		return true;
-	}
-	return false;
-}
-*/
 //*****END State Functions*****//

@@ -71,7 +71,16 @@ bool Movement::dropClaw(side s) {
 			break;
 		case 1:
 			if (openClaw(s)) {
-				
+				zeState;
+			}
+			break;
+		case 2:
+			if (retractClaw(s)) {
+				zeState++;
+			}
+			break;
+		case 3:
+			if (closeClaw(s)) {
 				zeState = 0;
 				return true;
 			}
@@ -87,17 +96,25 @@ bool Movement::pickupClaw(side s) {
 	static int zeState = 0;
 	switch (zeState) {
 		case 0:
-			if (extendClaw(s)) {
+			if (openClaw(s)) {
 				zeState++;
 			}
 			break;
 		case 1:
-			if (openClaw(s)) {
-
+			if (extendClaw(s)) {
+				zeState++;
+			}
+			break;
+		case 2:
+			if (closeClaw(s)) {
+				zeState++;
+			}
+			break;
+		case 3:
+			if (retractClaw(s)) {
 				zeState = 0;
 				return true;
 			}
-			break;
 	}
 	return false;
 }
