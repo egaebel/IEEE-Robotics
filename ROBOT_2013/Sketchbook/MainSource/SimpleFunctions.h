@@ -10,7 +10,8 @@ typedef struct block_t Block;
 bool fullOfBlocks(Block blocks[], int numBlocks);
 bool getBayPos(int distance, int safeDistance, int * lBlockPos, int * rBlockPos);
 bool goToWall();
-bool centerBay(side strafeDir, bPosition pos ,cam* c);
+bool centerBay(side strafeDir, bPosition pos ,side );
 Block* getZoneByPos(bPosition pos, Block * seaZone, Block * railZone, Block * loadingZone);
 bool goToBay(bPosition, int nBay, side clawSide);
+int getBayDist(bPosition,int,side);
 #endif

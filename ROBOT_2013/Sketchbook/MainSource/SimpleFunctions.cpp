@@ -2,6 +2,7 @@
 
 extern Movement move;
 extern cam rightCam;
+extern cam leftCam;
 extern Sonar sonarRight;
 extern Sonar sonarLeft;
 bool fullOfBlocks(Block blocks[], int numBlocks) {
@@ -34,7 +35,13 @@ bool getBayPos(int distance, int safeDistance, int * lBlockPos, int * rBlockPos)
 	return haveInfo;
 }
 
-bool centerBay(side strafeDir, bPosition pos, cam* c){
+bool centerBay(side strafeDir, bPosition pos, side sCam){
+	cam *c;
+	if(sCam==RIGHT)
+		c = &rightCam;
+	else
+		c = &leftCam;
+
 	if(goToWall()){
 		switch(c->inZone(pos))  {
 			case CENTER:
@@ -67,7 +74,7 @@ bool goToWall()
       	move.setSpeed(.25,0,1,0);
     }
     else{
-       	move.forward(0.10);
+       	move.forward(.1);
     }
     return false;
 }
@@ -89,38 +96,49 @@ Block* getZoneByPos(bPosition pos, Block * seaZone, Block * railZone, Block * lo
 }
 
 bool goToBay(bPosition bay, int nBay, side clawSide) {
-	Sonar *tempSonar;
-	side posSide;
+	if(goToWall()){
+		Sonar *tempSonar;
+		side posSide;
+		int dist = getBayDist(bay,nBay,clawSide);
+		if(bay==POS_SEA)
+			tempSonar = &sonarLeft;
+		else
+			tempSonar = &sonarRight;
+		
+		if(tempSonar->getDistance()>dist){
+			if(bay==POS_SEA)
+				move.slideWall(LEFT);
+			else
+				move.slideWall(RIGHT);
+			return 0;
+		}
+		else if(tempSonar->getDistance()<dist){
+			if(bay==POS_SEA)
+				move.slideWall(RIGHT);
+			else
+				move.slideWall(LEFT);
+			return 0;
+		}
+		else{
+			move.stop();
+			return 1;
+		}
+	}
+
+}
+
+int getBayDist(bPosition bay, int nBay, side clawSide) {
 	int dist;
 	switch(bay){
 		case POS_PICK_UP:
-			tempSonar = &sonarRight;
 			dist = 122 - (nBay*7);
 			break;
 		case POS_RAIL:
-			tempSonar = &sonarRight;
 			dist = 142 - (nBay*7);
 			break;
 		case POS_SEA:
-			tempSonar = &sonarLeft;
 			dist =  37 + (nBay*7);
 			break;
 	}
-	if(tempSonar->getDistance()>dist){
-		if(bay==POS_SEA)
-			move.slideWall(LEFT);
-		else
-			move.slideWall(RIGHT);
-		return 0;
-	}
-	else if(tempSonar->getDistance()<dist){
-		if(bay==POS_SEA)
-			move.slideWall(RIGHT);
-		else
-			move.slideWall(LEFT);
-		return 0;
-	}
-	else
-		return 1;
-
+	return dist;
 }

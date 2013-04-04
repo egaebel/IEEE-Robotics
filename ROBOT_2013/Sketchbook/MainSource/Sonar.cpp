@@ -6,6 +6,9 @@ Sonar::Sonar(int address, int interruptPin) {
   distance = -2;
 }
 
+/**
+ * Returns distance in cm
+ */
 int Sonar::getDistance() {
   return distance;
 }
@@ -38,7 +41,6 @@ boolean Sonar::update() {
 }
 
 int Sonar::i2cRequest(){
-  //Serial.println("Requesting");
   Wire.beginTransmission(addr);
   Wire.write(0x51);
   return (Wire.endTransmission());
