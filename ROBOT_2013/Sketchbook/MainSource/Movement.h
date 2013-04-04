@@ -14,6 +14,7 @@
 #define RETRACT_CLAW_TIME 0
 #define DROP_CLAW_TIME 0
 #define PICKUP_CLAW_TIME 0
+#define WALL_BACKUP_TIME 0
 
 class Movement {
 public:
@@ -26,8 +27,8 @@ public:
 		void forward(float speed);
 		void backward(float speed);
 		void stop();
-		int turn90(side s = LEFT);
-		int turnAround(side s = LEFT);
+		bool turn90(side s = LEFT);
+		bool turnAround(side s = LEFT);
 
 		bool dropClaw(side s);
 		bool pickupClaw(side s);
@@ -37,12 +38,11 @@ public:
 		bool extendClaw(side s);
 		bool retractClaw(side s);
     //Used for complex movements
-		bool setSpeed(float speedFL,float speedFR, float speedBL, float speedBR);
+		void setSpeed(float speedFL,float speedFR, float speedBL, float speedBR);
 		void liftUp();
 		void setDown();
 		bool backOffWall();
 private:
-		bool setSpeed(int servo, float speed);
 
 		Servo leftMotor;
 		Servo rightMotor;
@@ -58,6 +58,7 @@ private:
         Servo* getClawMotor(side s);
         Servo* getExtendMotor(side s);
 
+		bool setSpeed(int servo, float speed);
         void setSpeed(Servo motor, float speed, bool inverted);
         bool goToDeg(Servo motor,int d);
 };

@@ -51,7 +51,7 @@ static bool railDone;
 static bool seaDone;
 
 //Whether order of bays in air and whats in hand is the same
-bool airOrderSame;
+static bool airOrderSame;
 
 static const int PICKUP_SIZE = 14;
 static const int RAIL_SEA_SIZE = 6;
@@ -247,6 +247,8 @@ void moveToUpdate() {
             //move to wall
             case 3:
                 if (goToWall()) {
+                    curPos = nextPos;
+                    nextPos = POS_PICK_UP;
                     fsm.transitionTo(dropState);  
                 }
                 break;

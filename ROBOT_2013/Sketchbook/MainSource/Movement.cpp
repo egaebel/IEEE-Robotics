@@ -12,7 +12,7 @@ void Movement::init(){
     stop();
 }
 
-int Movement::turn90(side s){
+bool Movement::turn90(side s){
     static int state;
     static Timer timer(TURN_90_TIME);
     switch( state ){
@@ -33,15 +33,15 @@ int Movement::turn90(side s){
                 stop();
                 timer.stop();
                 state = 0;
-                return 1;
+                return true;
             }
             break;
         }
     }
-    return 0;
+    return false;
 }
 
-int Movement::turnAround(side s) {
+bool Movement::turnAround(side s) {
     static int step;
     switch( step ){
         case 0:
@@ -52,20 +52,30 @@ int Movement::turnAround(side s) {
 	    case 1:
 	        if(turn90(s)){
 	            step=0;
-	            return 1;
+	            return true;
 	        }
 	        break;
 	}
-	return 0;
+	return false;
 }
-
 
 //Drops the block in the claw on side s
 bool Movement::dropClaw(side s) {
 
-	static Timer time(DROP_CLAW_TIME);
-	if (extendClaw(s)) {
-
+	static int zeState = 0;
+	switch (zeState) {
+		case 0:
+			if (extendClaw(s)) {
+				zeState++;
+			}
+			break;
+		case 1:
+			if (openClaw(s)) {
+				
+				zeState = 0;
+				return true;
+			}
+			break;
 	}
 
 	return false;
@@ -74,6 +84,21 @@ bool Movement::dropClaw(side s) {
 //picks up a block in the claw on side s
 bool Movement::pickupClaw(side s) {
 
+	static int zeState = 0;
+	switch (zeState) {
+		case 0:
+			if (extendClaw(s)) {
+				zeState++;
+			}
+			break;
+		case 1:
+			if (openClaw(s)) {
+
+				zeState = 0;
+				return true;
+			}
+			break;
+	}
 	return false;
 }
 
@@ -179,7 +204,7 @@ void Movement::stop(){
 }
 
 
-bool Movement::setSpeed(float speedFL,float speedFR, float speedBL, float speedBR){
+void Movement::setSpeed(float speedFL,float speedFR, float speedBL, float speedBR){
 	setSpeed(MOTOR_FRONT_L,speedFL);
 	setSpeed(MOTOR_FRONT_R,speedFR);
 	setSpeed(MOTOR_BACK_L,speedBL);
@@ -258,13 +283,26 @@ void Movement::slideWall(side s){
 	switch(s){
 		case RIGHT:
 			setSpeed(.25,0,-.1,-.1);
-		break;
+			break;
 		case LEFT:
     		setSpeed(0,.25,.1,.1);
-		break;
+			break;
+		default:
+
+			break;
 	}
 }
 
+
 bool Movement::backOffWall(){
 
+	static Timer timer(WALL_BACKUP_TIME);
+
+	if(timer.isDone()) {
+		return true;
+	}
+	else {
+		backward(0.25);
+		return false;
+	}
 }
