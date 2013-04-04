@@ -6,6 +6,9 @@ Sonar::Sonar(int address, int interruptPin) {
   distance = -2;
 }
 
+/**
+ * Returns distance in cm
+ */
 int Sonar::getDistance() {
   return distance;
 }

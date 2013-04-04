@@ -48,7 +48,7 @@ void moveToAirPlatform() {
 		
 		case 0: //Turn around to face wall oposite pick_up area
 			move.turnAround();
-			airInternalState = 2;
+			airInternalState++;
 			break;
 			
 		case 1: //Once reached wall go to next internalState
@@ -59,7 +59,7 @@ void moveToAirPlatform() {
 			break;
 			
 		case 2: 
-			if(true /*SONAR DISTANCE FROM WALL CERTAIN DISTANCE*/) {
+			if(sonarLeft.getDistance() < 20) /*SONAR DISTANCE FROM WALL CERTAIN DISTANCE*/) {
 				move.stop();
 				move.turnAround();
 				move.stop();
@@ -124,7 +124,7 @@ void scanAirPlatform() {
 	//Scanning Air
 	switch (airInternalState) {
 		case 0:
-			airInternalState ++;
+			airInternalState++;
 			timer.init(500);  
 			timer.start();
 			move.backward(VERY_SLOW);
@@ -165,7 +165,7 @@ void dropAirBlocksEnter() {
  *  Drop blocks in air bays
  */
 void dropAirBlocks() {
-	if(airOrderSame)  {
+	if(airOrderSame)  { //If order same as blocks in the hand
 			switch (airInternalState) {
 				case 0://Assume that when right block over right target bay, left held block over left target bay
 					move.extendClaw(LEFT);
@@ -227,7 +227,7 @@ void dropAirBlocks() {
 					move.closeClaw(RIGHT);
 					airInternalState++;
 					move.backward(VERY_SLOW);
-					timer.init(2000); //Set timer for moving back enough (to avoid hitting placed block)
+					timer.init(1000); //Set timer for moving back enough (to avoid hitting placed block)
 					timer.start();
 				}
 				break;
@@ -249,7 +249,7 @@ void dropAirBlocks() {
 				break;
 			
 			case 7:
-				if(leftIR.getIR() > 10.0 && rightIR.getIR() > 10.0) { //If at front edge of the air platform
+				if(leftIR.getIR() > 10.0 ){ //If at front edge of the air platform (because right already off the edge)
 					move.stop();
 					move.slideLeft(VERY_SLOW); //start left strafe
 					airInternalState++;
@@ -271,11 +271,6 @@ void dropAirBlocks() {
 	
 }
 
-void moveAP_cleanUp() {
-	
-}
-
-void scanAP_cleanUp() {
-}
-void dropAP_cleanUp() {
-}
+void moveAP_cleanUp() {	}
+void scanAP_cleanUp() { }
+void dropAP_cleanUp() { }
