@@ -38,7 +38,6 @@ boolean Sonar::update() {
 }
 
 int Sonar::i2cRequest(){
-  //Serial.println("Requesting");
   Wire.beginTransmission(addr);
   Wire.write(0x51);
   return (Wire.endTransmission());

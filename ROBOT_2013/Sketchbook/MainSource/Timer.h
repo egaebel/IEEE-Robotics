@@ -18,6 +18,7 @@ class Timer {
 		void stop();
 		//will restart the timer regardless of time
 		void reset();	
+		bool isStarted();
 	private:
 		long endTime;
 		int endDuration;

@@ -33,6 +33,7 @@ int curBayPos;
 void state1Enter() {
 	internalState = 0;
 	pinMode(53, INPUT);
+	pinMode(52, INPUT);
 	move.init();
 	rightCam.init();
     leftCam.init();
@@ -43,6 +44,11 @@ void state1Update() {
 
 	switch(internalState){
 		case 0:
+			Serial.println("check the things");
+			if(move.liftUp())
+				internalState = 666;
+			break;
+		case 423:
 			if(goToWall()){
 				if(goToBay(POS_RAIL,4,RIGHT)){
 					move.stop();

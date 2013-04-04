@@ -39,8 +39,9 @@ public:
 		bool retractClaw(side s);
     //Used for complex movements
 		void setSpeed(float speedFL,float speedFR, float speedBL, float speedBR);
-		void liftUp();
-		void setDown();
+		bool liftUp();
+		bool setDown();
+		bool timerTest();
 		bool backOffWall();
 private:
 

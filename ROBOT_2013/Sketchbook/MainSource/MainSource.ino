@@ -1,11 +1,13 @@
+#define TWI_FREQ 25000L
 #include "FiniteStateMachine.h"
 #include "States.h"
 #include "States_Test.h"
 #include <Servo.h>
 #include <Wire.h>
 #include "IRlib.h"
+#include "common.h"
 
-#define DEBUG_FSM 1
+#define DEBUG_FSM 0
 
 Sonar sonarLeft(SONAR_LEFT,SONAR_LEFT_INT);
 Sonar sonarRight(SONAR_RIGHT,SONAR_RIGHT_INT);
@@ -36,22 +38,28 @@ void setup() {
         attachInterrupt(SONAR_LEFT_INT,handleSonarLeft,FALLING);
         attachInterrupt(SONAR_RIGHT_INT,handleSonarRight,FALLING);
         Wire.begin();
+        
+        delay(200);
 	//setup claws
 	//lClaw.init(LCLAW_EXTEND_SERVO, LCLAW_SERVO);
 	//rClaw.init(RCLAW_EXTEND_SERVO, RCLAW_SERVO);
 	//fsm
 	Serial.begin(9600);
-}
+        Serial.println("HEPR");
+        move.init();
+      
+      }
 
 void loop() {
     sonarLeft.update();
     sonarRight.update();
+    Serial.println(sonarLeft.getDistance());
     //leftIR.updateIR();
     //rightIR.updateIR();
-    Serial.print("Sonar L: ");
+/*    Serial.print("Sonar L: ");
     Serial.print(sonarLeft.getDistance());
     Serial.print("\tSonar R: ");
-    Serial.println(sonarRight.getDistance());
+    Serial.println(sonarRight.getDistance());*/
 #if DEBUG_FSM ==0
     fsm.update();
 #else

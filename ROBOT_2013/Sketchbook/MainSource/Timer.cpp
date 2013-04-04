@@ -29,3 +29,6 @@ void Timer::reset(){
 
 	endTime	= millis() + endDuration;
 }
+bool Timer::isStarted(){
+	return started;
+}

@@ -70,6 +70,8 @@ bool isScanning;
 Block *blocks;
 
 
+static int STATE;
+
 //State objects
 //Put it here since it needs to know that the functions exist
 State initState = State(initEnter, initUpdate, defExit);
@@ -84,14 +86,15 @@ State moveToAirState = State(moveToPlatformEnter, moveToAirPlatform, moveAP_clea
 
 //*****START State Functions*****//
 //initState Functions
+
 void initEnter() {
 
     //initialize necessary variables
     //TODO: SKIP THE FIRST STATE FOR NOW
     internalState = 1;
-    move.init();
-    rightCam.init();
-    leftCam.init();
+    //move.init();
+    //rightCam.init();
+    //leftCam.init();
     isScanning = true;
 }
 
@@ -129,6 +132,8 @@ void scanUpdate() {
     switch(internalState){
         //Move until hitting a colour
         case 0:
+            break;
+        case 340:
             if (curPos == POS_SEA) {
                 //focused on bay, read colour
                 if(centerBay(RIGHT,curPos,RIGHT)){
@@ -193,7 +198,6 @@ void scanUpdate() {
 
 //moveToState
 void moveToEnter() {
-
     //initialize necessary variables & sensors
     internalState = 0;
 }
@@ -203,27 +207,27 @@ void moveToUpdate() {
 
     //Start to sea (1 in state diagram) 
     if(curPos == POS_START && nextPos == POS_SEA){
-        if(goToBay(POS_SEA,0,RIGHT)){
-            curPos = POS_SEA;
-            nextPos = POS_RAIL;
-            fsm.transitionTo(scanState);
-        }
+        Serial.println("GOING TO SEA");
+            if(goToBay(POS_SEA,0,RIGHT)){
+                curPos = POS_SEA;
+                nextPos = POS_PICK_UP;
+                fsm.transitionTo(scanState);
+            }
     }
     //pickup to sea (10 in state diagram)
     else if (curPos == POS_PICK_UP && nextPos == POS_SEA) {
-
         switch (internalState) {
 
-            case 1:
+            case 0:
                 if(move.backOffWall())
                     internalState++;
                 break;
-            case 2:
+            case 1:
                 if(move.turn90(LEFT))
                     internalState++;
                 break;
             //move to wall
-            case 3:
+            case 2:
                 if (goToWall()) {
                     curPos = nextPos;
                     nextPos = POS_PICK_UP;
@@ -236,9 +240,10 @@ void moveToUpdate() {
     else if (curPos == POS_SEA && nextPos == POS_PICK_UP) {
 
         switch (internalState) {
-
-            //check if we need to move sector in zone
             case 0:
+                internalState++;
+            //check if we need to move sector in zone
+            case 2310:
                 //check if we are safe to turn around
                 if (sonarRight.getDistance() >= SEA_SAFE_ZONE) {
                     move.slideLeft(0.1);
@@ -258,8 +263,8 @@ void moveToUpdate() {
                 break;
             //turn right
             case 2:
-                move.turn90(RIGHT);
-                internalState++;
+                if(move.turn90(RIGHT))
+                    internalState++;
                 break;
             //move to wall
             case 3:
@@ -370,8 +375,10 @@ void moveToUpdate() {
     else if(curPos == POS_SEA && nextPos == POS_RAIL){
         switch(internalState){
             case 0:
-                if(move.backOffWall())
-                    internalState++;
+                //move.stop();
+                move.backward(1);
+                //if(move.backOffWall())
+                    //internalState++;
             break;
             case 1:
                 if(move.turn90(LEFT)){

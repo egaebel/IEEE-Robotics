@@ -6,10 +6,12 @@ void Movement::init(){
 	rightMotor.attach(MOTOR_FRONT_R);
 	backLeftMotor.attach(MOTOR_BACK_L);
     backRightMotor.attach(MOTOR_BACK_R);
-    rightClawMotor.attach(RCLAW_SERVO);
-    rightExtendMotor.attach(RCLAW_EXTEND_SERVO);
+    //rightClawMotor.attach(RCLAW_SERVO);
+    //rightExtendMotor.attach(RCLAW_EXTEND_SERVO);
+    topMotor.attach(3);
     rightExtendMotor.write(90);
     stop();
+    Serial.println("MOVEMENT INITED");
 }
 
 bool Movement::turn90(side s){
@@ -211,19 +213,21 @@ void Movement::setSpeed(float speedFL,float speedFR, float speedBL, float speedB
 	setSpeed(MOTOR_BACK_R,speedBR);
 }
 
-void Movement::liftUp() {
-	goToDeg(topMotor,90);
+bool Movement::liftUp() {
+	return goToDeg(topMotor,27);
 }
 
-void Movement::setDown() {
-	goToDeg(topMotor,180);
+bool Movement::setDown() {
+	return goToDeg(topMotor,0);
 }
 
 bool Movement::goToDeg(Servo motor, int d){
 	static int curD = 0;
 	static Timer t(100);
+	Serial.println("GoToDeg");
 	t.start();
 	if(t.isDone()){
+		Serial.println("Timer went off!");
 		if(curD<d){		
 			motor.write(curD);
 			curD++;
@@ -242,6 +246,7 @@ bool Movement::goToDeg(Servo motor, int d){
 }
 
 bool Movement::setSpeed(int servo, float speed){
+
 	switch(servo){
 		case MOTOR_FRONT_L:
 			setSpeed(leftMotor,speed,true);
@@ -276,7 +281,6 @@ void Movement::setSpeed(Servo motor, float speed, bool inverted){
 
 	//Adjust speed to correct range
 	speed = (90*speed)+90; //0-180
-
 	motor.write(speed); //set speed
 }
 void Movement::slideWall(side s){
@@ -295,14 +299,34 @@ void Movement::slideWall(side s){
 
 
 bool Movement::backOffWall(){
-
-	static Timer timer(WALL_BACKUP_TIME);
-
+	
+	//static Timer timer(WALL_BACKUP_TIME);
+	static Timer timer(1000);
+	if(!timer.isStarted()){
+		// leftMotor.detach();
+		// rightMotor.detach();
+		// leftMotor.attach(MOTOR_FRONT_L);
+		// rightMotor.attach(MOTOR_FRONT_R);
+		timer.start();
+	}
 	if(timer.isDone()) {
+		timer.stop();
 		return true;
 	}
 	else {
-		backward(0.25);
+		Serial.println("HERHRHRP");
+		//leftMotor.attach(MOTOR_FRONT_L);
+		//rightMotor.attach(MOTOR_FRONT_R);
+		backward(1);
 		return false;
+	}
+}
+
+bool Movement::timerTest(){
+	static Timer timer(1000);
+	timer.start();
+	if(timer.isDone()){
+		Serial.println("DING FRIES ARE DONE");
+		timer.reset();
 	}
 }

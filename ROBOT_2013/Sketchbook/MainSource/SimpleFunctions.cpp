@@ -74,7 +74,7 @@ bool goToWall()
       	move.setSpeed(.25,0,1,0);
     }
     else{
-       	move.forward(0.10);
+       	move.forward(.1);
     }
     return false;
 }
@@ -96,31 +96,34 @@ Block* getZoneByPos(bPosition pos, Block * seaZone, Block * railZone, Block * lo
 }
 
 bool goToBay(bPosition bay, int nBay, side clawSide) {
-	Sonar *tempSonar;
-	side posSide;
-	int dist = getBayDist(bay,nBay,clawSide);
-	
-	if(bay==POS_SEA)
-		tempSonar = &sonarLeft;
-	else
-		tempSonar = &sonarRight;
-	
-	if(tempSonar->getDistance()>dist){
+	if(goToWall()){
+		Sonar *tempSonar;
+		side posSide;
+		int dist = getBayDist(bay,nBay,clawSide);
 		if(bay==POS_SEA)
-			move.slideWall(LEFT);
+			tempSonar = &sonarLeft;
 		else
-			move.slideWall(RIGHT);
-		return 0;
+			tempSonar = &sonarRight;
+		
+		if(tempSonar->getDistance()>dist){
+			if(bay==POS_SEA)
+				move.slideWall(LEFT);
+			else
+				move.slideWall(RIGHT);
+			return 0;
+		}
+		else if(tempSonar->getDistance()<dist){
+			if(bay==POS_SEA)
+				move.slideWall(RIGHT);
+			else
+				move.slideWall(LEFT);
+			return 0;
+		}
+		else{
+			move.stop();
+			return 1;
+		}
 	}
-	else if(tempSonar->getDistance()<dist){
-		if(bay==POS_SEA)
-			move.slideWall(RIGHT);
-		else
-			move.slideWall(LEFT);
-		return 0;
-	}
-	else
-		return 1;
 
 }
 
