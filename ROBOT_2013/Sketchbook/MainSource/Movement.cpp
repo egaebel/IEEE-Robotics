@@ -59,20 +59,93 @@ int Movement::turnAround(side s) {
 	return 0;
 }
 
-bool Movement::extendClaw(side s){
-	rightExtendMotor.write(180);
+
+//Drops the block in the claw on side s
+bool Movement::dropClaw(side s) {
+
+	static Timer time(DROP_CLAW_TIME);
+	if (extendClaw(s)) {
+
+	}
+
 	return false;
 }
+
+//picks up a block in the claw on side s
+bool Movement::pickupClaw(side s) {
+
+	return false;
+}
+
+bool Movement::openClaw(side s) {
+
+	static Timer time(OPEN_CLAW_TIME);
+	if (time.isDone()) {
+		getClawMotor(s)->write(0);
+		return true;
+	}
+	else {
+		getClawMotor(s)->write(-180);
+		return false;
+	}
+}
+
+bool Movement::closeClaw(side s) {
+
+	static Timer time(CLOSE_CLAW_TIME);
+	if (time.isDone()) {
+		getClawMotor(s)->write(0);
+		return true;
+	}
+	else {
+		getClawMotor(s)->write(180);
+		return false;
+	}
+}
+
+bool Movement::extendClaw(side s){
+	
+	static Timer time(EXTEND_CLAW_TIME);
+	if (time.isDone()) {
+		getExtendMotor(s)->write(0);
+		return true;
+	}
+	else {
+		getExtendMotor(s)->write(180);
+		return false;
+	}
+}
+
 bool Movement::retractClaw(side s){
+	
 	if(!(digitalRead(22))){
-		rightExtendMotor.write(90);
+		getClawMotor(s)->write(90);
 		return false;
 	}
 	else{
-		rightExtendMotor.write(0);
+		getClawMotor(s)->write(0);
 		return true;
 	}
+}
 
+Servo * Movement::getClawMotor(side s) {
+
+	if (s == RIGHT) {
+		return &rightClawMotor;
+	}
+	else {
+		return &leftClawMotor;
+	}
+}
+
+Servo * Movement::getExtendMotor(side s) {
+
+	if (s == RIGHT) {
+		return &rightExtendMotor;
+	}
+	else {
+		return &leftExtendMotor;
+	}
 }
 
 void Movement::slideLeft(float speed){
@@ -121,17 +194,6 @@ void Movement::setDown() {
 	goToDeg(topMotor,180);
 }
 
-bool Movement::openClaw(side clawSide){
-	if(clawSide==RIGHT)
-		rightClawMotor.write(120);
-	
-	return 0;
-}
-bool Movement::closeClaw(side clawSide){
-	if(clawSide==RIGHT)
-		rightClawMotor.write(90);
-	return 0;
-}
 bool Movement::goToDeg(Servo motor, int d){
 	static int curD = 0;
 	static Timer t(100);
