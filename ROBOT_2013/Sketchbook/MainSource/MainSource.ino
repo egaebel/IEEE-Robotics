@@ -53,12 +53,12 @@ void setup() {
 void loop() {
     sonarLeft.update();
     sonarRight.update();
-    Serial.println(sonarLeft.getDistance());
+    //Serial.println(sonarLeft.getDistance());
     //leftIR.updateIR();
     //rightIR.updateIR();
-/*    Serial.print("Sonar L: ");
+    Serial.print("Sonar L: ");
     Serial.print(sonarLeft.getDistance());
-    Serial.print("\tSonar R: ");
+    /*Serial.print("\tSonar R: ");
     Serial.println(sonarRight.getDistance());*/
 #if DEBUG_FSM ==0
     fsm.update();

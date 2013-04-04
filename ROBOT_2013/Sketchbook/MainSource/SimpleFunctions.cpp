@@ -41,7 +41,7 @@ bool centerBay(side strafeDir, bPosition pos, side sCam){
 		c = &rightCam;
 	else
 		c = &leftCam;
-
+		
 	if(goToWall()){
 		switch(c->inZone(pos))  {
 			case CENTER:
@@ -140,5 +140,6 @@ int getBayDist(bPosition bay, int nBay, side clawSide) {
 			dist =  37 + (nBay*7);
 			break;
 	}
-	return dist;
+	
+	return dist;
 }

@@ -129,11 +129,12 @@ void scanUpdate() {
     //Perform the scanning actions
     //TODO: LETS IGNORE SCANNING FOR NOW
     fsm.transitionTo(moveToState);
-    switch(internalState){
+    /*switch(internalState){
         //Move until hitting a colour
         case 0:
             break;
         case 340:
+			Serial.println("Reached case 340");
             if (curPos == POS_SEA) {
                 //focused on bay, read colour
                 if(centerBay(RIGHT,curPos,RIGHT)){
@@ -196,7 +197,7 @@ void scanUpdate() {
             fsm.transitionTo(moveToState);
             break;
        
-	}
+	} */
 }
 
 //moveToState
@@ -212,6 +213,7 @@ void moveToUpdate() {
     if(curPos == POS_START && nextPos == POS_SEA){
         Serial.println("GOING TO SEA");
             if(goToBay(POS_SEA,0,RIGHT)){
+				Serial.println("grreg");
                 curPos = POS_SEA;
                 nextPos = POS_PICK_UP;
                 fsm.transitionTo(scanState);
@@ -453,6 +455,7 @@ void pickUpEnter() {
 
 void pickUpUpdate() {
 
+	Serial.println("in PickUp update");
 	//Perform the pick up actions
 	switch(internalState) {
 		//Move to the left target
