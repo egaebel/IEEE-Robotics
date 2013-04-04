@@ -170,11 +170,13 @@ void scanUpdate() {
     	            loadingZone[rBlockPos].size = rightCam.getBlockSize(loadingZone[rBlockPos].colour);
                     loadingZone[rBlockPos].present = true;
                     rBlockPos++;
-                    if(rBlockPos > 13)
+                    if(rBlockPos > 13) {
                         internalState = 2;
                         isScanning = false;
-                    else
+					}
+                    else {
                         internalState = 1;
+					}
                 }
             }           
             
@@ -458,7 +460,7 @@ void pickUpUpdate() {
 			if (goToBay(POS_PICK_UP, lTargetPos, LEFT)) {
                 internalState++;
             }
-            break
+            break;
         //center over left bay
         case 1:
             if(centerBay(LEFT, curPos, LEFT)) {
