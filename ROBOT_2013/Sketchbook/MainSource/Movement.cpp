@@ -328,6 +328,7 @@ bool Movement::backOffWall(){
 		theTime.start();
 	}
 	if(theTime.isDone()) {
+		stop();
 		theTime.stop();
 		theTime.reset();
 		Serial.println("WE'RE DONE HERE GENTLEMEN&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&");
@@ -356,10 +357,16 @@ bool Movement::timerTest(){
  */
 void Movement::forwardForDuration(float speed, int time_ms) {
 	static Timer timer(time_ms);
-	setSpeed(speed,speed,0,0);
-	timer.start();
+	
+	if(!timer.isStarted()) {
+		timer.start();
+	}
+	
 	if(timer.isDone()) {
-		this->stop();
+		stop();
+	} else
+	{
+		setSpeed(speed,speed,0,0);
 	}
 }
 
@@ -369,9 +376,11 @@ void Movement::forwardForDuration(float speed, int time_ms) {
 void Movement::backwardForDuration(float speed, int time_ms){
 	static Timer timer(time_ms);
 	setSpeed(-speed,-speed,0,0);
-	timer.start();
+	if(!timer.isStarted()) {
+		timer.start();
+	}
 	if(timer.isDone()) {
-		this->stop();
+		stop();
 	}
 }
 

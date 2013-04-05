@@ -117,40 +117,41 @@ void initEnter() {
       debugRailZone[idx].size = LARGE;
       debugRailZone[idx].present = false;
     }
-    debugLoadingZone[0].colour = PURPLE;
-    debugLoadingZone[0].size = MED;
-    debugLoadingZone[1].colour = GREEN;
-    debugLoadingZone[1].size = MED;
-    debugLoadingZone[2].colour = BROWN;
-    debugLoadingZone[2].size = MED;
-    debugLoadingZone[3].colour = YELLOW;
-    debugLoadingZone[3].size = MED;
-    debugLoadingZone[4].colour = BLUE;
-    debugLoadingZone[4].size = MED;
-    debugLoadingZone[5].colour = RED;
-    debugLoadingZone[5].size = MED;
-    debugLoadingZone[6].colour = PURPLE;
-    debugLoadingZone[6].size = LARGE;
-    debugLoadingZone[7].colour = GREEN;
-    debugLoadingZone[7].size = LARGE;
-    debugLoadingZone[8].colour = YELLOW;
-    debugLoadingZone[8].size = LARGE;
-    debugLoadingZone[9].colour = BROWN;
-    debugLoadingZone[9].size = LARGE;
-    debugLoadingZone[10].colour = RED;
-    debugLoadingZone[10].size = LARGE;
-    debugLoadingZone[11].colour = BLUE;
-    debugLoadingZone[11].size = LARGE;
-    debugLoadingZone[12].colour = BLUE;
-    debugLoadingZone[12].size = SMALL;
-    debugLoadingZone[13].colour = PURPLE;
-    debugLoadingZone[13].size = SMALL;
-    for(idx = 0; idx < 14; idx++)
-    {
-      debugLoadingZone[idx].present = false;
-    }
+    // debugLoadingZone[0].colour = PURPLE;
+    // debugLoadingZone[0].size = MED;
+    // debugLoadingZone[1].colour = GREEN;
+    // debugLoadingZone[1].size = MED;
+    // debugLoadingZone[2].colour = BROWN;
+    // debugLoadingZone[2].size = MED;
+    // debugLoadingZone[3].colour = YELLOW;
+    // debugLoadingZone[3].size = MED;
+    // debugLoadingZone[4].colour = BLUE;
+    // debugLoadingZone[4].size = MED;
+    // debugLoadingZone[5].colour = RED;
+    // debugLoadingZone[5].size = MED;
+    // debugLoadingZone[6].colour = PURPLE;
+    // debugLoadingZone[6].size = LARGE;
+    // debugLoadingZone[7].colour = GREEN;
+    // debugLoadingZone[7].size = LARGE;
+    // debugLoadingZone[8].colour = YELLOW;
+    // debugLoadingZone[8].size = LARGE;
+    // debugLoadingZone[9].colour = BROWN;
+    // debugLoadingZone[9].size = LARGE;
+    // debugLoadingZone[10].colour = RED;
+    // debugLoadingZone[10].size = LARGE;
+    // debugLoadingZone[11].colour = BLUE;
+    // debugLoadingZone[11].size = LARGE;
+    // debugLoadingZone[12].colour = BLUE;
+    // debugLoadingZone[12].size = SMALL;
+    // debugLoadingZone[13].colour = PURPLE;
+    // debugLoadingZone[13].size = SMALL;
+    // for(idx = 0; idx < 14; idx++)
+    // {
+      // debugLoadingZone[idx].present = false;
+    // }
     //initialize necessary variables
         //TODO: CHANGE BACK TO 0
+	
     internalState = 2;
     move.init();
     isScanning = true;
@@ -158,6 +159,7 @@ void initEnter() {
 
 void initUpdate() {
     Serial.println("ENTER INIT UPDATE");
+	fsm.transitionTo(moveToAirState);
     Serial.print("internalState ====================");
     Serial.print(internalState);
     Serial.print("\n");

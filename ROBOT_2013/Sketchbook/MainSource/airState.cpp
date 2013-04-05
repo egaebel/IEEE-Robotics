@@ -36,7 +36,7 @@ State dropAirBlocksState = State(dropAirBlocksEnter, dropAirBlocks, dropAP_clean
  * called once when entering moveToPlatformEnterState
  */
 void moveToPlatformEnter() {
-	airInternalState = 0;
+	airInternalState = 2;
 }
 
 /**
@@ -47,54 +47,71 @@ void moveToAirPlatform() {
 		
 		case 0: //Turn around to face wall oposite pick_up area
 			
-			while(!move.backOffWall()); //Back off the wall
-			move.stop();
-				
-			move.turnAround(RIGHT);
-			
-			airInternalState++;
-			break;
-			
-		case 1: //Once reached wall go to next internalState
-			while(!goToWall()); //Go to the wall
-			move.stop();
-			
-			airInternalState++;
-			move.slideLeft(MEDIUM); //Slide to far-wall.
-			break;
-			
-		case 2: 
-			if(sonarLeft.getDistance() < 20) { //Stop when 20cm from far-side wall
-				move.stop();
-
-				while(!move.backOffWall()); //Back off wall
-				move.stop();
-				
-				move.turnAround(RIGHT);
-			
+			if(move.backOffWall()) { //Back off the wall
 				airInternalState++;
-				move.forwardForDuration(VERY_FAST, 1500);
-				move.forward(MEDIUM); //Move forward
+			}			
+			break;
+		
+		case 1:
+			if(move.turnAround(LEFT)) {
+				move.stop();
+				airInternalState++;
 			}
 			break;
-					
-		case 3: //Move forward until reaching the mid-point ramp's overhang
-			if(leftIR.getIR() > 10.0 && rightIR.getIR() > 10.0) { //If front is off edge
+			
+		case 2: //Now turned, facing the opposite wall
+			if(goToWall()) {
+				move.stop();
+				airInternalState++;
+				move.slideWall(LEFT);
+			}
+			break;
+			
+		case 3: 
+			if(sonarLeft.getDistance() <= 20) { //Stop when 20cm from far-side wall
+				move.stop();
+				// Serial.println("Begin Movin backward");
+				// move.backwardForDuration(FAST, 100);
+				// Serial.println("End Movin backward");
+				airInternalState++;
+			}
+			break;
+			
+		case 4:
+			Serial.println("At case 4: moving off wall!");
+			if(move.backOffWall()) { //Back off wall
+				airInternalState++;
+				move.stop();
+			}
+			break;
+		
+		case 5:
+			if(move.turnAround(RIGHT)) {
+				Serial.println("Moving forward");
+				move.forwardForDuration(VERY_FAST, 1500);
+				move.forward(MEDIUM); //Move forward
+				/*STOP*/
+			}
+			break;
+	
+		case 6: //Move forward until reaching the mid-point ramp's overhang
+			// if(leftIR.getIR() > 10.0 && rightIR.getIR() > 10.0) { //If front is off edge
+			if(sonarLeft.getDistance() <= 25) {
 				move.stop();
 				
 				move.backwardForDuration(VERY_SLOW, 100); //Move backwards from ledge
 				move.turn90(LEFT); //Turn to face up-ramp
 				
-				airInternalState++;
+				//airInternalState++;
 				move.forwardForDuration(FAST, 2500);
 				move.forward(MEDIUM);
 			}
 			break;
 			
-		case 4: //Move forward until the air loading zone is reached. Once reached, transition to scanning state.
-			if(leftIR.getIR() > 10.0 && rightIR.getIR() > 10.0) { //Front (both IR's) hanging off front edge of Air platform
+		case 7: //Move forward until the air loading zone is reached. Once reached, transition to scanning state.
+			// if(leftIR.getIR() > 10.0 && rightIR.getIR() > 10.0) { //Front (both IR's) hanging off front edge of Air platform
+			if(sonarRight.getDistance() <= 25) {
 				move.stop();
-				
 				fsm.transitionTo(scanAirPlatformState);
 			}
 			break;
