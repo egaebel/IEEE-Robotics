@@ -30,16 +30,16 @@ bool centerBay(side strafeDir, bPosition pos, side sCam){
 			case CENTER:
 				move.stop();
 				return true;
-    		break;
     		case LEFT:
     			move.setSpeed(0,.25,.05,.05); //SLOW
-    		break;
+    			break;
     		case RIGHT:
     			move.setSpeed(.25,0,-.05,-.05); //SLOW
-    		break;
+    			break;
     		case NO_SIDE:
+    			Serial.println("NO SIDE IN CENTER BAY&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&");
     			move.slideWall(strafeDir);
-    		break;
+    			break;
     	}
     }
     return false;
@@ -47,18 +47,19 @@ bool centerBay(side strafeDir, bPosition pos, side sCam){
 
 bool goToWall()
 {
-  	if(digitalRead(53)&&digitalRead(52)){
+  	if(digitalRead(53) && digitalRead(52)){
 		return true;
 	}
     else if( digitalRead(53)){
-      	move.setSpeed(0,.25,-1,0);
+      	move.setSpeed(0,.25,0,-1);
     }
     else if( digitalRead(52)){
-      	move.setSpeed(.25,0,0,1);
+      	move.setSpeed(.25,0,1,0);
     }
     else{
        	move.forward(.1);
     }
+    Serial.println("GO TO WALL RETURNING FALSE!");
     return false;
 }
 

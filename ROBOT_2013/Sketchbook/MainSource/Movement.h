@@ -5,7 +5,8 @@
 #include "Servo.h"
 #include "Timer.h"
 
-#define TURN_90_TIME 820
+#define TURN_90_TIME 900 //820
+#define TURN_180_TIME 1800
 
 //need to be defined
 #define OPEN_CLAW_TIME 0
@@ -14,10 +15,10 @@
 #define RETRACT_CLAW_TIME 0
 #define DROP_CLAW_TIME 0
 #define PICKUP_CLAW_TIME 0
-#define WALL_BACKUP_TIME 0
+#define WALL_BACKUP_TIME 500
 
 class Movement {
-public:
+	public:
 		void init();
 		void slideWall(side s);
 		void slideLeft(float speed);
@@ -47,7 +48,7 @@ public:
 		void forwardForDuration(float speed, int time_ms);
 		void slideLeftForDuration(float speed, int time_ms);
 		void slideRightForDuration(float speed, int time_ms);
-private:
+	private:
 
 		Servo leftMotor;
 		Servo rightMotor;
