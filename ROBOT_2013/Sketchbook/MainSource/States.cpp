@@ -434,16 +434,6 @@ void pickUpEnter() {
 			}
 		}
 	}
-	
-	//Set target positions of blocks in loading
-	for(int i = 0; i < 14; i++) {
-		if(loadingZone[i].colour == lTargetBlock.colour && loadingZone[i].size == lTargetBlock.size) {
-			lTargetPos = i;
-		}
-		else if(loadingZone[i].colour == rTargetBlock.colour && loadingZone[i].size == rTargetBlock.size) {
-			rTargetPos = i;
-		}
-	}
 }
 
 void pickUpUpdate() {
