@@ -47,7 +47,7 @@ void setup() {
 void loop() {
     sonarLeft.update();
     sonarRight.update();
-#if DEBUG_FSM ==0
+#if DEBUG_FSM == 0
     fsm.update();
 #else
     fsm_debug.update();
