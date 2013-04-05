@@ -144,3 +144,27 @@ int getBayDist(bPosition bay, int nBay, side clawSide) {
 	return dist;
 
 }
+
+/* Takes in each Block array and sets the loadPos values in the sea and rail
+   to their respective bay values of the blocks in loading. */
+void calculateBlockTargets(Block * loading, Block * sea, Block * rail) {
+
+	Block * temp1;
+	Block * temp2;
+	for (int i = 0; i < 6; i++) {
+
+		temp1 = &sea[i];
+		temp2 = &rail[i];
+		for (int k = 0; k < 14; k++) {
+
+			if (loading[k] == *temp1) {
+
+				temp1->loadPos = k;
+			}
+			else if (loading[k] == *temp2) {
+
+				temp2->loadPos = k;
+			}
+		}
+	}
+}
