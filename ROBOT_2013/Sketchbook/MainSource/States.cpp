@@ -1,6 +1,8 @@
 #include "States.h"
 #include "airState.h"
 
+#define DEBUG_SCANNING true
+
 extern FiniteStateMachine fsm;
 
 //Externed hardwares-----------------------//
@@ -45,7 +47,16 @@ static Block loadingZone[14];
 //Sea zone colours, listed south to north.
 static Block seaZone[6]; 
 //Rail zone colours, listed west to east. 
-static Block railZone[6]; 
+static Block railZone[6];
+
+//Debug Scanning Test Values
+// Blocks in the loading zone, listed west to east.
+static Block debugLoadingZone[14];
+//Sea zone colours, listed south to north.
+static Block debugSeaZone[6]; 
+//Rail zone colours, listed west to east. 
+static Block debugRailZone[6];
+
 //pointer used to point to one of the bays
 static Block *blocks;
 
@@ -83,7 +94,61 @@ State moveToAirState = State(moveToPlatformEnter, moveToAirPlatform, moveAP_clea
 //*****START State Functions*****//
 //initState Functions
 void initEnter() {
-
+    int idx = 0;
+    debugSeaZone[0].colour = PURPLE;
+    debugSeaZone[1].colour = GREEN;
+    debugSeaZone[2].colour = BROWN;
+    debugSeaZone[3].colour = YELLOW;
+    debugSeaZone[4].colour = BLUE;
+    debugSeaZone[5].colour = RED;
+    for(idx = 0; idx < 6; idx++)
+    {
+      debugSeaZone[idx].size = MED;
+      debugSeaZone[idx].present = false;
+    }
+    debugRailZone[0].colour = PURPLE;
+    debugRailZone[1].colour = GREEN;
+    debugRailZone[2].colour = YELLOW;
+    debugRailZone[3].colour = BROWN;
+    debugRailZone[4].colour = RED;
+    debugRailZone[5].colour = BLUE;
+    for(idx = 0; idx < 6; idx++)
+    {
+      debugRailZone[idx].size = LARGE;
+      debugRailZone[idx].present = false;
+    }
+    debugLoadingZone[0].colour = PURPLE;
+    debugLoadingZone[0].size = MED;
+    debugLoadingZone[1].colour = GREEN;
+    debugLoadingZone[1].size = MED;
+    debugLoadingZone[2].colour = BROWN;
+    debugLoadingZone[2].size = MED;
+    debugLoadingZone[3].colour = YELLOW;
+    debugLoadingZone[3].size = MED;
+    debugLoadingZone[4].colour = BLUE;
+    debugLoadingZone[4].size = MED;
+    debugLoadingZone[5].colour = RED;
+    debugLoadingZone[5].size = MED;
+    debugLoadingZone[6].colour = PURPLE;
+    debugLoadingZone[6].size = LARGE;
+    debugLoadingZone[7].colour = GREEN;
+    debugLoadingZone[7].size = LARGE;
+    debugLoadingZone[8].colour = YELLOW;
+    debugLoadingZone[8].size = LARGE;
+    debugLoadingZone[9].colour = BROWN;
+    debugLoadingZone[9].size = LARGE;
+    debugLoadingZone[10].colour = RED;
+    debugLoadingZone[10].size = LARGE;
+    debugLoadingZone[11].colour = BLUE;
+    debugLoadingZone[11].size = LARGE;
+    debugLoadingZone[12].colour = BLUE;
+    debugLoadingZone[12].size = SMALL;
+    debugLoadingZone[13].colour = PURPLE;
+    debugLoadingZone[13].size = SMALL;
+    for(idx = 0; idx < 14; idx++)
+    {
+      debugLoadingZone[idx].present = false;
+    }
     //initialize necessary variables
         //TODO: CHANGE BACK TO 0
     internalState = 2;
@@ -131,7 +196,6 @@ void scanEnter() {
 void scanUpdate() {
     Serial.println("SCAN UPDATE))))))))))))))))))))))))))))");
     fsm.transitionTo(moveToState);
-    /*
     //Perform the scanning actions
     switch(internalState){
         //Move until hitting a colour
@@ -140,9 +204,16 @@ void scanUpdate() {
             if (curPos == POS_SEA) {
                 //focused on bay, read colour
                 if(centerBay(RIGHT,curPos,RIGHT)){
-                    move.stop();             
-                    seaZone[rBlockPos].colour = rightCam.getBlockColour(); 
-                    seaZone[rBlockPos].size = rightCam.getBlockSize(loadingZone[rBlockPos].colour);
+                    move.stop();
+                    #if DEBUG_SCANNING == true
+                    {   
+                        seaZone[rBlockPos].colour = debugSeaZone[rBlockPos].colour;
+                    }
+                    #else
+                        seaZone[rBlockPos].colour = rightCam.getBlockColour();
+                    }
+                    #endif
+                    seaZone[rBlockPos].size = MED;
                     seaZone[rBlockPos].present = false;
                     rBlockPos++;
                     if(rBlockPos == 5)
@@ -156,8 +227,15 @@ void scanUpdate() {
                 //if we're focused on a bay, read colour
                 if (centerBay(LEFT,curPos,LEFT)) {
                     move.stop();
-                    railZone[lBlockPos].colour = leftCam.getBlockColour(); 
-                    railZone[lBlockPos].size = leftCam.getBlockSize(loadingZone[lBlockPos].colour);
+                    #if DEBUG_SCANNING == true
+                    {   
+                        railZone[lBlockPos].colour = debugRailZone[lBlockPos].colour;
+                    }
+                    #else
+                        railZone[lBlockPos].colour = rightCam.getBlockColour();
+                    }
+                    #endif
+                    railZone[lBlockPos].size = LARGE;
                     railZone[lBlockPos].present = false;
                     lBlockPos++;
                     if(lBlockPos == 5)
@@ -171,8 +249,16 @@ void scanUpdate() {
                 //TODO: change to "onBlock" or something?
                 if (centerBay(RIGHT,curPos,RIGHT)) {
                     move.stop();
-                    loadingZone[lBlockPos].colour = leftCam.getBlockColour(); 
-    	            loadingZone[lBlockPos].size = leftCam.getBlockSize(loadingZone[rBlockPos].colour);
+                    #if DEBUG_SCANNING == true
+                    {   
+                        loadingZone[lBlockPos].colour = debugLoadingZone[lBlockPos].colour;
+                        loadingZone[lBlockPos].size = debugLoadingZone[lBlockPos].size;
+                    }
+                    #else
+                        loadingZone[lBlockPos].colour = leftCam.getBlockColour();
+                        loadingZone[lBlockPos].size = leftCam.getBlockSize(loadingZone[rBlockPos].colour);
+                    }
+                    #endif
                     loadingZone[lBlockPos].present = true;
                     lBlockPos++;
                     if(lBlockPos == 13) {
@@ -200,7 +286,7 @@ void scanUpdate() {
             //nextPos and curPos transitions were handled in most recent moveTo call
             fsm.transitionTo(moveToState);
             break;
-	} */
+	}
 }
 void moveToExit(){
 
