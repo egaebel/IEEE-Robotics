@@ -43,6 +43,10 @@ public:
 		bool setDown();
 		bool timerTest();
 		bool backOffWall();
+		void backwardForDuration(float speed, int time_ms);
+		void forwardForDuration(float speed, int time_ms);
+		void slideLeftForDuration(float speed, int time_ms);
+		void slideRightForDuration(float speed, int time_ms);
 private:
 
 		Servo leftMotor;

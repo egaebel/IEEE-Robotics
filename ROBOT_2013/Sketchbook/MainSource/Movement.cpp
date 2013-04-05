@@ -350,3 +350,56 @@ bool Movement::timerTest(){
 		timer.reset();
 	}
 }
+
+/**
+ * move foreward at speed: speed and for duration: time_ms
+ */
+void Movement::forwardForDuration(float speed, int time_ms) {
+	static Timer timer(time_ms);
+	setSpeed(speed,speed,0,0);
+	timer.start();
+	if(timer.isDone()) {
+		this->stop();
+	}
+}
+
+/**
+ * move backward at speed: speed and for duration: time_ms
+ */
+void Movement::backwardForDuration(float speed, int time_ms){
+	static Timer timer(time_ms);
+	setSpeed(-speed,-speed,0,0);
+	timer.start();
+	if(timer.isDone()) {
+		this->stop();
+	}
+}
+
+/**
+ * Slide right at speed: speed and for duration: time_ms
+ */
+void Movement::slideRightForDuration(float speed, int time_ms){
+	static Timer timer(time_ms);
+	setSpeed(0,0,-speed,-speed);
+	timer.start();
+	if(timer.isDone()) {
+		this->stop();
+	}
+}
+
+/**
+ * Slide left at speed: speed and for duration: time_ms
+ */
+void Movement::slideLeftForDuration(float speed, int time_ms){
+	static Timer timer(time_ms);
+	setSpeed(0,0,speed,speed);  
+	timer.start();
+	if(timer.isDone()) {
+		this->stop();
+	}
+}
+
+
+
+
+
