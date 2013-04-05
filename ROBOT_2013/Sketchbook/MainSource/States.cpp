@@ -254,14 +254,9 @@ void moveToUpdate() {
             //check if we need to move sector in zone
             case 0:
                 //check if we are safe to turn around
-                if (sonarRight.getDistance() >= SEA_SAFE_ZONE) {
-                    move.slideLeft(0.1);
-                    //check if we're in the safe zone now
-                    if (sonarRight.getDistance() >= SEA_SAFE_ZONE) {
-                        internalState++;
-                    }
-                }
-                else {
+                move.slideLeft(0.1);
+                if (sonarLeft.getDistance() < SEA_SAFE_ZONE) {
+                    move.stop();
                     internalState++;
                 }
                 break;
@@ -386,16 +381,22 @@ void moveToUpdate() {
     else if(curPos == POS_SEA && nextPos == POS_RAIL){
         switch(internalState){
             case 0:
+                move.slideLeft(0.1);
+                if (sonarLeft.getDistance() < SEA_SAFE_ZONE) {
+                    move.stop();
+                    internalState++;
+                }
+            case 1:
                 if(move.backOffWall())
                     internalState++;
                 break;
             
-            case 1:
+            case 2:
                 if(move.turn90(LEFT)){
 
                 }
                 break;
-            case 2:
+            case 3:
                 if(goToWall()){
                                         curPos = nextPos;
                     nextPos = POS_PICK_UP;
