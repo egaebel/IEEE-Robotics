@@ -81,7 +81,7 @@ Block* getZoneByPos(bPosition pos, Block * seaZone, Block * railZone, Block * lo
 bool goToBay(bPosition bay, int nBay, side clawSide) {
 	if(goToWall()){
 		Sonar *tempSonar;
-		side posSide;
+
 		int dist = getBayDist(bay,nBay,clawSide);
 		if(bay==POS_SEA)
 			tempSonar = &sonarLeft;
@@ -113,9 +113,9 @@ bool goToBay(bPosition bay, int nBay, side clawSide) {
 int getBayDist(bPosition bay, int nBay, side clawSide) {
 	int dist;
 	int clawAddition = 0;
-	if(side == LEFT)
+	if(clawSide == LEFT)
 		clawAddition = CLAW_CENTER_DISTANCE;
-	
+
 	switch(bay){
 		case POS_PICK_UP:
 			dist = 122 - (nBay*7) + clawAddition;
