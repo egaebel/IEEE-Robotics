@@ -33,18 +33,18 @@ typedef enum POSITION {
 
 typedef enum bColour_t {	
 	WHITE=0,//LEAVE WHITE AS 0
-	BLUE,
-	RED,
-	GREEN,
-	PURPLE,
-	BROWN,
 	YELLOW,
+	RED,
+	PURPLE,
+	BLUE,
+	BROWN,
+	GREEN,
 	BLACK//here so we can iterate white to black
 } bColour;
 
 typedef enum SIZE{
 	SMALL, 
-	MEDIUM, 
+	MED, 
 	LARGE
 } bSize;
 

@@ -42,15 +42,6 @@ side cam::inZone(bPosition pos){
     Serial.print("window:");Serial.println(windowCentroidX);
 
     if((tData.x2-tData.x1)+UNCERTAINTY_ALLOWANCE > cmToPx(BAY_WIDTH+LINE_WIDTH*2))  {
-/*        if((windowCentroidX-UNCERTAINTY_ALLOWANCE) < boundingCentroidX && boundingCentroidX < (windowCentroidX+UNCERTAINTY_ALLOWANCE)){
-          return CENTER;
-        }
-        else if((windowCentroidX-UNCERTAINTY_ALLOWANCE) < boundingCentroidX){
-          return RIGHT;
-        }
-        else if(boundingCentroidX < (windowCentroidX+UNCERTAINTY_ALLOWANCE)){
-          return LEFT;
-        }*/
 
         if(boundingCentroidX > windowCentroidX + UNCERTAINTY_ALLOWANCE)  {
             return RIGHT;
@@ -108,25 +99,14 @@ void cam::getTrackingData(){
   cmuCam->getTypeTDataPacket(&tData);
 }
 
-bColour cam::getBlockColour(){
-  int i;
-  //loop through all the colours
-  for(i=((int)WHITE)+1;i<(int)BLACK;i++){
-    getTrackingData((bColour)i);
-    //if we see enough pixels of that colour, we found the block
-    if(tData.pixels>30){
-      return (bColour)i;
-    }
-  }
-  return BROWN;
-}
+
 void cam::setWindow(bPosition pos){
   if(curPos != pos){
     switch(pos){
       case POS_PICK_UP:
           trackX1 = 0;
           trackY1 = 20;
-          trackX2 = BAY_WIDTH+LINE_WIDTH*4;
+          trackX2 = cmToPx(BAY_WIDTH+LINE_WIDTH*4);
           trackY2 = 100;
           break;
       case POS_SEA:
@@ -136,23 +116,52 @@ void cam::setWindow(bPosition pos){
           trackY2 = 50;
           break;
     }
-    cmuCam->setTrackingWindow(trackX1,trackY1,trackX2,trackY2);
+    cmuCam->setTrackingWindow(trackX1+PIXEL_X_OFFSET,trackY1,trackX2+PIXEL_X_OFFSET,trackY2);
   }  
 }
-/**
- * Finds absolute value of the param
- */
-/*int cam::abs(int a)  {
-	if(a < 0) return (-1 * a);
-	return a;
-}*/
+
+bColour cam::getBlockColour(){
+  return getColour(30);
+}
+
 bColour cam::getBayColour(){
-
+  return getColour(20);
 }
 
+bColour cam::getColour(int pixelDense){
+  int i;
+  //loop through all the colours
+  for(i=((int)WHITE)+1;i<(int)BLACK;i++){
+    getTrackingData((bColour)i);
+    //if we see enough pixels of that colour, we found the block
+    if(tData.pixels>pixelDense){
+      return (bColour)i;
+    }
+  }
+  return BROWN; //devault to brown cause why not
+}
+
+//chunk up that view
 bSize cam::getBlockSize(bColour colour){
-
+  //check the top part of the block, if we see enough its a rail!
+  cmuCam->setTrackingWindow(40+PIXEL_X_OFFSET,0,120+PIXEL_X_OFFSET,30);
+  getTrackingData(colour);
+  if(tData.pixels>25){
+    return LARGE;
+  }
+  //check the top+ a little more, if we see neough its a sea!
+  cmuCam->setTrackingWindow(40+PIXEL_X_OFFSET,0,120+PIXEL_X_OFFSET,80);
+  getTrackingData(colour);
+  if(tData.pixels>25){
+    return MED;
+  }
+  //else it's an air!
+  else{
+    return SMALL;
+  }
 }
+
+
 void cam::trackColour(bColour colour){
   if(!YUV_MODE){
     switch(colour){

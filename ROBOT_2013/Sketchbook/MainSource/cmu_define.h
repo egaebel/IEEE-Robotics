@@ -51,4 +51,8 @@
 
 
 
-#define PIXEL_BLOCK_MIN 35 //minimum % of pixels to identify a block
+#define PIXEL_BLOCK_MIN 25 //minimum % of pixels to identify a block
+#define PIXEL_RAIL_MIN 25
+#define PIXEL_SEA_MIN 25
+#define PIXEL_BAY_MIN 30
+#define PIXEL_X_OFFSET 0 //change to position the claws better
