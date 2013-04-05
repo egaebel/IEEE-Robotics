@@ -17,24 +17,6 @@ bool fullOfBlocks(Block blocks[], int numBlocks) {
 	return true;
 }
 
-/* Sets lBlockPos and rBlockPos if we are within the safeDistance, returns false if we are not, true if we are*/
-bool getBayPos(int distance, int safeDistance, int * lBlockPos, int * rBlockPos) {
-
-	bool haveInfo = false;
-
-	//check if we're past the beginning of the begin rail zone
-	if (distance >= safeDistance) {
-
-		haveInfo = true;
-		distance -= safeDistance;
-		distance /= SONAR_BLOCK_WIDTH;
-		*rBlockPos = distance;
-		*lBlockPos = *lBlockPos + 1;
-	}
-
-	return haveInfo;
-}
-
 bool centerBay(side strafeDir, bPosition pos, side sCam){
 	cam *c;
 	if(sCam==RIGHT)
@@ -142,7 +124,6 @@ int getBayDist(bPosition bay, int nBay, side clawSide) {
 	}
 	
 	return dist;
-
 }
 
 /* Takes in each Block array and sets the loadPos values in the sea and rail

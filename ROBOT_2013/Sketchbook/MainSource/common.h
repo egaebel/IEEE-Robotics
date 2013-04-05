@@ -60,15 +60,11 @@ typedef struct block_t {
     bool present;
     int loadPos;
     bool operator == (const block_t & other) const {
-
     	if (colour == other.colour) {
-
     		if (size == other.size) {
-
     			return true;
     		}
     	}
-
     	return false;
     }
 } Block;
