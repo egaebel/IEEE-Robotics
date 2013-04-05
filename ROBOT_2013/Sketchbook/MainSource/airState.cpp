@@ -83,10 +83,9 @@ void moveToAirPlatform() {
 				move.stop();
 				
 				//Turn around
-				move.turn90(LEFT);
-				move.turn90(LEFT);
-				
+				move.turnAround(LEFT);
 				move.stop();
+				
 				airInternalState++;
 				move.forward(MEDIUM); //Move forward
 			}
@@ -114,7 +113,7 @@ void moveToAirPlatform() {
 		case 4: //Move forward until the air loading zone is reached. Once reached, transition to scanning state.
 			if(leftIR.getIR() > 10.0 && rightIR.getIR() > 10.0) { //Front (both IR's) hanging off front edge of Air platform
 				move.stop();
-				airInternalState++;
+				
 				fsm.transitionTo(scanAirPlatformState);
 			}
 			break;
@@ -134,7 +133,7 @@ void scanAirPlatformEnter() {
 void scanAirPlatform() {
 	//Scanning Air
 	switch (airInternalState) {
-		case 0:
+		case 0: //At air platform, slide left.
 			airInternalState++;
 			
 			//Move backwards for time and until both IR's back over the platform
@@ -144,19 +143,20 @@ void scanAirPlatform() {
 				move.backward(VERY_SLOW);
 			}
 			move.stop();
+			
 			airInternalState++;
 			move.slideLeft(VERY_SLOW); //Start strafing left
 			break;
 			
-        case 1:
-			if(leftIR.getIR() > 10.0) { //If left IR hanging off edge
+        case 1: //Stop strafing left when left IR hanging off edge (At left edge of platform)
+			if(leftIR.getIR() > 10.0) {
 				move.stop();
 				airInternalState++;
 				move.slideRight(VERY_SLOW);	
 			}
 			break;
         case 2: //Strafe right until leftCam.inZone() of left most bay -> then read color
-			if (leftCam.inZone()) { /**ASSUMING CAM WORKS FOR BAYS ON THE AIR PLATFORM**/
+			if (leftCam.inZone()) { /**ASSUMING CAM IN ZONE MEANS LEFT BLOCK IS OVER THE BAY**/
 				move.stop();
 				airOrderSame = (lBlock.colour == (airZoneLeft.colour = leftCam.getBlockColour())); //Assigns cam's detected color to left bay's color in airZone and tests whether it's equal to left held block's color
 				fsm.transitionTo(dropAirBlocksState);	
@@ -184,7 +184,7 @@ void dropAirBlocks() {
 					move.dropClaw(LEFT);
 					move.dropClaw(RIGHT);
 					
-					airInternalState++;
+					//<VICTORY DANCE!>
 					break;
 				
 				//if the blocks are NOT in the same order of the 
@@ -196,94 +196,114 @@ void dropAirBlocks() {
 					//move even more slightly right
 					//drop left claw
 
-
-					//VICTORY DANCE!!!
 					break;
 			}
 		}
 		
 	else { //Order of bay colors not same as order of blocks in hand
-		switch (airInternalState) {
+		switch(airInternalState) {
 			case 0:
-				airInternalState++;
-				timer.init(500);
+				//Move just-right of the current left bay, to get our of inZone()
+				timer.init(50);  
 				timer.start();
-				move.backward(VERY_SLOW);
-				break;
-				
-			case 1:
-				if(timer.isDone() && leftIR.getIR() < 10.00 && rightIR.getIR() < 10.00) {
-					move.stop();
-					airInternalState++;	
-					move.slideLeft(VERY_SLOW);
-				}
-				break;
-				
-			case 2: //Strafe to left edge
-				if(leftIR.getIR() > 10.00) {
-					move.stop();
-					airInternalState++;	
-					move.forward(VERY_SLOW);
-				}
-				break;
-			
-			case 3:
-				if(rightIR.getIR() > 10.00)  { //If right IR is over the edge of the platform (because left already is over)
-					airInternalState++;
-					move.slideRight(VERY_SLOW); //start right strafe
-				} 
-				break;
-			
-			case 4: //Strafe right until right arm is over the air's left bay and drop the block
-				if (rightCam.inZone()) { //right cam over left bay (b/c rightcam will hit the left bay first)
-					move.stop();
-					move.extendClaw(RIGHT);
-					move.openClaw(RIGHT);
-					move.retractClaw(RIGHT);
-					move.closeClaw(RIGHT);
-					airInternalState++;
-					move.backward(VERY_SLOW);
-					timer.init(1000); //Set timer for moving back enough (to avoid hitting placed block)
-					timer.start();
-				}
-				break;
-				
-			case 5: //BackUp (to avoid hitting placed block in upcoming next internal-state's right strafe)
-				if(timer.isDone() && rightIR.getIR() > 10.00 && leftIR.getIR() > 10.00) {
-					move.stop();
+				while(!timer.isDone())  {
 					move.slideRight(VERY_SLOW);
-					airInternalState++;
 				}
-				break;
-			
-			case 6:
-				if(rightIR.getIR() > 10.00) { //When reaches the right edge
-					move.stop();
-					move.forward(VERY_SLOW);
-					airInternalState++;
-				}
-				break;
-			
-			case 7:
-				if(leftIR.getIR() > 10.0 ){ //If at front edge of the air platform (because right already off the edge)
-					move.stop();
-					move.slideLeft(VERY_SLOW); //start left strafe
-					airInternalState++;
-				}
-				break;
+				move.stop();
 				
-			case 8:
-				if (rightCam.inZone()) { //left cam over right bay (b/c left cam will hit the right bay first (coming left from the left edge))
+				airInternalState++; 
+				move.slideRight(VERY_SLOW);
+			
+			case 1:
+				if(leftCam.inZone()) {
 					move.stop();
-					move.extendClaw(LEFT);
-					move.openClaw(LEFT);
-					move.retractClaw(LEFT);
-					move.closeClaw(LEFT);
-					airInternalState++;
+					move.dropClaw(LEFT);
+					move.dropClaw(RIGHT);
+					//<VICTORY DANCE!>
 				}
-				break;
-		}	
+		}
 	}
+			
+		//switch (airInternalState) {
+			//case 0:
+				//airInternalState++;
+				//timer.init(200);
+				//timer.start();
+				//move.backward(VERY_SLOW);
+				//break;
+				
+			//case 1:
+				//if(timer.isDone() && leftIR.getIR() < 10.00 && rightIR.getIR() < 10.00) {
+					//move.stop();
+					//airInternalState++;	
+					//move.slideLeft(VERY_SLOW);
+				//}
+				//break;
+				
+			//case 2: //Strafe to left edge
+				//if(leftIR.getIR() > 10.00) {
+					//move.stop();
+					//airInternalState++;	
+					//move.forward(VERY_SLOW);
+				//}
+				//break;
+			
+			//case 3:
+				//if(rightIR.getIR() > 10.00)  { //If right IR is over the edge of the platform (because left already is over)
+					//airInternalState++;
+					//move.slideRight(VERY_SLOW); //start right strafe
+				//} 
+				//break;
+			
+			//case 4: //Strafe right until right arm is over the air's left bay and drop the block
+				//if (rightCam.inZone()) { //right cam over left bay (b/c rightcam will hit the left bay first)
+					//move.stop();
+					//move.extendClaw(RIGHT);
+					//move.openClaw(RIGHT);
+					//move.retractClaw(RIGHT);
+					//move.closeClaw(RIGHT);
+					//airInternalState++;
+					//move.backward(VERY_SLOW);
+					//timer.init(1000); //Set timer for moving back enough (to avoid hitting placed block)
+					//timer.start();
+				//}
+				//break;
+				
+			//case 5: //BackUp (to avoid hitting placed block in upcoming next internal-state's right strafe)
+				//if(timer.isDone() && rightIR.getIR() > 10.00 && leftIR.getIR() > 10.00) {
+					//move.stop();
+					//move.slideRight(VERY_SLOW);
+					//airInternalState++;
+				//}
+				//break;
+			
+			//case 6:
+				//if(rightIR.getIR() > 10.00) { //When reaches the right edge
+					//move.stop();
+					//move.forward(VERY_SLOW);
+					//airInternalState++;
+				//}
+				//break;
+			
+			//case 7:
+				//if(leftIR.getIR() > 10.0 ){ //If at front edge of the air platform (because right already off the edge)
+					//move.stop();
+					//move.slideLeft(VERY_SLOW); //start left strafe
+					//airInternalState++;
+				//}
+				//break;
+				
+			//case 8:
+				//if (rightCam.inZone()) { //left cam over right bay (b/c left cam will hit the right bay first (coming left from the left edge))
+					//move.stop();
+					//move.extendClaw(LEFT);
+					//move.openClaw(LEFT);
+					//move.retractClaw(LEFT);
+					//move.closeClaw(LEFT);
+					//airInternalState++;
+				//}
+				//break;
+		//}	
 	
 }
 
