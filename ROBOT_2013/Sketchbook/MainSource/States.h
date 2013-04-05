@@ -22,7 +22,7 @@ void scanUpdate();
 
 void moveToEnter();
 void moveToUpdate();
-
+void pickUpShortestEnter();
 void pickUpEnter();
 void pickUpUpdate();
 

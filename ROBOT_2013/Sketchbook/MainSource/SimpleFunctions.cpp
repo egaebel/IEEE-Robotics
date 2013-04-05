@@ -5,6 +5,7 @@ extern cam rightCam;
 extern cam leftCam;
 extern Sonar sonarRight;
 extern Sonar sonarLeft;
+
 bool fullOfBlocks(Block blocks[], int numBlocks) {
 
 	for (int i = 0; i < numBlocks; i++) {
