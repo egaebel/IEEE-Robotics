@@ -31,6 +31,8 @@ static Block rTargetBlock;
 static int lTargetPos;
 static int rTargetPos;
 
+Block rBlock;
+Block lBlock;
 //Non-Static
 //Variables for blocks currently held
 
@@ -445,13 +447,13 @@ void pickUpShortestEnter(){
     }
     //this is air!
     else{
-        if(getBayPos(curZone[0])<getBayPos(curZone[1])){
-            block1=curZone[0];
-            block2=curZone[1];
+        if(getBayDist(POS_PICK_UP,curZone[0].loadPos,RIGHT)<getBayDist(POS_PICK_UP,curZone[1].loadPos,RIGHT)){
+            block1=0;//curZone[0];
+            block2=0;//curZone[1];
         }
         else{
-            block1=curZone[1];
-            block2=curZone[0];
+            block1=0;//curZone[1];
+            block2=0;//curZone[0];
         }
     }
     //if it's in pick up 13, or if we need to drop off at sea 5, make sure to put it in the right claw
@@ -495,6 +497,16 @@ void pickUpEnter() {
 				rTargetBlock = loadingZone[i];
                 break;
 			}
+		}
+	}
+	
+	//Set target positions of blocks in loading
+	for(int i = 0; i < 14; i++) {
+		if(loadingZone[i].colour == lTargetBlock.colour && loadingZone[i].size == lTargetBlock.size) {
+			lTargetPos = i;
+		}
+		else if(loadingZone[i].colour == rTargetBlock.colour && loadingZone[i].size == rTargetBlock.size) {
+			rTargetPos = i;
 		}
 	}
 }
