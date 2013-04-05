@@ -7,6 +7,7 @@
 #define SONAR_BLOCK_WIDTH 6
 #define SEA_SAFE_ZONE 0
 #define PICKUP_START_LEFT_DIST 0
+#define CLAW_CENTER_DISTANCE 8
 //#define 
 //in centimeters
 #define BAY_WIDTH 6.5
@@ -107,7 +108,8 @@ typedef struct block_t {
 //Air State
 #define VERY_SLOW 0.05 //When threat of falling of ramp is high
 #define SLOW 0.1 
-#define MEDIUM 0.2 
-#define FAST 0.25 
+#define MEDIUM 0.25 
+#define FAST 0.5 
+#define VERY_FAST 0.75
 
 #endif
