@@ -83,7 +83,7 @@ void moveToAirPlatform() {
 				move.stop();
 				
 				//Turn around
-				move.around(LEFT);
+				move.turnAround(LEFT);
 				move.stop();
 				
 				airInternalState++;
@@ -202,9 +202,7 @@ void dropAirBlocks() {
 		
 	else { //Order of bay colors not same as order of blocks in hand
 		switch(airInternalState) {
-			switch 0:
-				airInternalState++; 
-				
+			case 0:
 				//Move just-right of the current left bay, to get our of inZone()
 				timer.init(50);  
 				timer.start();
@@ -213,9 +211,10 @@ void dropAirBlocks() {
 				}
 				move.stop();
 				
+				airInternalState++; 
 				move.slideRight(VERY_SLOW);
 			
-			switch 1:
+			case 1:
 				if(leftCam.inZone()) {
 					move.stop();
 					move.dropClaw(LEFT);
