@@ -153,6 +153,12 @@ void initEnter() {
         //TODO: CHANGE BACK TO 0
     internalState = 2;
     move.init();
+    Serial.println("initing leftCam");
+    leftCam.init();
+    Serial.println("initED leftCam");
+    Serial.println("initing rightCam");
+    rightCam.init();
+    Serial.println("inited rightCam");
     isScanning = true;
 }
 
@@ -224,6 +230,7 @@ void scanUpdate() {
             }
             //scanning rail (state transition 6)
             else if (curPos == POS_RAIL) {
+                Serial.println("scanning rail");
                 //if we're focused on a bay, read colour
                 if (centerBay(LEFT,curPos,LEFT)) {
                     move.stop();
@@ -238,17 +245,20 @@ void scanUpdate() {
                     railZone[lBlockPos].size = LARGE;
                     railZone[lBlockPos].present = false;
                     lBlockPos++;
-                    if(lBlockPos == 5)
-                        internalState = 2;
+                    Serial.print("lBlockPos is:: ");Serial.print(lBlockPos);Serial.print(" \n");
+                    if(lBlockPos == 5) 
+                        move.stop(), internalState = 2;
                     else
                         internalState = 1;
+                }
+                else {
+                    Serial.println("elsing on rail..............................");
                 }
             }
             //scanning pickup (state transition 4)
             else if (curPos == POS_PICK_UP) {
                 //TODO: change to "onBlock" or something?
                 if (centerBay(RIGHT,curPos,RIGHT)) {
-                    move.stop();
                     #if DEBUG_SCANNING == true
                     {   
                         loadingZone[lBlockPos].colour = debugLoadingZone[lBlockPos].colour;
@@ -270,27 +280,28 @@ void scanUpdate() {
 					}
                 }
             }           
-            
+            break;
         //We already read this colour, so just keep moving until white
         case 1:
             if(goToWall()){
                 if(rightCam.betweenZones())
                         internalState = 0;
-                if(curPos== POS_RAIL)
-                    move.slideWall(LEFT);
-                else
+                if(curPos== POS_SEA)
                     move.slideWall(RIGHT);
+                else
+                    move.slideWall(LEFT);
             }
             break;
         case 2:
+            move.stop();
+            Serial.println("LEAVING SCANNING STATE-------------------");
+            delay(5000);
             //nextPos and curPos transitions were handled in most recent moveTo call
             fsm.transitionTo(moveToState);
             break;
 	}
 }
-void moveToExit(){
 
-}
 //moveToState
 void moveToEnter() {
     //initialize necessary variables & sensors
@@ -396,7 +407,7 @@ void moveToUpdate() {
                     internalState++;
                 break;
             case 1:
-                if(move.turnAround())
+                if(move.turnAround(LEFT))
                     internalState++;
                 break;
             case 2:
@@ -438,7 +449,7 @@ void moveToUpdate() {
                     internalState++;
                 break;
             case 1:
-                if(move.turnAround())
+                if(move.turnAround(RIGHT))
                     internalState++;
                 break;
             case 2:
@@ -466,6 +477,7 @@ void moveToUpdate() {
                 break;
         }
     }
+    //THIS IS WHERE ALL SKETCHINESS PROBABLY IS
     //back off wall, turn 90 to the left, transition to scanstate
     else if(curPos == POS_SEA && nextPos == POS_RAIL){
         Serial.println("MOVE TO: SEA TO RAIL");
@@ -488,6 +500,11 @@ void moveToUpdate() {
                 break;
             case 3:
                 if(goToWall()){
+                    internalState++;
+                }
+                break;
+            case 4:
+                if (goToBay(POS_RAIL, 5, LEFT)) {
                     curPos = nextPos;
                     nextPos = POS_PICK_UP;
                     fsm.transitionTo(scanState);

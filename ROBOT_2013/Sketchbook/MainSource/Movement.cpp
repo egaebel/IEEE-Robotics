@@ -44,21 +44,32 @@ bool Movement::turn90(side s){
 }
 
 bool Movement::turnAround(side s) {
-    static int step;
-    switch( step ){
-        case 0:
-	        if(turn90(s)){
-	            step++;
-	        }
-	        break;
-	    case 1:
-	        if(turn90(s)){
-	            step=0;
-	            return true;
-	        }
-	        break;
-	}
-	return false;
+    static int state;
+    static Timer timer(TURN_180_TIME);
+    switch( state ){
+        case 0: //Setup
+        {
+            timer.start();
+            state++;
+            if(s == LEFT){
+                turnLeft(1);
+            }else{
+                turnRight(1);
+            }
+            break;
+        }
+        case 1: //Run
+        {
+            if( timer.isDone() ){
+                stop();
+                timer.stop();
+                state = 0;       
+                return true;
+            }
+            break;
+        }
+    }
+    return false;
 }
 
 //Drops the block in the claw on side s
@@ -317,27 +328,19 @@ void Movement::slideWall(side s){
 
 bool Movement::backOffWall(){
 	
-	//static Timer timer(WALL_BACKUP_TIME);
-	static Timer theTime(1000);
+	static Timer theTime(WALL_BACKUP_TIME);
 
 	if(!theTime.isStarted()){
-		// leftMotor.detach();
-		// rightMotor.detach();
-		// leftMotor.attach(MOTOR_FRONT_L);
-		// rightMotor.attach(MOTOR_FRONT_R);
 		theTime.start();
 	}
 	if(theTime.isDone()) {
+		stop();
 		theTime.stop();
 		theTime.reset();
-		Serial.println("WE'RE DONE HERE GENTLEMEN&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&");
 		return true;
 	}
 	else {
-		Serial.println("HERHRHRP");
-		//leftMotor.attach(MOTOR_FRONT_L);
-		//rightMotor.attach(MOTOR_FRONT_R);
-		this->backward(0.5);
+		setSpeed(-1, -1, 0, 0);
 		return false;
 	}
 }

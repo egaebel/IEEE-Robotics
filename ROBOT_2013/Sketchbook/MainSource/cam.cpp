@@ -5,12 +5,19 @@ cam::cam(int pin){
 }
 
 void cam::init(){
+    Serial.println("cam init CALLED");
     cmuCam->begin();
+    Serial.print("begun..............");
     cmuCam->autoGainControl(false);
+    Serial.print("autoGainControl..............");
     cmuCam->autoWhiteBalance(false);
+    Serial.print("autoWhiteBalance..............");
     cmuCam->cameraBrightness(45);
+    Serial.print("brightness..............");
     cmuCam->cameraContrast(15);
+    Serial.print("cameraContrast..............");
     cmuCam->pollMode(0);
+    Serial.print("pollMode!?..............\n");
 
   	//cmuCam->colorTracking(YUV_MODE);
 
@@ -40,8 +47,9 @@ side cam::inZone(bPosition pos){
     
     Serial.print("bounding:");Serial.println(boundingCentroidX);
     Serial.print("window:");Serial.println(windowCentroidX);
-
-    if((tData.x2-tData.x1)+UNCERTAINTY_ALLOWANCE > cmToPx(BAY_WIDTH+LINE_WIDTH*2))  {
+    Serial.print("ACTUAL WINDOW:: ");Serial.println(tData.x2 - tData.x1);
+    Serial.print("BAY SIZE:: ");Serial.println(cmToPx(BAY_WIDTH+LINE_WIDTH*2));
+    if((tData.x2-tData.x1)+UNCERTAINTY_ALLOWANCE >= cmToPx(BAY_WIDTH+LINE_WIDTH*2))  {
 
         if(boundingCentroidX > windowCentroidX + UNCERTAINTY_ALLOWANCE)  {
             return RIGHT;
@@ -49,11 +57,11 @@ side cam::inZone(bPosition pos){
         else if(boundingCentroidX < windowCentroidX - UNCERTAINTY_ALLOWANCE)  {
             return LEFT;
         }
-        else  {
+        else {
             return CENTER;
         }
     }
-    else  {
+    else {
         return NO_SIDE;
     }
 }
