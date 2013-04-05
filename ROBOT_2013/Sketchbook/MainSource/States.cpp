@@ -397,7 +397,7 @@ void moveToUpdate() {
             
             case 2:
                 if(move.turn90(LEFT)){
-
+                    internalState++;
                 }
                 break;
             case 3:

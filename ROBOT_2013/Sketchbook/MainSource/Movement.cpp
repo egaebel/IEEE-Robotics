@@ -34,8 +34,7 @@ bool Movement::turn90(side s){
             if( timer.isDone() ){
                 stop();
                 timer.stop();
-                state = 0;
-         		stop();       
+                state = 0;       
                 return true;
             }
             break;
