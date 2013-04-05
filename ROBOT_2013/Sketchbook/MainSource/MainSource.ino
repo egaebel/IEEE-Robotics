@@ -41,7 +41,7 @@ void setup() {
     delay(200);
 
 	Serial.begin(9600);
-    Serial.println("SETUP COMPLETED!!!");
+    Serial.println("SETUP COMPLETED!!");
 }
 
 void loop() {

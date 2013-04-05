@@ -78,17 +78,15 @@ State pickUpState = State(pickUpEnter, pickUpUpdate, defExit);
 State dropState = State(dropEnter, dropUpdate, defExit);
 /** Air **/
 State moveToAirState = State(moveToPlatformEnter, moveToAirPlatform, moveAP_cleanUp);
-
 //End State objects
 
 //*****START State Functions*****//
 //initState Functions
-
 void initEnter() {
 
     //initialize necessary variables
-    //TODO: SKIP THE FIRST STATE FOR NOW
-    internalState = 1;
+        //TODO: CHANGE BACK TO 0
+    internalState = 2;
     move.init();
     isScanning = true;
 }
@@ -126,6 +124,9 @@ void scanEnter() {
 }
 
 void scanUpdate() {
+    
+    fsm.transitionTo(moveToState);
+    /*
     //Perform the scanning actions
     switch(internalState){
         //Move until hitting a colour
@@ -194,8 +195,7 @@ void scanUpdate() {
             //nextPos and curPos transitions were handled in most recent moveTo call
             fsm.transitionTo(moveToState);
             break;
-       
-	}
+	} */
 }
 void moveToExit(){
 
@@ -221,11 +221,10 @@ void moveToUpdate() {
 /*    Back off wall, turns 90 deg left to face sea wall,
     goes to wall, switches to drop off state*/
     else if (curPos == POS_PICK_UP && nextPos == POS_SEA) {
-        Serial.println("POS_PICKUP && POS_SEA");
+        Serial.println("MOVE TO: PICK_UP TO SEA");
         switch (internalState) {
 
             case 0:
-                Serial.println("before backOffWall");
                 if(move.backOffWall())
                     internalState++;
                 break;
@@ -248,7 +247,7 @@ void moveToUpdate() {
     if the scanning flag is set, switch to scan state else switch to pickup, 
     if we are done with sea,make rail the next zone after pick up */
     else if (curPos == POS_SEA && nextPos == POS_PICK_UP) {
-
+        Serial.println("MOVE TO: SEA TO PICKUP");
         switch (internalState) {
             //check if we need to move sector in zone
             case 0:
@@ -303,7 +302,7 @@ void moveToUpdate() {
     }
     //Move off wall, do 180 to face rail zone, go to rail wall, switch to drop off state
     else if(curPos == POS_PICK_UP && nextPos == POS_RAIL){
-        
+        Serial.println("MOVE TO: PICKUP TO RAIL");
         switch(internalState) {
             //backup 
             case 0:
@@ -345,7 +344,7 @@ void moveToUpdate() {
     //Move off of wall, 180 to face pick up, go to pick_up wall
     //Transition to scan state if scan flag is still set, else pick up
     else if (curPos == POS_RAIL && nextPos == POS_PICK_UP) {
-
+        Serial.println("MOVE TO: RAIL TO PICKUP");
         switch (internalState) {
 
             case 0:
@@ -383,12 +382,12 @@ void moveToUpdate() {
     }
     //back off wall, turn 90 to the left, transition to scanstate
     else if(curPos == POS_SEA && nextPos == POS_RAIL){
+        Serial.println("MOVE TO: SEA TO RAIL");
         switch(internalState){
             case 0:
                 if(move.backOffWall())
                     internalState++;
                 break;
-            
             case 1:
                 if(move.turn90(LEFT)){
 
@@ -396,10 +395,11 @@ void moveToUpdate() {
                 break;
             case 2:
                 if(goToWall()){
-                                        curPos = nextPos;
+                    curPos = nextPos;
                     nextPos = POS_PICK_UP;
                     fsm.transitionTo(scanState);
                 }
+                break;
         }
     }
     else {
