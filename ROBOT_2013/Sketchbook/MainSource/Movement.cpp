@@ -35,6 +35,7 @@ bool Movement::turn90(side s){
                 stop();
                 timer.stop();
                 state = 0;
+         		stop();       
                 return true;
             }
             break;
@@ -226,8 +227,8 @@ void Movement::stop(){
 void Movement::setSpeed(float speedFL,float speedFR, float speedBL, float speedBR){
 	setSpeed(MOTOR_FRONT_L,speedFL);
 	setSpeed(MOTOR_FRONT_R,speedFR);
-	setSpeed(MOTOR_BACK_L,speedBL);
-	setSpeed(MOTOR_BACK_R,speedBR);
+	setSpeed(MOTOR_BACK_L,-speedBL);
+	setSpeed(MOTOR_BACK_R,-speedBR);
 }
 
 bool Movement::liftUp() {

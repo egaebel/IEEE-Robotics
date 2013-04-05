@@ -92,6 +92,11 @@ void initEnter() {
 }
 
 void initUpdate() {
+    Serial.println("ENTER INIT UPDATE");
+    Serial.print("internalState ====================");
+    Serial.print(internalState);
+    Serial.print("\n");
+
     //setup wall follower
     switch(internalState){
         case 0:
@@ -124,7 +129,7 @@ void scanEnter() {
 }
 
 void scanUpdate() {
-    
+    Serial.println("SCAN UPDATE))))))))))))))))))))))))))))");
     fsm.transitionTo(moveToState);
     /*
     //Perform the scanning actions
@@ -210,7 +215,7 @@ void moveToEnter() {
 void moveToUpdate() {
     //Start to sea (1 in state diagram) 
     if(curPos == POS_START && nextPos == POS_SEA){
-        Serial.println("MOVE TO: START TO SEA");
+        //Serial.println("MOVE TO: START TO SEA");
         if(goToBay(POS_SEA,0,RIGHT)){
             curPos = nextPos;
             nextPos = POS_RAIL;

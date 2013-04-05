@@ -63,10 +63,10 @@ bool cam::betweenZones()  {
 	getTrackingData(WHITE);
 	
 	if((tData.x2-tData.x1) < cmToPx(LINE_WIDTH) + UNCERTAINTY_ALLOWANCE)  {
-    return 1;
+    return true;
 	}
 	else  {
-    return 0;
+    return false;
 	}
 	
 }

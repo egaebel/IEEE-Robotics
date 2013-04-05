@@ -51,10 +51,10 @@ bool goToWall()
 		return true;
 	}
     else if( digitalRead(53)){
-      	move.setSpeed(0,.25,0,-1);
+      	move.setSpeed(0,.25,-1,0);
     }
     else if( digitalRead(52)){
-      	move.setSpeed(.25,0,1,0);
+      	move.setSpeed(.25,0,0,1);
     }
     else{
        	move.forward(.1);
@@ -81,7 +81,7 @@ Block* getZoneByPos(bPosition pos, Block * seaZone, Block * railZone, Block * lo
 bool goToBay(bPosition bay, int nBay, side clawSide) {
 	if(goToWall()){
 		Sonar *tempSonar;
-
+		Serial.println("gone to the wall!");
 		int dist = getBayDist(bay,nBay,clawSide);
 		if(bay==POS_SEA)
 			tempSonar = &sonarLeft;
@@ -89,17 +89,25 @@ bool goToBay(bPosition bay, int nBay, side clawSide) {
 			tempSonar = &sonarRight;
 		
 		if(tempSonar->getDistance() > dist){
-			if(bay == POS_SEA)
+			if(bay == POS_SEA){
+				Serial.println("going left cus distance > dist....wtf");
+				Serial.print("dist is::");Serial.print(dist);Serial.print("getDistance is:");Serial.print(tempSonar->getDistance());
 				move.slideWall(LEFT);
-			else
+			}
+			else {
 				move.slideWall(RIGHT);
+			}
 			return false;
 		}
 		else if(tempSonar->getDistance() < dist){
-			if(bay == POS_SEA)
+			if(bay == POS_SEA) {
+				Serial.println("going right cus distance < dist YES!");
+				Serial.print("dist is::");Serial.print(dist);Serial.print("getDistance is:");Serial.print(tempSonar->getDistance());
 				move.slideWall(RIGHT);
-			else
+			}
+			else {
 				move.slideWall(LEFT);
+			}
 			return false;
 		}
 		else{

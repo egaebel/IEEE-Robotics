@@ -47,6 +47,7 @@ void setup() {
 void loop() {
     sonarLeft.update();
     sonarRight.update();
+    Serial.println(sonarLeft.getDistance());
 #if DEBUG_FSM == 0
     fsm.update();
 #else
