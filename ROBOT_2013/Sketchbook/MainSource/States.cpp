@@ -51,8 +51,6 @@ static Block railZone[6];
 static bool railDone;
 static bool seaDone;
 
-//Whether order of bays in air and whats in hand is the same
-static bool airOrderSame;
 
 //The sizes of the zones
 const int PICKUP_SIZE = 14;

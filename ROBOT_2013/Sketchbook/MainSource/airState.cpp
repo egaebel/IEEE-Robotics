@@ -49,65 +49,73 @@ void moveToAirPlatform() {
 	switch (airInternalState) {
 		
 		case 0: //Turn around to face wall oposite pick_up area
-			if (move.turnAround())
-				airInternalState++;
+			
+			//Move Backwards for 200ms
+			timer.init(200);
+			timer.start();
+			while(!timer.isDone()) {
+				move.backward(MEDIUM);
+			}
+				
+			//Turn around
+			move.turn90(LEFT);
+			move.turn90(LEFT);
+			
+			airInternalState++;
 			break;
 			
 		case 1: //Once reached wall go to next internalState
 			if(goToWall()) {
 				airInternalState++;
-				//TODO:whaaaat???????
-				move.slideRight(FAST);
+				move.slideLeft(FAST); //Slide to far wall.
 			}
 			break;
 			
 		case 2: 
-			if(sonarLeft.getDistance() < 20) /*SONAR DISTANCE FROM WALL CERTAIN DISTANCE*/ {
+			if(sonarLeft.getDistance() < 20) { //Stop when 20cm from far-side wall
 				move.stop();
-				move.turnAround();
+				
+				//Move Backwards for 200ms
+				timer.init(200);
+				while(!timer.isDone()) {
+					move.backward(MEDIUM);
+				}
 				move.stop();
-				move.forward(MEDIUM);
+				
+				//Turn around
+				move.turn90(LEFT);
+				move.turn90(LEFT);
+				
+				move.stop();
 				airInternalState++;
+				move.forward(MEDIUM); //Move forward
 			}
 			break;
 					
 		case 3: //Move forward until reaching the mid-point ramp's overhang
 			if(leftIR.getIR() > 10.0 && rightIR.getIR() > 10.0) { //If front is off edge
 				move.stop();
-				airInternalState++;
-				timer.init(1000);
+				
+				//Move backwards from ledge
+				timer.init(100);
 				timer.start();
-				move.backward(VERY_SLOW);
-			} 
-			else if (leftIR.getIR() > 10.0) { //If right IR off ledge
-				//Do corrective actions
-				
-			} 
-			
-			else if (rightIR.getIR() > 10.0) { //If left IR off ledge
-				//Do corrective actions
-				
-			}
-			break;
-			
-		case 4: //Keep moving backwards until the timer is done, meaning the robot is centered enough, when it is, turn 90 deg to face air loading zone
-			if(timer.isDone()) {
+				while(!timer.isDone()) {
+					move.backward(VERY_SLOW);
+				}
 				move.stop();
+				
+				airInternalState++;
 				move.turn90(LEFT);
 				airInternalState++;
-				move.forward(MEDIUM);
+				move.forward(FAST);
 			}
 			break;
 			
-		case 5: //Move forward until the air loading zone is reached. Once reached, transition to scanning state.
+		case 4: //Move forward until the air loading zone is reached. Once reached, transition to scanning state.
 			if(leftIR.getIR() > 10.0 && rightIR.getIR() > 10.0) { //Front (both IR's) hanging off front edge of Air platform
 				move.stop();
 				airInternalState++;
 				fsm.transitionTo(scanAirPlatformState);
-			} else if(leftIR.getIR() > 10.0) {
-				
-			} else if(rightIR.getIR() > 10.0) {
-				
 			}
 			break;
 	}
@@ -128,26 +136,26 @@ void scanAirPlatform() {
 	switch (airInternalState) {
 		case 0:
 			airInternalState++;
-			timer.init(500);  
+			
+			//Move backwards for time and until both IR's back over the platform
+			timer.init(100);  
 			timer.start();
-			move.backward(VERY_SLOW);
-			break;
-		
-		case 1:
-			if(timer.isDone() && leftIR.getIR() < 10.0 && rightIR.getIR() < 10.0) { //When timer is over and both IR's back on land
-				move.stop();
-				airInternalState++;
-				move.slideLeft(VERY_SLOW); //Start strafing left
+			while(!timer.isDone() && leftIR.getIR() < 10.0 && rightIR.getIR() < 10.0)  {
+				move.backward(VERY_SLOW);
 			}
+			move.stop();
+			airInternalState++;
+			move.slideLeft(VERY_SLOW); //Start strafing left
 			break;
-        case 2:
+			
+        case 1:
 			if(leftIR.getIR() > 10.0) { //If left IR hanging off edge
 				move.stop();
 				airInternalState++;
 				move.slideRight(VERY_SLOW);	
 			}
 			break;
-        case 3: //Strafe right until leftCam.inZone() of left most bay -> then read color
+        case 2: //Strafe right until leftCam.inZone() of left most bay -> then read color
 			if (leftCam.inZone()) { /**ASSUMING CAM WORKS FOR BAYS ON THE AIR PLATFORM**/
 				move.stop();
 				airOrderSame = (lBlock.colour == (airZoneLeft.colour = leftCam.getBlockColour())); //Assigns cam's detected color to left bay's color in airZone and tests whether it's equal to left held block's color
