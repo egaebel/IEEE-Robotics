@@ -73,7 +73,7 @@ void moveToAirPlatform() {
 				move.turnAround(RIGHT);
 			
 				airInternalState++;
-				move.forwardForDuration(VERY_FAST, 400);
+				move.forwardForDuration(VERY_FAST, 1500);
 				move.forward(MEDIUM); //Move forward
 			}
 			break;
