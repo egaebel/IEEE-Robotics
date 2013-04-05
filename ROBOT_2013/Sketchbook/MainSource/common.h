@@ -107,7 +107,8 @@ typedef struct block_t {
 //Air State
 #define VERY_SLOW 0.05 //When threat of falling of ramp is high
 #define SLOW 0.1 
-#define MEDIUM 0.2 
-#define FAST 0.25 
+#define MEDIUM 0.25 
+#define FAST 0.5 
+#define VERY_FAST 0.75
 
 #endif
