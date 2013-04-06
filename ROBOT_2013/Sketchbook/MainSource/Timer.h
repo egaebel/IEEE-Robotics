@@ -3,6 +3,11 @@
 
 #include <Arduino.h>
 
+#define BACK_OFF_WALL_TIME 1000
+
+
+
+
 
 /* This class lets you set an egg timer pretty much, so it will return true after X amount of time,
 then you can just reset it*/
