@@ -11,7 +11,7 @@ void Timer::init(int end)  {
 }
 	
 bool Timer::isDone(){
-	if(started&&(millis()>endTime)){
+	if(started && (millis() > endTime)){
 		return true;
 	}
 	return false;
