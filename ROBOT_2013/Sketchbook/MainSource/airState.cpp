@@ -70,6 +70,7 @@ void moveToAirPlatform() {
 		case 3: //TESTTTT////
 			if(!timer.isDone()) {
 				move.stop();
+                                airInternalState++;
 			}
 			
 			
