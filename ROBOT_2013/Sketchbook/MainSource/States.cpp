@@ -198,8 +198,6 @@ void scanEnter() {
     internalState = 0;
     rBlockPos = 0;
     lBlockPos = 0;
-
-
 }
 
 void scanUpdate() {

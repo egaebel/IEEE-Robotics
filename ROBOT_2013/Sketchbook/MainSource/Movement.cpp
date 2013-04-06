@@ -2,21 +2,26 @@
 
 
 void Movement::init(){
+	
 	leftMotor.attach(MOTOR_FRONT_L);
 	rightMotor.attach(MOTOR_FRONT_R);
 	backLeftMotor.attach(MOTOR_BACK_L);
     backRightMotor.attach(MOTOR_BACK_R);
-    //rightClawMotor.attach(RCLAW_SERVO);
-    //leftClawMotor.attach(LCLAW_SERVO);
+    
+    rightClawMotor.attach(RCLAW_SERVO);
+    leftClawMotor.attach(LCLAW_SERVO);
+    leftClawMotor.write(180);
+    rightClawMotor.write(0);
+
     rightExtendMotor.attach(RCLAW_EXTEND_SERVO);
     leftExtendMotor.attach(LCLAW_EXTEND_SERVO);
+    rightExtendMotor.write(90);
+    leftExtendMotor.write(90);
 
-    leftClawMotor.write(180);
     //topMotor.attach(3);
     //leftTrebMotor.attach(TREB_LEFT_SERVO);
     //rightTrebMotor.attach(TREB_RIGHT_SERVO);
-    rightExtendMotor.write(90);
-    leftExtendMotor.write(90);
+    
     //leftClawMotor.write(180);
     //rightClawMotor.write(0);
 
@@ -152,9 +157,8 @@ bool Movement::pickupClaw(side s) {
 bool Movement::openClaw(side s) {
 
 	static Timer timer(OPEN_CLAW_TIME);
-	if (!timer.isStarted()) {
-		timer.start();
-	}
+
+	timer.start();
 
 	if (timer.isDone()) {
 		getClawMotor(s)->write(90);
@@ -175,9 +179,8 @@ bool Movement::openClaw(side s) {
 bool Movement::closeClaw(side s) {
 
 	static Timer timer(CLOSE_CLAW_TIME);
-	if (!timer.isStarted()) {
-		timer.start();
-	}
+
+	timer.start();
 
 	if (timer.isDone()) {
 		getClawMotor(s)->write(90);

@@ -71,7 +71,6 @@ typedef struct block_t {
 } Block;
 
 /* PIN DEFINITIONS */
-#define COLOR_SENSOR 0 //Pin for color sensor (pin 0 is fake) 
 	//Motors (Servos)
 #define MOTOR_FRONT_L 11
 #define MOTOR_FRONT_R 12
@@ -86,26 +85,22 @@ typedef struct block_t {
 #define LEFT_CLAW_BUMPER 21
 #define RIGHT_CLAW_BUMPER 22
 
+	//Top Motors
 #define TREB_LEFT_SERVO 2
 #define TREB_RIGHT_SERVO 3
 
 #define RIGHT_TRACK_BUMPER_IN 22
 
 	//Wallfolloer servos
-#define WALL_FOLLOW_SERVO 5
 #define BUMPER_2_PIN 4
 #define BUMPER_1_PIN 3
-	//Top Motor
+	//CMU Cams
 #define LCAM_PIN 2
 #define RCAM_PIN 3
-
+	//IR
 #define RIGHT_IR 5
 #define LEFT_IR	6
-
-
-
-
-
+	//Bumpers
 #define BUMPER_L 53
 #define BUMPER_R 52
     //Sonar - Addresses
@@ -115,7 +110,7 @@ typedef struct block_t {
 #define SONAR_LEFT_INT 4  //PIN 19
 #define SONAR_RIGHT_INT 5 //PIN 18
 
-//Air State
+	//Air State Speeds
 #define VERY_SLOW 0.05 //When threat of falling of ramp is high
 #define SLOW 0.1 
 #define MEDIUM 0.25 
