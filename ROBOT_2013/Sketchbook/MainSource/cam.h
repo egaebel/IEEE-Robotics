@@ -31,6 +31,7 @@ class cam{
 	public:
 		cam(int pin);
 		void init();
+		void initLeft();
 		side inZone(bPosition pos=POS_PICK_UP);
         bool betweenZones();
         side locateZone(); 
@@ -39,6 +40,7 @@ class cam{
 		bSize getBlockSize(bColour colour);
 		void getTrackingData(bColour colour);
 		void getTrackingData();
+
 	private:
 		int trackX1;
 		int trackX2;

@@ -11,6 +11,12 @@ void Movement::init(){
     rightExtendMotor.attach(RCLAW_EXTEND_SERVO);
     leftExtendMotor.attach(LCLAW_EXTEND_SERVO);
 
+    leftClawMotor.write(180);
+    //topMotor.attach(3);
+    //leftTrebMotor.attach(TREB_LEFT_SERVO);
+    //rightTrebMotor.attach(TREB_RIGHT_SERVO);
+    rightExtendMotor.write(90);
+    leftExtendMotor.write(90);
     //leftClawMotor.write(180);
     //rightClawMotor.write(0);
 
@@ -500,7 +506,6 @@ void Movement::testExtendInit() {
 }
 
 void Movement::testExtend() {
-
 	//rightExtendMotor.write(155);
 	leftExtendMotor.write(55);
 }

@@ -17,8 +17,8 @@ FiniteStateMachine fsm(moveToAirState);
 Sonar sonarLeft(SONAR_LEFT,SONAR_LEFT_INT);
 Sonar sonarRight(SONAR_RIGHT,SONAR_RIGHT_INT);
 
-IRAverager leftIR;
-IRAverager rightIR;
+IRAverager leftIR(LEFT_IR);
+IRAverager rightIR(RIGHT_IR);
 
 Movement move;
 
@@ -35,10 +35,10 @@ void handleSonarRight(){
 
 void setup() {
     delay(100); //Make sure we don't catch the PWM from POR of Sonar
-    //attachInterrupt(SONAR_LEFT_INT,handleSonarLeft,FALLING);
+    attachInterrupt(SONAR_LEFT_INT,handleSonarLeft,FALLING);
     //attachInterrupt(SONAR_RIGHT_INT,handleSonarRight,FALLING);
 
-    //Wire.begin();
+    Wire.begin();
     delay(200);
     //move.init();
     move.testExtendInit();
@@ -48,10 +48,11 @@ void setup() {
 
 int switchInt = 0;
 void loop() {
-    
+    sonarLeft.update();
+    Serial.println(sonarLeft.getDistance());
+    Serial.println(sonarRight.getDistance());
     //sonarLeft.update();
     //sonarRight.update();
-    //Serial.println(sonarRight.getDistance());
 #if DEBUG_FSM == 0
     //fsm.update();
     /*
@@ -63,6 +64,10 @@ void loop() {
         if (move.retractClaw(RIGHT))
             switchInt++;
     }
+<<<<<<< HEAD
+
+>>>>>>> 82867959715bfcf29de599be93272a3a1574684d
+=======
     else if (switchInt == 2) {
         if (move.extendClaw(LEFT))
             switchInt++;
