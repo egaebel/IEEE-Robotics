@@ -61,6 +61,9 @@ class Movement {
         Servo leftClawMotor;
         Servo leftExtendMotor;
 
+        Servo leftTrebMotor;
+        Servo rightTrebMotor;
+
         Servo* getClawMotor(side s);
         Servo* getExtendMotor(side s);
 

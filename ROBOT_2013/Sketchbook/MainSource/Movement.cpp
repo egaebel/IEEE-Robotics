@@ -6,10 +6,17 @@ void Movement::init(){
 	rightMotor.attach(MOTOR_FRONT_R);
 	backLeftMotor.attach(MOTOR_BACK_L);
     backRightMotor.attach(MOTOR_BACK_R);
-    //rightClawMotor.attach(RCLAW_SERVO);
-    //rightExtendMotor.attach(RCLAW_EXTEND_SERVO);
-    topMotor.attach(3);
+    rightClawMotor.attach(RCLAW_SERVO);
+    leftClawMotor.attach(LCLAW_SERVO);
+    rightExtendMotor.attach(RCLAW_EXTEND_SERVO);
+    leftExtendMotor.attach(LCLAW_EXTEND_SERVO);
+    //topMotor.attach(3);
+    //leftTrebMotor.attach(TREB_LEFT_SERVO);
+    //rightTrebMotor.attach(TREB_RIGHT_SERVO);
     rightExtendMotor.write(90);
+    //leftExtendMotor.write(90);
+    //leftTrebMotor.write(0);
+    //rightTrebMotor.write(180);
     stop();
     Serial.println("MOVEMENT INITED");
 }
@@ -242,11 +249,42 @@ void Movement::setSpeed(float speedFL,float speedFR, float speedBL, float speedB
 }
 
 bool Movement::liftUp() {
-	return goToDeg(topMotor,27);
+	static Timer t(1000);
+	if(!t.isStarted()){
+		leftTrebMotor.attach(TREB_LEFT_SERVO);
+    	rightTrebMotor.attach(TREB_RIGHT_SERVO);
+    	t.start();
+	}
+	leftTrebMotor.write(100);
+	rightTrebMotor.write(80);
+	if(t.isDone()){
+		Serial.println("done with lift up");
+		t.stop();
+		return true;
+	}
+	return false;
 }
-
 bool Movement::setDown() {
-	return goToDeg(topMotor,0);
+
+	static Timer t(100);
+	static int offset=0;
+	t.start();
+	if(t.isDone()){
+		if(offset<101){
+			offset++;
+		}
+		else{
+			t.stop();
+			leftTrebMotor.detach();
+			rightTrebMotor.detach();
+			offset=0;
+			Serial.println("done with lift down");
+			return true;
+		}
+	}
+	leftTrebMotor.write(100-offset);
+	rightTrebMotor.write(80+offset);
+	return false;
 }
 
 bool Movement::goToDeg(Servo motor, int d){

@@ -165,7 +165,7 @@ void initEnter() {
 
 void initUpdate() {
     Serial.println("ENTER INIT UPDATE");
-	fsm.transitionTo(moveToAirState);
+	//fsm.transitionTo(moveToAirState);
     Serial.print("internalState ====================");
     Serial.print(internalState);
     Serial.print("\n");
@@ -186,6 +186,8 @@ void initUpdate() {
             if(goToWall()){
                 curPos = POS_START;
                 nextPos = POS_SEA;
+/*                curPos = POS_RAIL;
+                nextPos = POS_PICK_UP;*/
                 fsm.transitionTo(moveToState);
             }
             break;

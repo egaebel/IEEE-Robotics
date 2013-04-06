@@ -78,10 +78,16 @@ typedef struct block_t {
 #define MOTOR_BACK_L 10
 #define MOTOR_BACK_R 13
 	//Claw Servos
-//#define LCLAW_SERVO 9
-#define RCLAW_SERVO 3
-#define LCLAW_EXTEND_SERVO 2
-#define RCLAW_EXTEND_SERVO 4
+#define LCLAW_SERVO 4
+#define RCLAW_SERVO 5
+#define RCLAW_EXTEND_SERVO 7
+#define LCLAW_EXTEND_SERVO 6
+
+#define LEFT_CLAW_BUMPER 21
+#define RIGHT_CLAW_BUMPER 22
+
+#define TREB_LEFT_SERVO 2
+#define TREB_RIGHT_SERVO 3
 
 #define RIGHT_TRACK_BUMPER_IN 22
 
@@ -95,6 +101,10 @@ typedef struct block_t {
 
 #define RIGHT_IR 1
 #define LEFT_IR	6
+
+
+
+
 
 #define BUMPER_L 53
 #define BUMPER_R 52

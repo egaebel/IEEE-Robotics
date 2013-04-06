@@ -39,15 +39,14 @@ void setup() {
 
     Wire.begin();
     delay(200);
-
+    move.init();
 	Serial.begin(9600);
     Serial.println("SETUP COMPLETED!!");
 }
-
 void loop() {
-    sonarLeft.update();
-    sonarRight.update();
-    Serial.println(sonarLeft.getDistance());
+    //sonarLeft.update();
+    //sonarRight.update();
+    Serial.println(sonarRight.getDistance());
 #if DEBUG_FSM == 0
     fsm.update();
 #else
