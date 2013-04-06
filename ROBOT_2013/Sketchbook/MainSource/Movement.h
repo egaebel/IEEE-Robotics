@@ -5,16 +5,22 @@
 #include "Servo.h"
 #include "Timer.h"
 
+//Turn Timing
 #define TURN_90_TIME 900 //820
 #define TURN_180_TIME 1800
 
-//need to be defined
-#define OPEN_CLAW_TIME 0
-#define CLOSE_CLAW_TIME 0
-#define EXTEND_CLAW_TIME 0
-#define RETRACT_CLAW_TIME 0
-#define DROP_CLAW_TIME 0
-#define PICKUP_CLAW_TIME 0
+//Start Claw timings---------------
+#define OPEN_CLAW_TIME 5000
+#define CLOSE_CLAW_TIME 5000
+
+#define EXTEND_CLAW_TIME 2300
+#define RETRACT_CLAW_TIME 2300
+
+#define DROP_CLAW_TIME 3000
+#define PICKUP_CLAW_TIME 3000
+//End Claw timings---------------
+
+//movement timing
 #define WALL_BACKUP_TIME 500
 
 class Movement {
@@ -48,6 +54,10 @@ class Movement {
 		void forwardForDuration(float speed, int time_ms);
 		void slideLeftForDuration(float speed, int time_ms);
 		void slideRightForDuration(float speed, int time_ms);
+		
+		//DELETE THIS SHIT
+		void testExtendInit();
+		void testExtend();
 	private:
 
 		Servo leftMotor;

@@ -188,7 +188,7 @@ void initUpdate() {
                 nextPos = POS_SEA;
 /*                curPos = POS_RAIL;
                 nextPos = POS_PICK_UP;*/
-                fsm.transitionTo(moveToState);
+                fsm.transitionTo(pickUpState);
             }
             break;
     }
