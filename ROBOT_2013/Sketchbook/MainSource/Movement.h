@@ -10,10 +10,10 @@
 #define TURN_180_TIME 1800
 
 //Start Claw timings---------------
-#define OPEN_CLAW_TIME 5000
-#define CLOSE_CLAW_TIME 5000
+#define OPEN_CLAW_TIME 500
+#define CLOSE_CLAW_TIME 800
 
-#define EXTEND_CLAW_TIME 2000
+#define EXTEND_CLAW_TIME 2500
 #define RETRACT_CLAW_TIME 2000
 
 #define DROP_CLAW_TIME 3000
@@ -58,6 +58,7 @@ class Movement {
 		//DELETE THIS SHIT
 		void testExtendInit();
 		void testExtend();
+		void zero();
 	private:
 
 		Servo leftMotor;
