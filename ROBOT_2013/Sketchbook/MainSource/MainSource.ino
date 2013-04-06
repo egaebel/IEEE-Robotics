@@ -35,22 +35,51 @@ void handleSonarRight(){
 
 void setup() {
     delay(100); //Make sure we don't catch the PWM from POR of Sonar
-    //attachInterrupt(SONAR_LEFT_INT,handleSonarLeft,FALLING);
+    attachInterrupt(SONAR_LEFT_INT,handleSonarLeft,FALLING);
     //attachInterrupt(SONAR_RIGHT_INT,handleSonarRight,FALLING);
 
-    //Wire.begin();
+    Wire.begin();
     delay(200);
     move.init();
+    //move.testExtendInit();
 	Serial.begin(9600);
     Serial.println("SETUP COMPLETED!!");
 	
 }
+
+int switchInt = 0;
 void loop() {
+    sonarLeft.update();
+    Serial.println(sonarLeft.getDistance());
+    Serial.println(sonarRight.getDistance());
     //sonarLeft.update();
     //sonarRight.update();
-    Serial.println(sonarRight.getDistance());
 #if DEBUG_FSM == 0
-    fsm.update();
+    //fsm.update();
+    /*
+    if (switchInt == 0) {
+        if(move.extendClaw(RIGHT))
+            switchInt++;
+    }
+    else if (switchInt == 1) {
+        if (move.retractClaw(RIGHT))
+            switchInt++;
+    }
+<<<<<<< HEAD
+
+>>>>>>> 82867959715bfcf29de599be93272a3a1574684d
+=======
+    else if (switchInt == 2) {
+        if (move.extendClaw(LEFT))
+            switchInt++;
+    }
+    else if (switchInt == 3) {
+        if (move.retractClaw(LEFT)) 
+            switchInt++;
+    }
+    */
+    move.testExtendInit();
+    move.testExtend();
 #else
     fsm_debug.update();
 #endif
