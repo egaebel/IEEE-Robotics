@@ -20,7 +20,7 @@
 #define POLL_MODE false // See the command interface manual about poll mode.
 #define YUV_MODE false // See the command interface manual about yuv mode.
 
-#define NOISE_FILTER 2
+#define NOISE_FILTER 1
 
 #define PIXELS_THRESHOLD 1
 #define CONFIDENCE_THRESHOLD 50
