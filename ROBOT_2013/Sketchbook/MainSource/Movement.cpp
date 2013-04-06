@@ -4,21 +4,26 @@
 #define EXTEND_L_ZERO 71
 
 void Movement::init(){
+	
 	leftMotor.attach(MOTOR_FRONT_L);
 	rightMotor.attach(MOTOR_FRONT_R);
 	backLeftMotor.attach(MOTOR_BACK_L);
     backRightMotor.attach(MOTOR_BACK_R);
+    
     rightClawMotor.attach(RCLAW_SERVO);
     leftClawMotor.attach(LCLAW_SERVO);
+    leftClawMotor.write(180);
+    rightClawMotor.write(0);
+
     rightExtendMotor.attach(RCLAW_EXTEND_SERVO);
     leftExtendMotor.attach(LCLAW_EXTEND_SERVO);
+    rightExtendMotor.write(90);
+    leftExtendMotor.write(90);
 
-    leftClawMotor.write(90);
     //topMotor.attach(3);
     //leftTrebMotor.attach(TREB_LEFT_SERVO);
     //rightTrebMotor.attach(TREB_RIGHT_SERVO);
-    rightExtendMotor.write(EXTEND_R_ZERO);
-    leftExtendMotor.write(EXTEND_L_ZERO);
+    
     //leftClawMotor.write(180);
     //rightClawMotor.write(0);
 
@@ -104,7 +109,7 @@ bool Movement::dropClaw(side s) {
 			break;
 		case 1:
 			if (openClaw(s)) {
-				zeState;
+				zeState++;
 			}
 			break;
 		case 2:
@@ -114,7 +119,6 @@ bool Movement::dropClaw(side s) {
 			break;
 		case 3:
 			if (closeClaw(s)) {
-				zeState = 0;
 				return true;
 			}
 			break;
@@ -155,18 +159,21 @@ bool Movement::pickupClaw(side s) {
 bool Movement::openClaw(side s) {
 
 	static Timer timer(OPEN_CLAW_TIME);
-		timer.start();
+
+	timer.start();
 
 	if (timer.isDone()) {
+		getClawMotor(s)->write(90);
 		timer.stop();
 		return true;
 	}
 	else {
 		if (s == RIGHT) {
-			getClawMotor(s)->write(140);
+			getClawMotor(s)->write(180);
 		}
-		else
-			getClawMotor(s)->write(70);
+		else {
+			getClawMotor(s)->write(0);	
+		}
 		return false;
 	}
 }
@@ -174,16 +181,21 @@ bool Movement::openClaw(side s) {
 bool Movement::closeClaw(side s) {
 
 	static Timer timer(CLOSE_CLAW_TIME);
+
 	timer.start();
+
 	if (timer.isDone()) {
+		getClawMotor(s)->write(90);
 		timer.stop();
 		return true;
 	}
 	else {
-		if (s == RIGHT)
-			getClawMotor(s)->write(85);
-		else
-			getClawMotor(s)->write(95);
+		if (s == RIGHT) {
+			getClawMotor(s)->write(0);
+		}
+		else {
+			getClawMotor(s)->write(180);	
+		}
 		return false;
 	}
 }
@@ -497,14 +509,10 @@ void Movement::slideLeftForDuration(float speed, int time_ms){
 void Movement::testExtendInit() {
 
 	//rightExtendMotor.attach(RCLAW_EXTEND_SERVO);
-    leftExtendMotor.attach(LCLAW_EXTEND_SERVO);
+    leftExtendMotor.attach(RCLAW_EXTEND_SERVO);
 }
 
 void Movement::testExtend() {
 	//rightExtendMotor.write(155);
-	leftExtendMotor.write(165);
-}
-void Movement::zero(){
-	rightExtendMotor.write(0);
-	leftExtendMotor.write(0);
+	leftExtendMotor.write(55);
 }

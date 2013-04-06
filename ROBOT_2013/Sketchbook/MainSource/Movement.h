@@ -6,8 +6,8 @@
 #include "Timer.h"
 
 //Turn Timing
-#define TURN_90_TIME 900 //820
-#define TURN_180_TIME 1800
+#define TURN_90_TIME 1000 //820
+#define TURN_180_TIME 2000
 
 //Start Claw timings---------------
 #define OPEN_CLAW_TIME 500
@@ -58,7 +58,6 @@ class Movement {
 		//DELETE THIS SHIT
 		void testExtendInit();
 		void testExtend();
-		void zero();
 	private:
 
 		Servo leftMotor;

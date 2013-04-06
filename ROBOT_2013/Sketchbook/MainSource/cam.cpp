@@ -9,13 +9,13 @@ void cam::init(){
     cmuCam->begin();
     cmuCam->autoGainControl(false);
     cmuCam->autoWhiteBalance(false);
-    cmuCam->cameraBrightness(45);
-    cmuCam->cameraContrast(15);
+
+    cmuCam->cameraBrightness(CAM_BRIGHTNESS);
+    cmuCam->cameraContrast(CAM_CONTRAST);
     cmuCam->pollMode(0);
-    cmuCam->noiseFilter(1);
   	//cmuCam->colorTracking(YUV_MODE);
 
-  	//cmuCam->noiseFilter(NOISE_FILTER);
+  	cmuCam->noiseFilter(NOISE_FILTER);
     trackX1 = 0;
     trackX2 = 159;
     trackY1 = 0;
