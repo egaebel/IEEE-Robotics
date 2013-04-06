@@ -198,6 +198,8 @@ void scanEnter() {
     internalState = 0;
     rBlockPos = 0;
     lBlockPos = 0;
+
+
 }
 
 void scanUpdate() {
@@ -224,8 +226,10 @@ void scanUpdate() {
                     seaZone[rBlockPos].present = false;
                     rBlockPos++;
                     if(rBlockPos == 5)
+                        //leave scanning
                         internalState = 2;
                     else
+                        //go to the next betweenZone position
                         internalState = 1;
                 }
             }
@@ -248,8 +252,10 @@ void scanUpdate() {
                     lBlockPos++;
                     Serial.print("lBlockPos is:: ");Serial.print(lBlockPos);Serial.print(" \n");
                     if(lBlockPos == 5) 
-                        move.stop(), internalState = 2;
+                        //leave scanning
+                        internalState = 2;
                     else
+                        //go to next INBETWEEN zone position
                         internalState = 1;
                 }
                 else {
@@ -273,10 +279,12 @@ void scanUpdate() {
                     loadingZone[lBlockPos].present = true;
                     lBlockPos++;
                     if(lBlockPos == 13) {
+                        //leave scanning, be DONE with ALL SCANNING
                         internalState = 2;
                         isScanning = false;
 					}
                     else {
+                        //go to the next INBETWEEN zone position
                         internalState = 1;
 					}
                 }
@@ -285,8 +293,16 @@ void scanUpdate() {
         //We already read this colour, so just keep moving until white
         case 1:
             if(goToWall()){
-                if(rightCam.betweenZones())
+                //set the camera to be used to check for inbetween zones
+                cam *theCam;
+                if (curPos == POS_SEA)
+                    *theCam = rightCam;
+                else
+                    *theCam = leftCam;
+
+                if(theCam->betweenZones())
                         internalState = 0;
+
                 if(curPos== POS_SEA)
                     move.slideWall(RIGHT);
                 else
@@ -298,7 +314,13 @@ void scanUpdate() {
             Serial.println("LEAVING SCANNING STATE-------------------");
             delay(5000);
             //nextPos and curPos transitions were handled in most recent moveTo call
-            fsm.transitionTo(moveToState);
+            //if we're heading to SEA to drop off next....
+            if (curPos == POS_PICK_UP) {
+                fsm.transitionTo(pickUpState);
+            }
+            else {
+                fsm.transitionTo(moveToState);
+            }
             break;
 	}
 }
@@ -327,7 +349,7 @@ void moveToUpdate() {
         switch(internalState){
             case 0:
                 move.slideLeft(0.1);
-                if (sonarLeft.getDistance() < SEA_SAFE_ZONE) {
+                if (sonarLeft.getDistance() <= SEA_SAFE_ZONE) {
                     move.stop();
                     internalState++;
                 }
@@ -395,12 +417,11 @@ void moveToUpdate() {
         }
     }
     //pickup to sea (10 in state diagram)
-/*    Back off wall, turns 90 deg left to face sea wall,
+    /* Back off wall, turns 90 deg left to face sea wall,
     goes to wall, switches to drop off state*/
     else if (curPos == POS_PICK_UP && nextPos == POS_SEA) {
         Serial.println("MOVE TO: PICK_UP TO SEA");
         switch (internalState) {
-
             case 0:
                 if(move.backOffWall())
                     internalState++;
