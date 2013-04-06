@@ -79,7 +79,7 @@ static bool isScanning;
 State initState = State(initEnter, initUpdate, defExit);
 State scanState = State(scanEnter, scanUpdate, defExit);
 State moveToState = State(moveToEnter, moveToUpdate, defExit);
-State pickUpState = State(pickUpEnter, pickUpUpdate, defExit);
+State pickUpState = State(pickUpShortestEnter, pickUpUpdate, defExit);
 State dropState = State(dropEnter, dropUpdate, defExit);
 /** Air **/
 State moveToAirState = State(moveToPlatformEnter, moveToAirPlatform, moveAP_cleanUp);
@@ -88,72 +88,14 @@ State moveToAirState = State(moveToPlatformEnter, moveToAirPlatform, moveAP_clea
 //*****START State Functions*****//
 //initState Functions
 void initEnter() {
-    int idx = 0;
-    debugSeaZone[0].colour = PURPLE;
-    debugSeaZone[1].colour = GREEN;
-    debugSeaZone[2].colour = BROWN;
-    debugSeaZone[3].colour = YELLOW;
-    debugSeaZone[4].colour = BLUE;
-    debugSeaZone[5].colour = RED;
-    for(idx = 0; idx < 6; idx++)
-    {
-      debugSeaZone[idx].size = MED;
-      debugSeaZone[idx].present = false;
-    }
-    debugRailZone[0].colour = PURPLE;
-    debugRailZone[1].colour = GREEN;
-    debugRailZone[2].colour = YELLOW;
-    debugRailZone[3].colour = BROWN;
-    debugRailZone[4].colour = RED;
-    debugRailZone[5].colour = BLUE;
-    for(idx = 0; idx < 6; idx++)
-    {
-      debugRailZone[idx].size = LARGE;
-      debugRailZone[idx].present = false;
-    }
-    // debugLoadingZone[0].colour = PURPLE;
-    // debugLoadingZone[0].size = MED;
-    // debugLoadingZone[1].colour = GREEN;
-    // debugLoadingZone[1].size = MED;
-    // debugLoadingZone[2].colour = BROWN;
-    // debugLoadingZone[2].size = MED;
-    // debugLoadingZone[3].colour = YELLOW;
-    // debugLoadingZone[3].size = MED;
-    // debugLoadingZone[4].colour = BLUE;
-    // debugLoadingZone[4].size = MED;
-    // debugLoadingZone[5].colour = RED;
-    // debugLoadingZone[5].size = MED;
-    // debugLoadingZone[6].colour = PURPLE;
-    // debugLoadingZone[6].size = LARGE;
-    // debugLoadingZone[7].colour = GREEN;
-    // debugLoadingZone[7].size = LARGE;
-    // debugLoadingZone[8].colour = YELLOW;
-    // debugLoadingZone[8].size = LARGE;
-    // debugLoadingZone[9].colour = BROWN;
-    // debugLoadingZone[9].size = LARGE;
-    // debugLoadingZone[10].colour = RED;
-    // debugLoadingZone[10].size = LARGE;
-    // debugLoadingZone[11].colour = BLUE;
-    // debugLoadingZone[11].size = LARGE;
-    // debugLoadingZone[12].colour = BLUE;
-    // debugLoadingZone[12].size = SMALL;
-    // debugLoadingZone[13].colour = PURPLE;
-    // debugLoadingZone[13].size = SMALL;
-    // for(idx = 0; idx < 14; idx++)
-    // {
-      // debugLoadingZone[idx].present = false;
-    // }
-    //initialize necessary variables
         //TODO: CHANGE BACK TO 0
-	
+    #if DEBUG_SCANNING
+	debugInit();
+    #endif
     internalState = 2;
     move.init();
-    Serial.println("initing leftCam");
     leftCam.init();
-    Serial.println("initED leftCam");
-    Serial.println("initing rightCam");
     rightCam.init();
-    Serial.println("inited rightCam");
     isScanning = true;
 }
 
@@ -167,16 +109,20 @@ void initUpdate() {
     //setup wall follower
     switch(internalState){
         case 0:
+            if(digitalRead(BUMPER_L))
+                internalState++;
+            break;
+        case 1:
             //TODO: probably needs to back up more than normal
             if (move.backOffWall()) {
                 internalState++;
             }
             break;
-        case 1:
+        case 2:
             if (move.setDown()) {
                 internalState++;
             }
-        case 2:
+        case 3:
             if(goToWall()){
                 curPos = POS_START;
                 nextPos = POS_SEA;
@@ -191,12 +137,23 @@ void defExit() {}
 //scanState
 void scanEnter() {
     internalState = 0;
-    rBlockPos = 0;
-    lBlockPos = 0;
+
+    if (curPos == POS_SEA) {
+        rBlockPos = 0;
+        lBlockPos = 0;
+    }
+    else if (curPos == POS_RAIL) {
+        rBlockPos = 6;
+        lBlockPos = 5;
+    }
+    else {
+        rBlockPos = 13;
+        lBlockPos = 12;
+    }
 }
 
 void scanUpdate() {
-    Serial.println("SCAN UPDATE))))))))))))))))))))))))))))");
+    Serial.println("skipping scan update");
     fsm.transitionTo(moveToState);
     //Perform the scanning actions
     switch(internalState){
@@ -218,7 +175,7 @@ void scanUpdate() {
                     seaZone[rBlockPos].size = MED;
                     seaZone[rBlockPos].present = false;
                     rBlockPos++;
-                    if(rBlockPos == 5)
+                    if(rBlockPos == 6)
                         //leave scanning
                         internalState = 2;
                     else
@@ -237,14 +194,14 @@ void scanUpdate() {
                         railZone[lBlockPos].colour = debugRailZone[lBlockPos].colour;
                     }
                     #else
-                        railZone[lBlockPos].colour = rightCam.getBlockColour();
+                        railZone[lBlockPos].colour = leftCam.getBlockColour();
                     }
                     #endif
                     railZone[lBlockPos].size = LARGE;
                     railZone[lBlockPos].present = false;
-                    lBlockPos++;
+                    lBlockPos--;
                     Serial.print("lBlockPos is:: ");Serial.print(lBlockPos);Serial.print(" \n");
-                    if(lBlockPos == 5) 
+                    if(lBlockPos == -1) 
                         //leave scanning
                         internalState = 2;
                     else
@@ -261,17 +218,17 @@ void scanUpdate() {
                 if (centerBay(RIGHT,curPos,RIGHT)) {
                     #if DEBUG_SCANNING == true
                     {   
-                        loadingZone[lBlockPos].colour = debugLoadingZone[lBlockPos].colour;
-                        loadingZone[lBlockPos].size = debugLoadingZone[lBlockPos].size;
+                        loadingZone[rBlockPos].colour = debugLoadingZone[rBlockPos].colour;
+                        loadingZone[rBlockPos].size = debugLoadingZone[rBlockPos].size;
                     }
                     #else
-                        loadingZone[lBlockPos].colour = leftCam.getBlockColour();
-                        loadingZone[lBlockPos].size = leftCam.getBlockSize(loadingZone[rBlockPos].colour);
+                        loadingZone[rBlockPos].colour = rightCam.getBlockColour();
+                        loadingZone[rBlockPos].size = rightCam.getBlockSize(loadingZone[rBlockPos].colour);
                     }
                     #endif
-                    loadingZone[lBlockPos].present = true;
-                    lBlockPos++;
-                    if(lBlockPos == 13) {
+                    loadingZone[rBlockPos].present = true;
+                    rBlockPos--;
+                    if(rBlockPos == -1) {
                         //leave scanning, be DONE with ALL SCANNING
                         internalState = 2;
                         isScanning = false;
@@ -341,8 +298,7 @@ void moveToUpdate() {
         Serial.println("MOVE TO: SEA TO RAIL");
         switch(internalState){
             case 0:
-                move.slideLeft(0.1);
-                if (sonarLeft.getDistance() <= SEA_SAFE_ZONE) {
+                if (goToBay(POS_SEA, 2, RIGHT)) {
                     move.stop();
                     internalState++;
                 }
@@ -389,7 +345,6 @@ void moveToUpdate() {
                     internalState++;
                 }
                 break;
-            //TODO: REVIEW THIs
             case 3:
                 curPos = nextPos;
                 if (!seaDone) {
@@ -401,10 +356,15 @@ void moveToUpdate() {
 
                 //check if we need to be scanning pickup
                 if (isScanning) {
-                    fsm.transitionTo(scanState);
+                    internalState++;
                 }
                 else {
                     fsm.transitionTo(pickUpState);
+                }
+                break;
+            case 4:
+                if(goToBay(POS_PICK_UP,13,RIGHT)){
+                    fsm.transitionTo(scanState);
                 }
                 break;
         }
@@ -425,7 +385,7 @@ void moveToUpdate() {
                 break;
             //move to wall
             case 2:
-                if (goToWall()) {
+                if(goToWall()) {
                     curPos = nextPos;
                     nextPos = POS_PICK_UP;
                     fsm.transitionTo(dropState);  
@@ -443,9 +403,7 @@ void moveToUpdate() {
             //check if we need to move sector in zone
             case 0:
                 //check if we are safe to turn around
-                move.slideLeft(0.1);
-                if (sonarLeft.getDistance() < SEA_SAFE_ZONE) {
-                    move.stop();
+                if (goToBay(POS_SEA, 2, RIGHT)) {
                     internalState++;
                 }
                 break;
@@ -476,13 +434,7 @@ void moveToUpdate() {
                     nextPos = POS_RAIL;
                 }
 
-                //if we need to scan pickup
-                if (isScanning) {
-                    fsm.transitionTo(scanState);
-                }
-                else {
-                    fsm.transitionTo(pickUpState);
-                }
+                fsm.transitionTo(pickUpState);
                 break;
         }
     }
@@ -505,24 +457,17 @@ void moveToUpdate() {
                 }
                 break;
             case 3:
-                if (isScanning) {
+                //if rail isn't full
+                if (!railDone) {
                     curPos = nextPos;
                     nextPos = POS_PICK_UP;
-                    fsm.transitionTo(scanState);
+                    fsm.transitionTo(dropState);
                 }
+                //if air isn't full (which it won't be)
                 else {
-                    //if rail isn't full
-                    if (!fullOfBlocks(railZone, RAIL_SEA_SIZE)) {
-                        curPos = nextPos;
-                        nextPos = POS_PICK_UP;
-                        fsm.transitionTo(dropState);
-                    }
-                    //if air isn't full (which it won't be)
-                    else {
-                        curPos = nextPos;
-                        nextPos = POS_AIR;
-                        fsm.transitionTo(moveToState);
-                    }
+                    curPos = nextPos;
+                    nextPos = POS_AIR;
+                    fsm.transitionTo(moveToState);
                 }
                 break;
         }
@@ -543,17 +488,24 @@ void pickUpShortestEnter(){
     int block2;
     int i1;
     int i2;
+
     //What type of blocks are we doing?
     if(!seaDone)
         curZone = seaZone;
     else if(!railDone)
         curZone = railZone;
+
     //what are the two closest blocsks?
     if(!seaDone || !railDone){
+
         for(int i = 0; i < 6;i++){
+
             if(curZone[i].present == false){
-                tempDist = getBayDist(POS_PICK_UP,curZone[i].loadPos,RIGHT);
+
+                tempDist = getBayDist(POS_PICK_UP, curZone[i].loadPos, RIGHT);
+
                 if(tempDist < min1Dist){
+
                     min2Dist = min1Dist;
                     block2 = block1;
                     i2 = i1;
@@ -562,6 +514,7 @@ void pickUpShortestEnter(){
                     i1 = i;
                 }
                 else if(tempDist <= min2Dist){
+
                     min2Dist = tempDist;
                     block2 = curZone[i].loadPos;
                     i2 = i1;
@@ -606,57 +559,6 @@ void pickUpShortestEnter(){
         rTargetPos = block1;
         lTargetPos = block2;
     }
-}
-
-//pickUpState
-void pickUpEnter() {
-
-    internalState = 0;
-
-  	//Figure out which blocks you need to pick up
-	if(!seaDone) {
-		for(int i = 0; i < 6; i++) {
-			if(seaZone[i].present == false) {
-				lTargetBlock = seaZone[i];
-				rTargetBlock = seaZone[++i];
-                break;
-			}
-		}
-	}
-	else if(!railDone) {
-		for(int i = 0; i < 6; i++) {
-			if(!railZone[i].present == false) {
-				lTargetBlock = railZone[i];
-				rTargetBlock = railZone[++i];
-                break;
-			}
-		}
-	}
-	else {
-	    int i = 0;
-		for(; i < 14; i++) {
-			if(loadingZone[i].present == true) {
-				lTargetBlock = loadingZone[i];
-				break;
-			}
-		}
-		for(; i < 14; i++) {
-			if(loadingZone[i].present == true) {
-				rTargetBlock = loadingZone[i];
-                break;
-			}
-		}
-	}
-	
-	//Set target positions of blocks in loading
-	for(int i = 0; i < 14; i++) {
-		if(loadingZone[i].colour == lTargetBlock.colour && loadingZone[i].size == lTargetBlock.size) {
-			lTargetPos = i;
-		}
-		else if(loadingZone[i].colour == rTargetBlock.colour && loadingZone[i].size == rTargetBlock.size) {
-			rTargetPos = i;
-		}
-	}
 }
 
 void pickUpUpdate() {
@@ -777,3 +679,120 @@ void dropUpdate() {
 }
 
 //*****END State Functions*****//
+
+
+
+
+void debugInit(){
+    int idx = 0;
+    debugSeaZone[0].colour = PURPLE;
+    debugSeaZone[1].colour = GREEN;
+    debugSeaZone[2].colour = BROWN;
+    debugSeaZone[3].colour = YELLOW;
+    debugSeaZone[4].colour = BLUE;
+    debugSeaZone[5].colour = RED;
+    for(idx = 0; idx < 6; idx++)
+    {
+      debugSeaZone[idx].size = MED;
+      debugSeaZone[idx].present = false;
+    }
+    debugRailZone[0].colour = PURPLE;
+    debugRailZone[1].colour = GREEN;
+    debugRailZone[2].colour = YELLOW;
+    debugRailZone[3].colour = BROWN;
+    debugRailZone[4].colour = RED;
+    debugRailZone[5].colour = BLUE;
+    for(idx = 0; idx < 6; idx++)
+    {
+      debugRailZone[idx].size = LARGE;
+      debugRailZone[idx].present = false;
+    }
+    // debugLoadingZone[0].colour = PURPLE;
+    // debugLoadingZone[0].size = MED;
+    // debugLoadingZone[1].colour = GREEN;
+    // debugLoadingZone[1].size = MED;
+    // debugLoadingZone[2].colour = BROWN;
+    // debugLoadingZone[2].size = MED;
+    // debugLoadingZone[3].colour = YELLOW;
+    // debugLoadingZone[3].size = MED;
+    // debugLoadingZone[4].colour = BLUE;
+    // debugLoadingZone[4].size = MED;
+    // debugLoadingZone[5].colour = RED;
+    // debugLoadingZone[5].size = MED;
+    // debugLoadingZone[6].colour = PURPLE;
+    // debugLoadingZone[6].size = LARGE;
+    // debugLoadingZone[7].colour = GREEN;
+    // debugLoadingZone[7].size = LARGE;
+    // debugLoadingZone[8].colour = YELLOW;
+    // debugLoadingZone[8].size = LARGE;
+    // debugLoadingZone[9].colour = BROWN;
+    // debugLoadingZone[9].size = LARGE;
+    // debugLoadingZone[10].colour = RED;
+    // debugLoadingZone[10].size = LARGE;
+    // debugLoadingZone[11].colour = BLUE;
+    // debugLoadingZone[11].size = LARGE;
+    // debugLoadingZone[12].colour = BLUE;
+    // debugLoadingZone[12].size = SMALL;
+    // debugLoadingZone[13].colour = PURPLE;
+    // debugLoadingZone[13].size = SMALL;
+    // for(idx = 0; idx < 14; idx++)
+    // {
+      // debugLoadingZone[idx].present = false;
+    // }
+    //initialize necessary variables
+}
+
+
+
+/*
+//pickUpState
+void pickUpEnter() {
+
+    internalState = 0;
+
+    //Figure out which blocks you need to pick up
+    if(!seaDone) {
+        for(int i = 0; i < 6; i++) {
+            if(seaZone[i].present == false) {
+                lTargetBlock = seaZone[i];
+                rTargetBlock = seaZone[++i];
+                break;
+            }
+        }
+    }
+    else if(!railDone) {
+        for(int i = 0; i < 6; i++) {
+            if(!railZone[i].present == false) {
+                lTargetBlock = railZone[i];
+                rTargetBlock = railZone[++i];
+                break;
+            }
+        }
+    }
+    else {
+        int i = 0;
+        for(; i < 14; i++) {
+            if(loadingZone[i].present == true) {
+                lTargetBlock = loadingZone[i];
+                break;
+            }
+        }
+        for(; i < 14; i++) {
+            if(loadingZone[i].present == true) {
+                rTargetBlock = loadingZone[i];
+                break;
+            }
+        }
+    }
+    
+    //Set target positions of blocks in loading
+    for(int i = 0; i < 14; i++) {
+        if(loadingZone[i].colour == lTargetBlock.colour && loadingZone[i].size == lTargetBlock.size) {
+            lTargetPos = i;
+        }
+        else if(loadingZone[i].colour == rTargetBlock.colour && loadingZone[i].size == rTargetBlock.size) {
+            rTargetPos = i;
+        }
+    }
+}
+*/
