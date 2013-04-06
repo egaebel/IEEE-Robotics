@@ -12,16 +12,16 @@ void cam::init(){
     Serial.print("autoGainControl..............");
     cmuCam->autoWhiteBalance(false);
     Serial.print("autoWhiteBalance..............");
-    cmuCam->cameraBrightness(45);
+    cmuCam->cameraBrightness(CAM_BRIGHTNESS);
     Serial.print("brightness..............");
-    cmuCam->cameraContrast(15);
+    cmuCam->cameraContrast(CAM_CONTRAST);
     Serial.print("cameraContrast..............");
     cmuCam->pollMode(0);
     Serial.print("pollMode!?..............\n");
 
   	//cmuCam->colorTracking(YUV_MODE);
 
-  	//cmuCam->noiseFilter(NOISE_FILTER);
+  	cmuCam->noiseFilter(NOISE_FILTER);
     trackX1 = 0;
     trackX2 = 159;
     trackY1 = 0;
