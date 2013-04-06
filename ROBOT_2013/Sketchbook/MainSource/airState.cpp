@@ -70,8 +70,9 @@ void moveToAirPlatform() {
 		case 3: //TESTTTT////
 			if(!timer.isDone()) {
 				move.stop();
+                                airInternalState++;
 			}
-			
+			break;
 			
 		// case 3: 
 			// if(sonarLeft.getDistance() <= 20) { //Stop when 20cm from far-side wall
@@ -98,6 +99,7 @@ void moveToAirPlatform() {
 				move.forwardForDuration(VERY_FAST, 1500);
 				move.forward(MEDIUM); //Move forward
 				/*STOP*/
+                                airInternalState++;
 			}
 			break;
 	
@@ -105,13 +107,15 @@ void moveToAirPlatform() {
 			// if(leftIR.getIR() > 10.0 && rightIR.getIR() > 10.0) { //If front is off edge
 			if(sonarLeft.getDistance() <= 25) {
 				move.stop();
-				
+				Serial.println("Reached edge of first platform");
 				move.backwardForDuration(VERY_SLOW, 100); //Move backwards from ledge
 				move.turn90(LEFT); //Turn to face up-ramp
-				
+				Serial.println("Just turned left");
 				//airInternalState++;
 				move.forwardForDuration(FAST, 2500);
 				move.forward(MEDIUM);
+                                Serial.println("Going forward up second ramp");
+                                airInternalState++;
 			}
 			break;
 			
@@ -119,6 +123,7 @@ void moveToAirPlatform() {
 			// if(leftIR.getIR() > 10.0 && rightIR.getIR() > 10.0) { //Front (both IR's) hanging off front edge of Air platform
 			if(sonarRight.getDistance() <= 25) {
 				move.stop();
+                                Serial.println("Reached edge of second platform.");
 				fsm.transitionTo(scanAirPlatformState);
 			}
 			break;
@@ -139,29 +144,40 @@ void scanAirPlatform() {
 	//Scanning Air
 	switch (airInternalState) {
 		case 0: //At air platform, slide left.
-			airInternalState++;
-			
 			//Move backwards for time and until both IR's back over the platform
 			while(leftIR.getIR() > 10.0 && rightIR.getIR() > 10.0) {
 				move.backwardForDuration(VERY_SLOW,40);
+                                Serial.println("Sliding back until not over edge.");
 			}
 			
 			airInternalState++;
 			move.slideLeft(SLOW); //Start strafing left
+                        Serial.println("Strafing left to edge.");
 			break;
 			
         case 1: //Stop strafing left when left IR hanging off edge (At left edge of platform)
 			if(leftIR.getIR() > 10.0) {
 				move.stop();
+                                Serial.println("Left side over the edge.");
 				airInternalState++;
-				move.slideRight(VERY_SLOW);	
+				move.slideRight(VERY_SLOW);
+                                Serial.println("Sliding right ot left zone of air.");	
 			}
 			break;
         case 2: //Strafe right until leftCam.inZone() of left most bay -> then read color
 			if (leftCam.inZone()) { /**ASSUMING CAM IN ZONE MEANS LEFT BLOCK IS OVER THE BAY**/
 				move.stop();
-				airOrderSame = (lBlock.colour == leftCam.getBlockColour()); //Assigns cam's detected color to left bay's color in airZone and tests whether it's equal to left held block's color
-				fsm.transitionTo(dropAirBlocksState);	
+                                Serial.println("Left cam is in left zone.");
+				airOrderSame = (lBlock.colour == leftCam.getBayColour()); //Assigns cam's detected color to left bay's color in airZone and tests whether it's equal to left held block's color
+				if(airOrderSame)
+                                {
+                                    Serial.println("Left block is the same as left bay. Same for right.");
+                                }
+                                else
+                                {
+                                    Serial.println("Left block is for right bay. Right block is for left bay.");
+                                }
+                                fsm.transitionTo(dropAirBlocksState);	
 			}
 			break;
 		}
@@ -182,22 +198,18 @@ void dropAirBlocks() {
 			switch (airInternalState) {
 				//If order same as blocks in the hand
 				case 0:
+                                        Serial.println("Dropping both claws.");
 					//Assume that when right block over right target bay, left held block over left target bay
 					move.dropClaw(LEFT);
 					move.dropClaw(RIGHT);
 					
+                                        airInternalState++;
 					//<VICTORY DANCE!>
 					break;
 				
-				//if the blocks are NOT in the same order of the 
+				//Use this case to infinitely repeat and keep robot from doing anything stupid (like trying to drop again).
 				case 1:
-					
-					//move slightly left
-					//drop right claw
-
-					//move even more slightly right
-					//drop left claw
-
+                                        Serial.println("Finished course.");
 					break;
 			}
 	}
@@ -207,25 +219,36 @@ void dropAirBlocks() {
 			case 0:
 				//Move just-right of the current left bay, to get our of inZone() (skip current bay under left block)
 				move.slideRightForDuration(VERY_SLOW, 30);
-				
-				airInternalState++; 
+				Serial.println("Sliding right to line up left claw with right air zone.");
 				move.slideRight(VERY_SLOW);
+				airInternalState++; 
 			
 			case 1:
 				if(leftCam.inZone()) {
 					move.stop();
+                                        Serial.println("Left cam is in right air zone.");
+                                        Serial.println("Droping left claw.");
 					move.dropClaw(LEFT);
 					
+                                        //This needs to be longer than previous state because need to slide left to 
+					move.slideLeftForDuration(SLOW, 100);
+                                        move.slideLeft(VERY_SLOW);
+                                        Serial.println("Sliding left to line up right claw with left air zone.");
 					airInternalState++;
-					move.slideLeftForDuration(VERY_SLOW, 30);
 				}
 			case 2:
 				if(rightCam.inZone()) { //right cam in right bay (if reads block as a bay)
-					
-					airInternalState++;
+					move.stop();
+                                        Serial.println("Right cam is in left zone.");
+                                        Serial.println("Droping right claw.");
 					move.dropClaw(RIGHT);
+                                        airInternalState++;
 					//<VICTORY DANCE!>
 				}
+                         //Use this case to infinitely repeat and keep robot from doing anything stupid (like trying to drop again).
+                         case 3:
+                                 Serial.println("Finished course.");
+                                 break;
 		}
 	}
 			

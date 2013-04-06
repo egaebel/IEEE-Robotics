@@ -10,9 +10,6 @@ extern FiniteStateMachine fsm;
 extern Sonar sonarRight;
 extern Sonar sonarLeft;
 
-extern IRAverager leftIR;
-extern IRAverager rightIR;
-
 extern cam leftCam;
 extern cam rightCam;
 
@@ -201,6 +198,8 @@ void scanEnter() {
     internalState = 0;
     rBlockPos = 0;
     lBlockPos = 0;
+
+
 }
 
 void scanUpdate() {
@@ -227,8 +226,10 @@ void scanUpdate() {
                     seaZone[rBlockPos].present = false;
                     rBlockPos++;
                     if(rBlockPos == 5)
+                        //leave scanning
                         internalState = 2;
                     else
+                        //go to the next betweenZone position
                         internalState = 1;
                 }
             }
@@ -251,8 +252,10 @@ void scanUpdate() {
                     lBlockPos++;
                     Serial.print("lBlockPos is:: ");Serial.print(lBlockPos);Serial.print(" \n");
                     if(lBlockPos == 5) 
-                        move.stop(), internalState = 2;
+                        //leave scanning
+                        internalState = 2;
                     else
+                        //go to next INBETWEEN zone position
                         internalState = 1;
                 }
                 else {
@@ -276,10 +279,12 @@ void scanUpdate() {
                     loadingZone[lBlockPos].present = true;
                     lBlockPos++;
                     if(lBlockPos == 13) {
+                        //leave scanning, be DONE with ALL SCANNING
                         internalState = 2;
                         isScanning = false;
 					}
                     else {
+                        //go to the next INBETWEEN zone position
                         internalState = 1;
 					}
                 }
@@ -288,8 +293,16 @@ void scanUpdate() {
         //We already read this colour, so just keep moving until white
         case 1:
             if(goToWall()){
-                if(rightCam.betweenZones())
+                //set the camera to be used to check for inbetween zones
+                cam *theCam;
+                if (curPos == POS_SEA)
+                    *theCam = rightCam;
+                else
+                    *theCam = leftCam;
+
+                if(theCam->betweenZones())
                         internalState = 0;
+
                 if(curPos== POS_SEA)
                     move.slideWall(RIGHT);
                 else
@@ -301,7 +314,13 @@ void scanUpdate() {
             Serial.println("LEAVING SCANNING STATE-------------------");
             delay(5000);
             //nextPos and curPos transitions were handled in most recent moveTo call
-            fsm.transitionTo(moveToState);
+            //if we're heading to SEA to drop off next....
+            if (curPos == POS_PICK_UP) {
+                fsm.transitionTo(pickUpState);
+            }
+            else {
+                fsm.transitionTo(moveToState);
+            }
             break;
 	}
 }
@@ -323,13 +342,86 @@ void moveToUpdate() {
             fsm.transitionTo(scanState);
         }
     }
+    //THIS IS WHERE ALL SKETCHINESS PROBABLY IS
+        //back off wall, turn 90 to the left, transition to scanstate
+    else if(curPos == POS_SEA && nextPos == POS_RAIL){
+        Serial.println("MOVE TO: SEA TO RAIL");
+        switch(internalState){
+            case 0:
+                move.slideLeft(0.1);
+                if (sonarLeft.getDistance() <= SEA_SAFE_ZONE) {
+                    move.stop();
+                    internalState++;
+                }
+                break;
+            case 1:
+                if(move.backOffWall())
+                    internalState++;
+                break;
+            case 2:
+                if(move.turn90(LEFT)){
+                    internalState++;
+                }
+                break;
+            case 3:
+                if(goToWall()){
+                    internalState++;
+                }
+                break;
+            case 4:
+                if (goToBay(POS_RAIL, 5, LEFT)) {
+                    curPos = nextPos;
+                    nextPos = POS_PICK_UP;
+                    fsm.transitionTo(scanState);
+                }
+                break;
+        }
+    }
+    //Move off of wall, 180 to face pick up, go to pick_up wall
+        //Transition to scan state if scan flag is still set, else pick up
+    else if (curPos == POS_RAIL && nextPos == POS_PICK_UP) {
+        Serial.println("MOVE TO: RAIL TO PICKUP");
+        switch (internalState) {
+
+            case 0:
+                if(move.backOffWall())
+                    internalState++;
+                break;
+            case 1:
+                if(move.turnAround(RIGHT))
+                    internalState++;
+                break;
+            case 2:
+                if (goToWall()) {
+                    internalState++;
+                }
+                break;
+            //TODO: REVIEW THIs
+            case 3:
+                curPos = nextPos;
+                if (!seaDone) {
+                  nextPos = POS_SEA;
+                }
+                else {
+                  nextPos = POS_RAIL;
+                }
+
+                //check if we need to be scanning pickup
+                if (isScanning) {
+                    fsm.transitionTo(scanState);
+                }
+                else {
+                    fsm.transitionTo(pickUpState);
+                }
+                break;
+        }
+    }
     //pickup to sea (10 in state diagram)
-/*    Back off wall, turns 90 deg left to face sea wall,
+    /* Back off wall, turns 90 deg left to face sea wall,
     goes to wall, switches to drop off state*/
     else if (curPos == POS_PICK_UP && nextPos == POS_SEA) {
         Serial.println("MOVE TO: PICK_UP TO SEA");
         switch (internalState) {
-
             case 0:
                 if(move.backOffWall())
                     internalState++;
@@ -348,7 +440,7 @@ void moveToUpdate() {
                 break;
         }
     }
-/*    Move left if we need to by checking sonar, so we don't pack up into pickUp,
+    /* Move left if we need to by checking sonar, so we don't pack up into pickUp,
     back off of wall, turn 90 to the right (pickup zone), go to wall,
     if the scanning flag is set, switch to scan state else switch to pickup, 
     if we are done with sea,make rail the next zone after pick up */
@@ -438,80 +530,6 @@ void moveToUpdate() {
                         nextPos = POS_AIR;
                         fsm.transitionTo(moveToState);
                     }
-                }
-                break;
-        }
-    }
-    //Move off of wall, 180 to face pick up, go to pick_up wall
-    //Transition to scan state if scan flag is still set, else pick up
-    else if (curPos == POS_RAIL && nextPos == POS_PICK_UP) {
-        Serial.println("MOVE TO: RAIL TO PICKUP");
-        switch (internalState) {
-
-            case 0:
-                if(move.backOffWall())
-                    internalState++;
-                break;
-            case 1:
-                if(move.turnAround(RIGHT))
-                    internalState++;
-                break;
-            case 2:
-                if (goToWall()) {
-                    internalState++;
-                }
-                break;
-            //TODO: REVIEW THIs
-            case 3:
-                curPos = nextPos;
-                if (!seaDone) {
-                  nextPos = POS_SEA;
-                }
-                else {
-                  nextPos = POS_RAIL;
-                }
-
-                //check if we need to be scanning pickup
-                if (isScanning) {
-                    fsm.transitionTo(scanState);
-                }
-                else {
-                    fsm.transitionTo(pickUpState);
-                }
-                break;
-        }
-    }
-    //THIS IS WHERE ALL SKETCHINESS PROBABLY IS
-    //back off wall, turn 90 to the left, transition to scanstate
-    else if(curPos == POS_SEA && nextPos == POS_RAIL){
-        Serial.println("MOVE TO: SEA TO RAIL");
-        switch(internalState){
-            case 0:
-                move.slideLeft(0.1);
-                if (sonarLeft.getDistance() < SEA_SAFE_ZONE) {
-                    move.stop();
-                    internalState++;
-                }
-            case 1:
-                if(move.backOffWall())
-                    internalState++;
-                break;
-            
-            case 2:
-                if(move.turn90(LEFT)){
-                    internalState++;
-                }
-                break;
-            case 3:
-                if(goToWall()){
-                    internalState++;
-                }
-                break;
-            case 4:
-                if (goToBay(POS_RAIL, 5, LEFT)) {
-                    curPos = nextPos;
-                    nextPos = POS_PICK_UP;
-                    fsm.transitionTo(scanState);
                 }
                 break;
         }
