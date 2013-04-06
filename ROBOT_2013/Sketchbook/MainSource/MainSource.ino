@@ -40,11 +40,10 @@ void setup() {
 
     //Wire.begin();
     delay(200);
-    move.init();
-    //move.testExtendInit();
+    //move.init();
+    move.testExtendInit();
 	Serial.begin(9600);
     Serial.println("SETUP COMPLETED!!");
-	
 }
 
 int switchInt = 0;
@@ -73,7 +72,6 @@ void loop() {
             switchInt++;
     }
     */
-    move.testExtendInit();
     move.testExtend();
 #else
     fsm_debug.update();

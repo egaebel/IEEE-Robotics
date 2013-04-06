@@ -323,6 +323,80 @@ void moveToUpdate() {
             fsm.transitionTo(scanState);
         }
     }
+    //THIS IS WHERE ALL SKETCHINESS PROBABLY IS
+        //back off wall, turn 90 to the left, transition to scanstate
+    else if(curPos == POS_SEA && nextPos == POS_RAIL){
+        Serial.println("MOVE TO: SEA TO RAIL");
+        switch(internalState){
+            case 0:
+                move.slideLeft(0.1);
+                if (sonarLeft.getDistance() < SEA_SAFE_ZONE) {
+                    move.stop();
+                    internalState++;
+                }
+                break;
+            case 1:
+                if(move.backOffWall())
+                    internalState++;
+                break;
+            case 2:
+                if(move.turn90(LEFT)){
+                    internalState++;
+                }
+                break;
+            case 3:
+                if(goToWall()){
+                    internalState++;
+                }
+                break;
+            case 4:
+                if (goToBay(POS_RAIL, 5, LEFT)) {
+                    curPos = nextPos;
+                    nextPos = POS_PICK_UP;
+                    fsm.transitionTo(scanState);
+                }
+                break;
+        }
+    }
+    //Move off of wall, 180 to face pick up, go to pick_up wall
+        //Transition to scan state if scan flag is still set, else pick up
+    else if (curPos == POS_RAIL && nextPos == POS_PICK_UP) {
+        Serial.println("MOVE TO: RAIL TO PICKUP");
+        switch (internalState) {
+
+            case 0:
+                if(move.backOffWall())
+                    internalState++;
+                break;
+            case 1:
+                if(move.turnAround(RIGHT))
+                    internalState++;
+                break;
+            case 2:
+                if (goToWall()) {
+                    internalState++;
+                }
+                break;
+            //TODO: REVIEW THIs
+            case 3:
+                curPos = nextPos;
+                if (!seaDone) {
+                  nextPos = POS_SEA;
+                }
+                else {
+                  nextPos = POS_RAIL;
+                }
+
+                //check if we need to be scanning pickup
+                if (isScanning) {
+                    fsm.transitionTo(scanState);
+                }
+                else {
+                    fsm.transitionTo(pickUpState);
+                }
+                break;
+        }
+    }
     //pickup to sea (10 in state diagram)
 /*    Back off wall, turns 90 deg left to face sea wall,
     goes to wall, switches to drop off state*/
@@ -348,7 +422,7 @@ void moveToUpdate() {
                 break;
         }
     }
-/*    Move left if we need to by checking sonar, so we don't pack up into pickUp,
+    /* Move left if we need to by checking sonar, so we don't pack up into pickUp,
     back off of wall, turn 90 to the right (pickup zone), go to wall,
     if the scanning flag is set, switch to scan state else switch to pickup, 
     if we are done with sea,make rail the next zone after pick up */
@@ -438,80 +512,6 @@ void moveToUpdate() {
                         nextPos = POS_AIR;
                         fsm.transitionTo(moveToState);
                     }
-                }
-                break;
-        }
-    }
-    //Move off of wall, 180 to face pick up, go to pick_up wall
-    //Transition to scan state if scan flag is still set, else pick up
-    else if (curPos == POS_RAIL && nextPos == POS_PICK_UP) {
-        Serial.println("MOVE TO: RAIL TO PICKUP");
-        switch (internalState) {
-
-            case 0:
-                if(move.backOffWall())
-                    internalState++;
-                break;
-            case 1:
-                if(move.turnAround(RIGHT))
-                    internalState++;
-                break;
-            case 2:
-                if (goToWall()) {
-                    internalState++;
-                }
-                break;
-            //TODO: REVIEW THIs
-            case 3:
-                curPos = nextPos;
-                if (!seaDone) {
-                  nextPos = POS_SEA;
-                }
-                else {
-                  nextPos = POS_RAIL;
-                }
-
-                //check if we need to be scanning pickup
-                if (isScanning) {
-                    fsm.transitionTo(scanState);
-                }
-                else {
-                    fsm.transitionTo(pickUpState);
-                }
-                break;
-        }
-    }
-    //THIS IS WHERE ALL SKETCHINESS PROBABLY IS
-    //back off wall, turn 90 to the left, transition to scanstate
-    else if(curPos == POS_SEA && nextPos == POS_RAIL){
-        Serial.println("MOVE TO: SEA TO RAIL");
-        switch(internalState){
-            case 0:
-                move.slideLeft(0.1);
-                if (sonarLeft.getDistance() < SEA_SAFE_ZONE) {
-                    move.stop();
-                    internalState++;
-                }
-            case 1:
-                if(move.backOffWall())
-                    internalState++;
-                break;
-            
-            case 2:
-                if(move.turn90(LEFT)){
-                    internalState++;
-                }
-                break;
-            case 3:
-                if(goToWall()){
-                    internalState++;
-                }
-                break;
-            case 4:
-                if (goToBay(POS_RAIL, 5, LEFT)) {
-                    curPos = nextPos;
-                    nextPos = POS_PICK_UP;
-                    fsm.transitionTo(scanState);
                 }
                 break;
         }

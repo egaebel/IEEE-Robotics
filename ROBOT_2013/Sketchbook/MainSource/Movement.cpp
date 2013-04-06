@@ -96,7 +96,7 @@ bool Movement::dropClaw(side s) {
 			break;
 		case 1:
 			if (openClaw(s)) {
-				zeState;
+				zeState++;
 			}
 			break;
 		case 2:
@@ -106,7 +106,6 @@ bool Movement::dropClaw(side s) {
 			break;
 		case 3:
 			if (closeClaw(s)) {
-				zeState = 0;
 				return true;
 			}
 			break;
@@ -152,12 +151,17 @@ bool Movement::openClaw(side s) {
 	}
 
 	if (timer.isDone()) {
-		getClawMotor(s)->write(0);
+		getClawMotor(s)->write(90);
 		timer.stop();
 		return true;
 	}
 	else {
-		getClawMotor(s)->write(180);
+		if (s == RIGHT) {
+			getClawMotor(s)->write(180);
+		}
+		else {
+			getClawMotor(s)->write(0);	
+		}
 		return false;
 	}
 }
@@ -170,12 +174,17 @@ bool Movement::closeClaw(side s) {
 	}
 
 	if (timer.isDone()) {
-		getClawMotor(s)->write(0);
+		getClawMotor(s)->write(90);
 		timer.stop();
 		return true;
 	}
 	else {
-		getClawMotor(s)->write(180);
+		if (s == RIGHT) {
+			getClawMotor(s)->write(0);
+		}
+		else {
+			getClawMotor(s)->write(180);	
+		}
 		return false;
 	}
 }
@@ -193,10 +202,10 @@ bool Movement::extendClaw(side s){
 	}
 	else {
 		if (s == RIGHT) {
-			getExtendMotor(s)->write(155);
+			getExtendMotor(s)->write(180);
 		}
 		else {
-			getExtendMotor(s)->write(45);	
+			getExtendMotor(s)->write(0);	
 		}
 		return false;
 	}
@@ -487,11 +496,11 @@ void Movement::slideLeftForDuration(float speed, int time_ms){
 void Movement::testExtendInit() {
 
 	//rightExtendMotor.attach(RCLAW_EXTEND_SERVO);
-    leftExtendMotor.attach(LCLAW_EXTEND_SERVO);
+    leftExtendMotor.attach(RCLAW_EXTEND_SERVO);
 }
 
 void Movement::testExtend() {
 
 	//rightExtendMotor.write(155);
-	leftExtendMotor.write(165);
+	leftExtendMotor.write(55);
 }
