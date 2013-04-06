@@ -175,7 +175,7 @@ void scanUpdate() {
                     seaZone[rBlockPos].size = MED;
                     seaZone[rBlockPos].present = false;
                     rBlockPos++;
-                    if(rBlockPos == 5)
+                    if(rBlockPos == 6)
                         //leave scanning
                         internalState = 2;
                     else
@@ -194,14 +194,14 @@ void scanUpdate() {
                         railZone[lBlockPos].colour = debugRailZone[lBlockPos].colour;
                     }
                     #else
-                        railZone[lBlockPos].colour = rightCam.getBlockColour();
+                        railZone[lBlockPos].colour = leftCam.getBlockColour();
                     }
                     #endif
                     railZone[lBlockPos].size = LARGE;
                     railZone[lBlockPos].present = false;
                     lBlockPos--;
                     Serial.print("lBlockPos is:: ");Serial.print(lBlockPos);Serial.print(" \n");
-                    if(lBlockPos == 0) 
+                    if(lBlockPos == -1) 
                         //leave scanning
                         internalState = 2;
                     else
@@ -228,7 +228,7 @@ void scanUpdate() {
                     #endif
                     loadingZone[rBlockPos].present = true;
                     rBlockPos--;
-                    if(rBlockPos == 0) {
+                    if(rBlockPos == -1) {
                         //leave scanning, be DONE with ALL SCANNING
                         internalState = 2;
                         isScanning = false;
@@ -345,7 +345,6 @@ void moveToUpdate() {
                     internalState++;
                 }
                 break;
-            //TODO: REVIEW THIs
             case 3:
                 curPos = nextPos;
                 if (!seaDone) {
@@ -489,17 +488,24 @@ void pickUpShortestEnter(){
     int block2;
     int i1;
     int i2;
+
     //What type of blocks are we doing?
     if(!seaDone)
         curZone = seaZone;
     else if(!railDone)
         curZone = railZone;
+
     //what are the two closest blocsks?
     if(!seaDone || !railDone){
+
         for(int i = 0; i < 6;i++){
+
             if(curZone[i].present == false){
-                tempDist = getBayDist(POS_PICK_UP,curZone[i].loadPos,RIGHT);
+
+                tempDist = getBayDist(POS_PICK_UP, curZone[i].loadPos, RIGHT);
+
                 if(tempDist < min1Dist){
+
                     min2Dist = min1Dist;
                     block2 = block1;
                     i2 = i1;
@@ -508,6 +514,7 @@ void pickUpShortestEnter(){
                     i1 = i;
                 }
                 else if(tempDist <= min2Dist){
+
                     min2Dist = tempDist;
                     block2 = curZone[i].loadPos;
                     i2 = i1;
