@@ -7,18 +7,12 @@ cam::cam(int pin){
 void cam::init(){
     Serial.println("cam init CALLED");
     cmuCam->begin();
-    Serial.print("begun..............");
     cmuCam->autoGainControl(false);
-    Serial.print("autoGainControl..............");
     cmuCam->autoWhiteBalance(false);
-    Serial.print("autoWhiteBalance..............");
     cmuCam->cameraBrightness(45);
-    Serial.print("brightness..............");
     cmuCam->cameraContrast(15);
-    Serial.print("cameraContrast..............");
     cmuCam->pollMode(0);
-    Serial.print("pollMode!?..............\n");
-
+    cmuCam->noiseFilter(1);
   	//cmuCam->colorTracking(YUV_MODE);
 
   	//cmuCam->noiseFilter(NOISE_FILTER);
@@ -28,6 +22,10 @@ void cam::init(){
     trackY2 = 119;
     curColour = BLACK;
     curPos = POS_START;
+}
+void cam::initLeft(){
+  init();
+  cmuCam->horizontalMirror(1);
 }
 side cam::inZone(bPosition pos){
     setWindow(pos);

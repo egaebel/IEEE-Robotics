@@ -35,10 +35,10 @@ void handleSonarRight(){
 
 void setup() {
     delay(100); //Make sure we don't catch the PWM from POR of Sonar
-    //attachInterrupt(SONAR_LEFT_INT,handleSonarLeft,FALLING);
+    attachInterrupt(SONAR_LEFT_INT,handleSonarLeft,FALLING);
     //attachInterrupt(SONAR_RIGHT_INT,handleSonarRight,FALLING);
 
-    //Wire.begin();
+    Wire.begin();
     delay(200);
     move.init();
 	Serial.begin(9600);
@@ -46,11 +46,12 @@ void setup() {
 	
 }
 void loop() {
-    //sonarLeft.update();
+    sonarLeft.update();
     //sonarRight.update();
-    Serial.println(sonarRight.getDistance());
+    Serial.println(sonarLeft.getDistance());
+    //Serial.println(sonarRight.getDistance());
 #if DEBUG_FSM == 0
-    fsm.update();
+    //fsm.update();
 #else
     fsm_debug.update();
 #endif

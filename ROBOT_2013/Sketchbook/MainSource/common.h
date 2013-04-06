@@ -80,8 +80,8 @@ typedef struct block_t {
 	//Claw Servos
 #define LCLAW_SERVO 4
 #define RCLAW_SERVO 5
-#define RCLAW_EXTEND_SERVO 7
-#define LCLAW_EXTEND_SERVO 6
+#define RCLAW_EXTEND_SERVO 6
+#define LCLAW_EXTEND_SERVO 7
 
 #define LEFT_CLAW_BUMPER 21
 #define RIGHT_CLAW_BUMPER 22

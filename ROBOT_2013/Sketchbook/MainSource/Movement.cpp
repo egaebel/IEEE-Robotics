@@ -10,11 +10,12 @@ void Movement::init(){
     leftClawMotor.attach(LCLAW_SERVO);
     rightExtendMotor.attach(RCLAW_EXTEND_SERVO);
     leftExtendMotor.attach(LCLAW_EXTEND_SERVO);
+    leftClawMotor.write(180);
     //topMotor.attach(3);
     //leftTrebMotor.attach(TREB_LEFT_SERVO);
     //rightTrebMotor.attach(TREB_RIGHT_SERVO);
     rightExtendMotor.write(90);
-    //leftExtendMotor.write(90);
+    leftExtendMotor.write(90);
     //leftTrebMotor.write(0);
     //rightTrebMotor.write(180);
     stop();
