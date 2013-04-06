@@ -72,7 +72,7 @@ void moveToAirPlatform() {
 				move.stop();
                                 airInternalState++;
 			}
-			
+			break;
 			
 		// case 3: 
 			// if(sonarLeft.getDistance() <= 20) { //Stop when 20cm from far-side wall
@@ -99,6 +99,7 @@ void moveToAirPlatform() {
 				move.forwardForDuration(VERY_FAST, 1500);
 				move.forward(MEDIUM); //Move forward
 				/*STOP*/
+                                airInternalState++;
 			}
 			break;
 	
@@ -113,6 +114,7 @@ void moveToAirPlatform() {
 				//airInternalState++;
 				move.forwardForDuration(FAST, 2500);
 				move.forward(MEDIUM);
+                                airInternalState++;
 			}
 			break;
 			
