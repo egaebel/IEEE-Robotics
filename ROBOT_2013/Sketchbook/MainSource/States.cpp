@@ -146,6 +146,7 @@ void scanEnter() {
         rBlockPos = 6;
         lBlockPos = 5;
     }
+    //pickup
     else {
         rBlockPos = 13;
         lBlockPos = 12;
@@ -253,7 +254,7 @@ void scanUpdate() {
                 if(theCam->betweenZones())
                         internalState = 0;
 
-                if(curPos== POS_SEA)
+                if(curPos == POS_SEA)
                     move.slideWall(RIGHT);
                 else
                     move.slideWall(LEFT);
@@ -640,14 +641,14 @@ void dropUpdate() {
                 if(!blocks[lTargetPos].present) {
                     if(goToBay(curPos,lTargetPos,LEFT)){
                         activeClaw = LEFT;
-                        blocks[lTargetPos].present = 1;
+                        blocks[lTargetPos].present = true;
                         internalState++;
                     }
                 }
                 else if (!blocks[rTargetPos].present){
                     if(goToBay(curPos,rTargetPos,RIGHT)){
                         activeClaw = RIGHT;
-                        blocks[rTargetPos].present = 1;
+                        blocks[rTargetPos].present = true;
                         internalState++;
                     }
                 }
