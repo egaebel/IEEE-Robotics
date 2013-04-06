@@ -17,8 +17,8 @@ FiniteStateMachine fsm(moveToAirState);
 Sonar sonarLeft(SONAR_LEFT,SONAR_LEFT_INT);
 Sonar sonarRight(SONAR_RIGHT,SONAR_RIGHT_INT);
 
-IRAverager leftIR;
-IRAverager rightIR;
+IRAverager leftIR(LEFT_IR);
+IRAverager rightIR(RIGHT_IR);
 
 Movement move;
 
@@ -40,11 +40,10 @@ void setup() {
 
     Wire.begin();
     delay(200);
-    move.init();
-    //move.testExtendInit();
+    //move.init();
+    move.testExtendInit();
 	Serial.begin(9600);
     Serial.println("SETUP COMPLETED!!");
-	
 }
 
 int switchInt = 0;
@@ -78,7 +77,6 @@ void loop() {
             switchInt++;
     }
     */
-    move.testExtendInit();
     move.testExtend();
 #else
     fsm_debug.update();
