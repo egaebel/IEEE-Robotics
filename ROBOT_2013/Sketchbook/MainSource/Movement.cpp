@@ -402,6 +402,7 @@ void Movement::setSpeed(Servo motor, float speed, bool inverted){
 	speed = (90*speed)+90; //0-180
 	motor.write(speed); //set speed
 }
+
 void Movement::slideWall(side s){
 	switch(s){
 		case RIGHT:
@@ -411,7 +412,6 @@ void Movement::slideWall(side s){
     		setSpeed(0,.25,.1,.1);
 			break;
 		default:
-
 			break;
 	}
 }
@@ -457,8 +457,7 @@ void Movement::forwardForDuration(float speed, int time_ms) {
 	
 	if(timer.isDone()) {
 		stop();
-	} else
-	{
+	} else {
 		setSpeed(speed,speed,0,0);
 	}
 }
