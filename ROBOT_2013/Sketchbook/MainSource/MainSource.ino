@@ -41,17 +41,20 @@ void setup() {
     Wire.begin();
     delay(200);
     move.init();
+
+    //TODO:
+    rightCam.init();
+
 	Serial.begin(9600);
     Serial.println("SETUP COMPLETED!!");
 }
 
-int switchInt = 0;
+int switchInt = 5;
 void loop() {
     sonarLeft.update();
     sonarRight.update();
-    Serial.print("LEFT ");Serial.println(sonarLeft.getDistance());
-    Serial.print("RIGHT ");Serial.println(sonarRight.getDistance());
-    
+    //Serial.print("LEFT ");Serial.println(sonarLeft.getDistance());
+    //Serial.print("RIGHT ");Serial.println(sonarRight.getDistance());
     
 #if DEBUG_FSM == 0
     fsm.update();
@@ -66,6 +69,39 @@ void loop() {
             switchInt++;
         break;
         case 2:
+        if(move.dropClaw(RIGHT))
+            switchInt++;
+        break;
+        case 3:
+        if(move.dropClaw(LEFT))
+            switchInt++;
+        break;
+        case 4:
+        if(move.turn90(RIGHT)){
+            switchInt++;
+        }
+        break;
+        case 5:
+        if(digitalRead(53))
+            switchInt = 123;
+        break;
+        case 6:
+            if(move.liftUp())
+                switchInt++;
+        break;
+        case 7:
+            if(digitalRead(52))
+                switchInt++;
+        break;
+        case 8:
+            if(move.setDown())
+                switchInt++;
+        break;
+        case 123:
+            Serial.print("colour: ");Serial.println(rightCam.getBlockColour());
+            switchInt = 5;
+        break;
+        case 666:
         break;
     }
 

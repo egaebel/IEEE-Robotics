@@ -1,5 +1,7 @@
 #include "Movement.h"
 
+#define EXTEND_R_ZERO 63
+#define EXTEND_L_ZERO 73
 
 void Movement::init(){
 	
@@ -10,13 +12,13 @@ void Movement::init(){
     
     rightClawMotor.attach(RCLAW_SERVO);
     leftClawMotor.attach(LCLAW_SERVO);
-    leftClawMotor.write(180);
-    rightClawMotor.write(0);
+    //leftClawMotor.write(180);
+    //rightClawMotor.write(0);
 
     rightExtendMotor.attach(RCLAW_EXTEND_SERVO);
     leftExtendMotor.attach(LCLAW_EXTEND_SERVO);
-    rightExtendMotor.write(90);
-    leftExtendMotor.write(90);
+    rightExtendMotor.write(EXTEND_R_ZERO);
+    leftExtendMotor.write(EXTEND_L_ZERO);
 
     //topMotor.attach(3);
     //leftTrebMotor.attach(TREB_LEFT_SERVO);
@@ -117,6 +119,7 @@ bool Movement::dropClaw(side s) {
 			break;
 		case 3:
 			if (closeClaw(s)) {
+				zeState =0;
 				return true;
 			}
 			break;
@@ -128,29 +131,26 @@ bool Movement::dropClaw(side s) {
 //picks up a block in the claw on side s
 bool Movement::pickupClaw(side s) {
 
-	static int zeState = 0;
-	switch (zeState) {
-		case 0:
-			if (openClaw(s)) {
-				zeState++;
-			}
-			break;
-		case 1:
-			if (extendClaw(s)) {
-				zeState++;
-			}
-			break;
-		case 2:
-			if (closeClaw(s)) {
-				zeState++;
-			}
-			break;
-		case 3:
-			if (retractClaw(s)) {
-				zeState = 0;
-				return true;
-			}
-	}
+	static int switchInt = 0;
+    switch(switchInt){
+        case 0:
+            if(openClaw(s))
+                switchInt++;
+        break;
+        case 1:
+            if(extendClaw(s))
+                switchInt++;
+        break;
+        case 2:
+            if(closeClaw(s))
+                switchInt++;
+        case 3:
+            if(retractClaw(s)){
+            	switchInt = 0;
+                return true;
+            }
+        break;
+    }
 	return false;
 }
 
@@ -161,17 +161,14 @@ bool Movement::openClaw(side s) {
 	timer.start();
 
 	if (timer.isDone()) {
-		getClawMotor(s)->write(90);
 		timer.stop();
 		return true;
 	}
 	else {
-		if (s == RIGHT) {
-			getClawMotor(s)->write(180);
-		}
-		else {
-			getClawMotor(s)->write(0);	
-		}
+		if (s == RIGHT)
+			getClawMotor(s)->write(118);
+		else
+			getClawMotor(s)->write(62);	
 		return false;
 	}
 }
@@ -183,17 +180,16 @@ bool Movement::closeClaw(side s) {
 	timer.start();
 
 	if (timer.isDone()) {
-		getClawMotor(s)->write(90);
+		//getClawMotor(s)->write(90);
 		timer.stop();
 		return true;
 	}
 	else {
-		if (s == RIGHT) {
-			getClawMotor(s)->write(0);
-		}
-		else {
-			getClawMotor(s)->write(180);	
-		}
+		if (s == RIGHT)
+			getClawMotor(s)->write(70);
+		else
+			getClawMotor(s)->write(110);	
+
 		return false;
 	}
 }
@@ -201,13 +197,22 @@ bool Movement::closeClaw(side s) {
 bool Movement::extendClaw(side s){
 	
 	static Timer timer(EXTEND_CLAW_TIME);
-	
+	if(!timer.isStarted()){
+		if(s==LEFT)
+			timer.init(EXTEND_CLAW_TIME_L);
+		else
+			timer.init(EXTEND_CLAW_TIME);
+	}
 	timer.start();
 
 	if (timer.isDone()) {
-		getExtendMotor(s)->write(90);
+		if(s == LEFT)
+			getExtendMotor(s)->write(EXTEND_L_ZERO);
+		else
+			getExtendMotor(s)->write(EXTEND_R_ZERO);
+
 		timer.stop();
-		return true;	
+		return true;
 	}
 	else {
 		if (s == RIGHT) {
@@ -221,25 +226,27 @@ bool Movement::extendClaw(side s){
 }
 
 bool Movement::retractClaw(side s){
-	
-	static Timer timer(RETRACT_CLAW_TIME);
+	bool bump;
+	if(s == LEFT){
+		if(!digitalRead(LEFT_CLAW_BUMPER)){
+			getExtendMotor(s)->write(EXTEND_L_ZERO);
+			return true;
+		}
+	}
+	else{
+		if(!digitalRead(RIGHT_CLAW_BUMPER)){
+			getExtendMotor(s)->write(EXTEND_R_ZERO);
+			return true;
+		}
+	}
 
-	timer.start();
-
-	if(timer.isDone()){
-		getClawMotor(s)->write(90);
-		timer.stop();
-		return true;
+	if (s == RIGHT) {
+		getExtendMotor(s)->write(0);
 	}
 	else {
-		if (s == RIGHT) {
-			getExtendMotor(s)->write(0);
-		}
-		else {
-			getExtendMotor(s)->write(180);
-		}
-		return false;
+		getExtendMotor(s)->write(180);
 	}
+	return false;
 }
 
 Servo * Movement::getClawMotor(side s) {
@@ -301,14 +308,14 @@ void Movement::setSpeed(float speedFL,float speedFR, float speedBL, float speedB
 }
 
 bool Movement::liftUp() {
-	static Timer t(1000);
+	static Timer t(2000);
 	if(!t.isStarted()){
 		leftTrebMotor.attach(TREB_LEFT_SERVO);
     	rightTrebMotor.attach(TREB_RIGHT_SERVO);
     	t.start();
 	}
-	leftTrebMotor.write(100);
-	rightTrebMotor.write(80);
+	leftTrebMotor.write(160);
+	rightTrebMotor.write(20);
 	if(t.isDone()){
 		Serial.println("done with lift up");
 		t.stop();
@@ -318,24 +325,18 @@ bool Movement::liftUp() {
 }
 bool Movement::setDown() {
 
-	static Timer t(100);
-	static int offset=0;
+	static Timer t(2000);
+	//static int offset=0;
 	t.start();
 	if(t.isDone()){
-		if(offset<101){
-			offset++;
-		}
-		else{
-			t.stop();
-			leftTrebMotor.detach();
-			rightTrebMotor.detach();
-			offset=0;
-			Serial.println("done with lift down");
-			return true;
-		}
+		t.stop();
+		leftTrebMotor.detach();
+		rightTrebMotor.detach();
+		Serial.println("done with lift down");
+		return true;
 	}
-	leftTrebMotor.write(100-offset);
-	rightTrebMotor.write(80+offset);
+	leftTrebMotor.write(20);
+	rightTrebMotor.write(160);
 	return false;
 }
 
@@ -401,6 +402,7 @@ void Movement::setSpeed(Servo motor, float speed, bool inverted){
 	speed = (90*speed)+90; //0-180
 	motor.write(speed); //set speed
 }
+
 void Movement::slideWall(side s){
 	switch(s){
 		case RIGHT:
@@ -410,7 +412,6 @@ void Movement::slideWall(side s){
     		setSpeed(0,.25,.1,.1);
 			break;
 		default:
-
 			break;
 	}
 }
@@ -456,8 +457,7 @@ void Movement::forwardForDuration(float speed, int time_ms) {
 	
 	if(timer.isDone()) {
 		stop();
-	} else
-	{
+	} else {
 		setSpeed(speed,speed,0,0);
 	}
 }
