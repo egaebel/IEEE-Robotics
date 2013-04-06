@@ -10,9 +10,6 @@ extern FiniteStateMachine fsm;
 extern Sonar sonarRight;
 extern Sonar sonarLeft;
 
-extern IRAverager leftIR;
-extern IRAverager rightIR;
-
 extern cam leftCam;
 extern cam rightCam;
 

@@ -17,8 +17,8 @@ FiniteStateMachine fsm(moveToAirState);
 Sonar sonarLeft(SONAR_LEFT,SONAR_LEFT_INT);
 Sonar sonarRight(SONAR_RIGHT,SONAR_RIGHT_INT);
 
-IRAverager leftIR;
-IRAverager rightIR;
+IRAverager leftIR(LEFT_IR);
+IRAverager rightIR(RIGHT_IR);
 
 Movement move;
 
