@@ -6,6 +6,11 @@ extern cam leftCam;
 extern Sonar sonarRight;
 extern Sonar sonarLeft;
 
+void updateBayBool(Block * blocks, int size, bool * done) {
+
+	*done = fullOfBlocks(blocks, size);
+}
+
 bool fullOfBlocks(Block blocks[], int numBlocks) {
 
 	for (int i = 0; i < numBlocks; i++) {
@@ -46,13 +51,13 @@ bool centerBay(side strafeDir, bPosition pos, side sCam){
 
 bool goToWall()
 {
-  	if(digitalRead(BUMPER_2_PIN) && digitalRead(BUMPER_1_PIN)){
+  	if(digitalRead(BUMPER_L) && digitalRead(BUMPER_R)){
 		return true;
 	}
-    else if( digitalRead(53)){
+    else if( digitalRead(BUMPER_L)){
       	move.setSpeed(0,.25,0,-1);
     }
-    else if( digitalRead(52)){
+    else if( digitalRead(BUMPER_R)){
       	move.setSpeed(.25,0,1,0);
     }
     else{

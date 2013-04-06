@@ -17,9 +17,6 @@ extern Movement move;
 //-----------------------------------------//
 //End Externed Hardwares-------------------//
 
-//Timer Time needed to center in Air State
-static Timer timer(1000);
-
 //positions used for the state machine
 static POSITION curPos = POS_START;
 static POSITION nextPos;
@@ -183,9 +180,7 @@ void initUpdate() {
             if(goToWall()){
                 curPos = POS_START;
                 nextPos = POS_SEA;
-/*                curPos = POS_RAIL;
-                nextPos = POS_PICK_UP;*/
-                fsm.transitionTo(pickUpState);
+                fsm.transitionTo(moveToState);
             }
             break;
     }
@@ -755,6 +750,11 @@ void dropUpdate() {
                     }
                 }
                 else {
+                    if (curPos == POS_SEA)
+                        updateBayBool(seaZone, 6, &seaDone);
+                    else 
+                        updateBayBool(railZone, 6, &railDone);
+                    
                     fsm.transitionTo(moveToState);
                 }
                 break;

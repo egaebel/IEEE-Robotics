@@ -8,6 +8,7 @@
 
 typedef struct block_t Block;
 
+void updateBayBool(Block * blocks, int size, bool * done);
 bool fullOfBlocks(Block blocks[], int numBlocks);
 bool getBayPos(int distance, int safeDistance, int * lBlockPos, int * rBlockPos);
 bool goToWall();

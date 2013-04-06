@@ -91,9 +91,6 @@ typedef struct block_t {
 
 #define RIGHT_TRACK_BUMPER_IN 22
 
-	//Wallfolloer servos
-#define BUMPER_2_PIN 4
-#define BUMPER_1_PIN 3
 	//CMU Cams
 #define LCAM_PIN 2
 #define RCAM_PIN 3
