@@ -1,7 +1,7 @@
 #include "Movement.h"
 
-#define EXTEND_R_ZERO 65
-#define EXTEND_L_ZERO 71
+#define EXTEND_R_ZERO 63
+#define EXTEND_L_ZERO 73
 
 void Movement::init(){
 	
@@ -17,8 +17,8 @@ void Movement::init(){
 
     rightExtendMotor.attach(RCLAW_EXTEND_SERVO);
     leftExtendMotor.attach(LCLAW_EXTEND_SERVO);
-    rightExtendMotor.write(90);
-    leftExtendMotor.write(90);
+    rightExtendMotor.write(EXTEND_R_ZERO);
+    leftExtendMotor.write(EXTEND_L_ZERO);
 
     //topMotor.attach(3);
     //leftTrebMotor.attach(TREB_LEFT_SERVO);
@@ -119,6 +119,7 @@ bool Movement::dropClaw(side s) {
 			break;
 		case 3:
 			if (closeClaw(s)) {
+				zeState =0;
 				return true;
 			}
 			break;
@@ -165,9 +166,9 @@ bool Movement::openClaw(side s) {
 	}
 	else {
 		if (s == RIGHT)
-			getClawMotor(s)->write(130);
+			getClawMotor(s)->write(118);
 		else
-			getClawMotor(s)->write(50);	
+			getClawMotor(s)->write(62);	
 		return false;
 	}
 }
@@ -196,7 +197,12 @@ bool Movement::closeClaw(side s) {
 bool Movement::extendClaw(side s){
 	
 	static Timer timer(EXTEND_CLAW_TIME);
-	
+	if(!timer.isStarted()){
+		if(s==LEFT)
+			timer.init(EXTEND_CLAW_TIME_L);
+		else
+			timer.init(EXTEND_CLAW_TIME);
+	}
 	timer.start();
 
 	if (timer.isDone()) {
@@ -302,14 +308,14 @@ void Movement::setSpeed(float speedFL,float speedFR, float speedBL, float speedB
 }
 
 bool Movement::liftUp() {
-	static Timer t(1000);
+	static Timer t(2000);
 	if(!t.isStarted()){
 		leftTrebMotor.attach(TREB_LEFT_SERVO);
     	rightTrebMotor.attach(TREB_RIGHT_SERVO);
     	t.start();
 	}
-	leftTrebMotor.write(100);
-	rightTrebMotor.write(80);
+	leftTrebMotor.write(160);
+	rightTrebMotor.write(20);
 	if(t.isDone()){
 		Serial.println("done with lift up");
 		t.stop();
@@ -319,24 +325,18 @@ bool Movement::liftUp() {
 }
 bool Movement::setDown() {
 
-	static Timer t(100);
-	static int offset=0;
+	static Timer t(2000);
+	//static int offset=0;
 	t.start();
 	if(t.isDone()){
-		if(offset<101){
-			offset++;
-		}
-		else{
-			t.stop();
-			leftTrebMotor.detach();
-			rightTrebMotor.detach();
-			offset=0;
-			Serial.println("done with lift down");
-			return true;
-		}
+		t.stop();
+		leftTrebMotor.detach();
+		rightTrebMotor.detach();
+		Serial.println("done with lift down");
+		return true;
 	}
-	leftTrebMotor.write(100-offset);
-	rightTrebMotor.write(80+offset);
+	leftTrebMotor.write(20);
+	rightTrebMotor.write(160);
 	return false;
 }
 

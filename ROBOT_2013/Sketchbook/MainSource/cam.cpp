@@ -96,6 +96,7 @@ if(((tData.x2-tData.x1)> cmToPx(BAY_WIDTH + 2*LINE_WIDTH)-UNCERTAINTY_ALLOWANCE)
 void cam::getTrackingData(bColour colour){
   if(curColour != colour){
     trackColour(colour);
+    curColour = colour;
   }
   cmuCam->getTypeTDataPacket(&tData); // Get a tracking packet
   Serial.print("pixels");Serial.println(tData.pixels);
