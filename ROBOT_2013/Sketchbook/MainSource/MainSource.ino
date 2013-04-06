@@ -55,32 +55,26 @@ void loop() {
     //Serial.println(sonarRight.getDistance());
 #if DEBUG_FSM == 0
     //fsm.update();
-    //move.pickupClaw(LEFT);    
-    /*switch (switchInt) {
-        case 0:
-            if (move.extendClaw(RIGHT)) {
-                switchInt++;
-            }
-            break;
-        case 1:
-            if (move.extendClaw(RIGHT)) {
-                switchInt++;
-            }
-            break;
-    }*/
+    /*
     if (switchInt == 0) {
         if(move.extendClaw(RIGHT))
             switchInt++;
     }
-    /*else if (switchInt == 1) {
-        if (move.closeClaw(RIGHT))
-            switchInt++;
-    }*/
     else if (switchInt == 1) {
-        if (move.retractClaw(RIGHT)) 
+        if (move.retractClaw(RIGHT))
             switchInt++;
     }
-
+    else if (switchInt == 2) {
+        if (move.extendClaw(LEFT))
+            switchInt++;
+    }
+    else if (switchInt == 3) {
+        if (move.retractClaw(LEFT)) 
+            switchInt++;
+    }
+    */
+    move.testExtendInit();
+    move.testExtend();
 #else
     fsm_debug.update();
 #endif
