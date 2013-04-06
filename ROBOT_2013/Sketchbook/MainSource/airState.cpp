@@ -36,7 +36,7 @@ State dropAirBlocksState = State(dropAirBlocksEnter, dropAirBlocks, dropAP_clean
  * called once when entering moveToPlatformEnterState
  */
 void moveToPlatformEnter() {
-	airInternalState = 2;
+	airInternalState = 0;
 }
 
 /**
@@ -53,8 +53,7 @@ void moveToAirPlatform() {
 			break;
 		
 		case 1:
-			if(move.turnAround(LEFT)) {
-				move.stop();
+			if(move.turnAround(RIGHT)) {
 				airInternalState++;
 			}
 			break;
@@ -64,24 +63,32 @@ void moveToAirPlatform() {
 				move.stop();
 				airInternalState++;
 				move.slideWall(LEFT);
+				timer.init(3000);
+				timer.start();
 			}
 			break;
-			
-		case 3: 
-			if(sonarLeft.getDistance() <= 20) { //Stop when 20cm from far-side wall
+		case 3: //TESTTTT////
+			if(!timer.isDone()) {
 				move.stop();
+			}
+			
+			
+		// case 3: 
+			// if(sonarLeft.getDistance() <= 20) { //Stop when 20cm from far-side wall
+				// move.stop();
 				// Serial.println("Begin Movin backward");
 				// move.backwardForDuration(FAST, 100);
 				// Serial.println("End Movin backward");
-				airInternalState++;
-			}
-			break;
+				// airInternalState++;
+			// }
+			// break;
 			
 		case 4:
 			Serial.println("At case 4: moving off wall!");
 			if(move.backOffWall()) { //Back off wall
-				airInternalState++;
 				move.stop();
+				airInternalState++;
+				
 			}
 			break;
 		

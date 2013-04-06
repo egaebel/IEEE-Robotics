@@ -93,7 +93,7 @@ typedef struct block_t {
 #define LCAM_PIN 2
 #define RCAM_PIN 3
 
-#define RIGHT_IR 1
+#define RIGHT_IR 5
 #define LEFT_IR	6
 
 #define BUMPER_L 53
