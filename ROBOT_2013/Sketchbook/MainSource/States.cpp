@@ -91,72 +91,14 @@ State moveToAirState = State(moveToPlatformEnter, moveToAirPlatform, moveAP_clea
 //*****START State Functions*****//
 //initState Functions
 void initEnter() {
-    int idx = 0;
-    debugSeaZone[0].colour = PURPLE;
-    debugSeaZone[1].colour = GREEN;
-    debugSeaZone[2].colour = BROWN;
-    debugSeaZone[3].colour = YELLOW;
-    debugSeaZone[4].colour = BLUE;
-    debugSeaZone[5].colour = RED;
-    for(idx = 0; idx < 6; idx++)
-    {
-      debugSeaZone[idx].size = MED;
-      debugSeaZone[idx].present = false;
-    }
-    debugRailZone[0].colour = PURPLE;
-    debugRailZone[1].colour = GREEN;
-    debugRailZone[2].colour = YELLOW;
-    debugRailZone[3].colour = BROWN;
-    debugRailZone[4].colour = RED;
-    debugRailZone[5].colour = BLUE;
-    for(idx = 0; idx < 6; idx++)
-    {
-      debugRailZone[idx].size = LARGE;
-      debugRailZone[idx].present = false;
-    }
-    // debugLoadingZone[0].colour = PURPLE;
-    // debugLoadingZone[0].size = MED;
-    // debugLoadingZone[1].colour = GREEN;
-    // debugLoadingZone[1].size = MED;
-    // debugLoadingZone[2].colour = BROWN;
-    // debugLoadingZone[2].size = MED;
-    // debugLoadingZone[3].colour = YELLOW;
-    // debugLoadingZone[3].size = MED;
-    // debugLoadingZone[4].colour = BLUE;
-    // debugLoadingZone[4].size = MED;
-    // debugLoadingZone[5].colour = RED;
-    // debugLoadingZone[5].size = MED;
-    // debugLoadingZone[6].colour = PURPLE;
-    // debugLoadingZone[6].size = LARGE;
-    // debugLoadingZone[7].colour = GREEN;
-    // debugLoadingZone[7].size = LARGE;
-    // debugLoadingZone[8].colour = YELLOW;
-    // debugLoadingZone[8].size = LARGE;
-    // debugLoadingZone[9].colour = BROWN;
-    // debugLoadingZone[9].size = LARGE;
-    // debugLoadingZone[10].colour = RED;
-    // debugLoadingZone[10].size = LARGE;
-    // debugLoadingZone[11].colour = BLUE;
-    // debugLoadingZone[11].size = LARGE;
-    // debugLoadingZone[12].colour = BLUE;
-    // debugLoadingZone[12].size = SMALL;
-    // debugLoadingZone[13].colour = PURPLE;
-    // debugLoadingZone[13].size = SMALL;
-    // for(idx = 0; idx < 14; idx++)
-    // {
-      // debugLoadingZone[idx].present = false;
-    // }
-    //initialize necessary variables
         //TODO: CHANGE BACK TO 0
-	
+    #if DEBUG_SCANNING
+	debugInit();
+    #endif
     internalState = 2;
     move.init();
-    Serial.println("initing leftCam");
     leftCam.init();
-    Serial.println("initED leftCam");
-    Serial.println("initing rightCam");
     rightCam.init();
-    Serial.println("inited rightCam");
     isScanning = true;
 }
 
@@ -170,22 +112,24 @@ void initUpdate() {
     //setup wall follower
     switch(internalState){
         case 0:
+            if(digitalRead(BUMPER_L))
+                internalState++;
+            break;
+        case 1:
             //TODO: probably needs to back up more than normal
             if (move.backOffWall()) {
                 internalState++;
             }
             break;
-        case 1:
+        case 2:
             if (move.setDown()) {
                 internalState++;
             }
-        case 2:
+        case 3:
             if(goToWall()){
                 curPos = POS_START;
                 nextPos = POS_SEA;
-/*                curPos = POS_RAIL;
-                nextPos = POS_PICK_UP;*/
-                fsm.transitionTo(pickUpState);
+                fsm.transitionTo(moveToState);
             }
             break;
     }
@@ -201,7 +145,7 @@ void scanEnter() {
 }
 
 void scanUpdate() {
-    Serial.println("SCAN UPDATE))))))))))))))))))))))))))))");
+    Serial.println("skipping scan update");
     fsm.transitionTo(moveToState);
     //Perform the scanning actions
     switch(internalState){
@@ -406,10 +350,15 @@ void moveToUpdate() {
 
                 //check if we need to be scanning pickup
                 if (isScanning) {
-                    fsm.transitionTo(scanState);
+                    internalState++;
                 }
                 else {
                     fsm.transitionTo(pickUpState);
+                }
+                break;
+            case 4:
+                if(goToBay(POS_PICK_UP,curPos,RIGHT)){
+                    fsm.transitionTo(scanState);
                 }
                 break;
         }
@@ -430,7 +379,7 @@ void moveToUpdate() {
                 break;
             //move to wall
             case 2:
-                if (goToWall()) {
+                if(goToWall()) {
                     curPos = nextPos;
                     nextPos = POS_PICK_UP;
                     fsm.transitionTo(dropState);  
@@ -517,7 +466,7 @@ void moveToUpdate() {
                 }
                 else {
                     //if rail isn't full
-                    if (!fullOfBlocks(railZone, RAIL_SEA_SIZE)) {
+                    if (!railDone) {
                         curPos = nextPos;
                         nextPos = POS_PICK_UP;
                         fsm.transitionTo(dropState);
@@ -777,3 +726,65 @@ void dropUpdate() {
 }
 
 //*****END State Functions*****//
+
+
+
+
+void debugInit(){
+    int idx = 0;
+    debugSeaZone[0].colour = PURPLE;
+    debugSeaZone[1].colour = GREEN;
+    debugSeaZone[2].colour = BROWN;
+    debugSeaZone[3].colour = YELLOW;
+    debugSeaZone[4].colour = BLUE;
+    debugSeaZone[5].colour = RED;
+    for(idx = 0; idx < 6; idx++)
+    {
+      debugSeaZone[idx].size = MED;
+      debugSeaZone[idx].present = false;
+    }
+    debugRailZone[0].colour = PURPLE;
+    debugRailZone[1].colour = GREEN;
+    debugRailZone[2].colour = YELLOW;
+    debugRailZone[3].colour = BROWN;
+    debugRailZone[4].colour = RED;
+    debugRailZone[5].colour = BLUE;
+    for(idx = 0; idx < 6; idx++)
+    {
+      debugRailZone[idx].size = LARGE;
+      debugRailZone[idx].present = false;
+    }
+    // debugLoadingZone[0].colour = PURPLE;
+    // debugLoadingZone[0].size = MED;
+    // debugLoadingZone[1].colour = GREEN;
+    // debugLoadingZone[1].size = MED;
+    // debugLoadingZone[2].colour = BROWN;
+    // debugLoadingZone[2].size = MED;
+    // debugLoadingZone[3].colour = YELLOW;
+    // debugLoadingZone[3].size = MED;
+    // debugLoadingZone[4].colour = BLUE;
+    // debugLoadingZone[4].size = MED;
+    // debugLoadingZone[5].colour = RED;
+    // debugLoadingZone[5].size = MED;
+    // debugLoadingZone[6].colour = PURPLE;
+    // debugLoadingZone[6].size = LARGE;
+    // debugLoadingZone[7].colour = GREEN;
+    // debugLoadingZone[7].size = LARGE;
+    // debugLoadingZone[8].colour = YELLOW;
+    // debugLoadingZone[8].size = LARGE;
+    // debugLoadingZone[9].colour = BROWN;
+    // debugLoadingZone[9].size = LARGE;
+    // debugLoadingZone[10].colour = RED;
+    // debugLoadingZone[10].size = LARGE;
+    // debugLoadingZone[11].colour = BLUE;
+    // debugLoadingZone[11].size = LARGE;
+    // debugLoadingZone[12].colour = BLUE;
+    // debugLoadingZone[12].size = SMALL;
+    // debugLoadingZone[13].colour = PURPLE;
+    // debugLoadingZone[13].size = SMALL;
+    // for(idx = 0; idx < 14; idx++)
+    // {
+      // debugLoadingZone[idx].present = false;
+    // }
+    //initialize necessary variables
+}

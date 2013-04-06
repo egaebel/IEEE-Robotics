@@ -28,5 +28,7 @@ void pickUpUpdate();
 
 void dropEnter();
 void dropUpdate();
+
+void debugInit();
 //end prototpyes
 #endif

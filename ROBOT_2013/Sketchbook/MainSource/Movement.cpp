@@ -12,8 +12,8 @@ void Movement::init(){
     
     rightClawMotor.attach(RCLAW_SERVO);
     leftClawMotor.attach(LCLAW_SERVO);
-    leftClawMotor.write(180);
-    rightClawMotor.write(0);
+    //leftClawMotor.write(180);
+    //rightClawMotor.write(0);
 
     rightExtendMotor.attach(RCLAW_EXTEND_SERVO);
     leftExtendMotor.attach(LCLAW_EXTEND_SERVO);
@@ -130,29 +130,26 @@ bool Movement::dropClaw(side s) {
 //picks up a block in the claw on side s
 bool Movement::pickupClaw(side s) {
 
-	static int zeState = 0;
-	switch (zeState) {
-		case 0:
-			if (openClaw(s)) {
-				zeState++;
-			}
-			break;
-		case 1:
-			if (extendClaw(s)) {
-				zeState++;
-			}
-			break;
-		case 2:
-			if (closeClaw(s)) {
-				zeState++;
-			}
-			break;
-		case 3:
-			if (retractClaw(s)) {
-				zeState = 0;
-				return true;
-			}
-	}
+	static int switchInt = 0;
+    switch(switchInt){
+        case 0:
+            if(openClaw(s))
+                switchInt++;
+        break;
+        case 1:
+            if(extendClaw(s))
+                switchInt++;
+        break;
+        case 2:
+            if(closeClaw(s))
+                switchInt++;
+        case 3:
+            if(retractClaw(s)){
+            	switchInt = 0;
+                return true;
+            }
+        break;
+    }
 	return false;
 }
 
@@ -163,17 +160,14 @@ bool Movement::openClaw(side s) {
 	timer.start();
 
 	if (timer.isDone()) {
-		getClawMotor(s)->write(90);
 		timer.stop();
 		return true;
 	}
 	else {
-		if (s == RIGHT) {
-			getClawMotor(s)->write(180);
-		}
-		else {
-			getClawMotor(s)->write(0);	
-		}
+		if (s == RIGHT)
+			getClawMotor(s)->write(130);
+		else
+			getClawMotor(s)->write(50);	
 		return false;
 	}
 }
@@ -185,17 +179,16 @@ bool Movement::closeClaw(side s) {
 	timer.start();
 
 	if (timer.isDone()) {
-		getClawMotor(s)->write(90);
+		//getClawMotor(s)->write(90);
 		timer.stop();
 		return true;
 	}
 	else {
-		if (s == RIGHT) {
-			getClawMotor(s)->write(0);
-		}
-		else {
-			getClawMotor(s)->write(180);	
-		}
+		if (s == RIGHT)
+			getClawMotor(s)->write(70);
+		else
+			getClawMotor(s)->write(110);	
+
 		return false;
 	}
 }
@@ -207,9 +200,13 @@ bool Movement::extendClaw(side s){
 	timer.start();
 
 	if (timer.isDone()) {
-		getExtendMotor(s)->write(90);
+		if(s == LEFT)
+			getExtendMotor(s)->write(EXTEND_L_ZERO);
+		else
+			getExtendMotor(s)->write(EXTEND_R_ZERO);
+
 		timer.stop();
-		return true;	
+		return true;
 	}
 	else {
 		if (s == RIGHT) {

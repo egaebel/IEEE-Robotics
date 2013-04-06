@@ -7,7 +7,7 @@
 #include "IRlib.h"
 #include "common.h"
 
-#define DEBUG_FSM 0
+#define DEBUG_FSM 1
 
 extern State initState;
 extern State moveToAirState;
@@ -40,8 +40,7 @@ void setup() {
 
     Wire.begin();
     delay(200);
-    //move.init();
-    move.testExtendInit();
+    move.init();
 	Serial.begin(9600);
     Serial.println("SETUP COMPLETED!!");
 }
@@ -49,35 +48,27 @@ void setup() {
 int switchInt = 0;
 void loop() {
     sonarLeft.update();
-    //sonarLeft.update();
     sonarRight.update();
-    Serial.print("LEFT");Serial.println(sonarLeft.getDistance());
-    Serial.print("RIGHT");Serial.println(sonarRight.getDistance());
+    Serial.print("LEFT ");Serial.println(sonarLeft.getDistance());
+    Serial.print("RIGHT ");Serial.println(sonarRight.getDistance());
     
-    switch(switchInt){
-        case 0:
-            if(move.openClaw(LEFT)){
-                switchInt++;
-            }
-        break;
-        case 1:
-            if(move.extendClaw(LEFT)){
-                switchInt++;
-            }
-        break;
-        case 2:
-            if(move.closeClaw(LEFT)){
-                switchInt++;
-            }
-        case 3:
-            if(move.retractClaw(LEFT)){
-                switchInt++;
-            }
-        break;
-    }
+    
 #if DEBUG_FSM == 0
     fsm.update();
 #else
-    fsm_debug.update();
+    switch(switchInt){
+        case 0:
+        if(move.pickupClaw(RIGHT))
+            switchInt++;
+        break;
+        case 1:
+        if(move.pickupClaw(LEFT))
+            switchInt++;
+        break;
+        case 2:
+        break;
+    }
+
+    //fsm_debug.update();
 #endif
 }
