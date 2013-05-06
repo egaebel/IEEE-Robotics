@@ -12,7 +12,7 @@ void handleSonarLeft(){
 }
 
 void handleSonarRight(){
-  right.setDataReady(false);
+  right.setDataReady(true);
 }
 
 void setup(){
