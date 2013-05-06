@@ -1,7 +1,7 @@
 #include "Movement.h"
 
-#define EXTEND_R_ZERO 63
-#define EXTEND_L_ZERO 73
+#define EXTEND_R_ZERO 65
+#define EXTEND_L_ZERO 71
 
 void Movement::init(){
 	

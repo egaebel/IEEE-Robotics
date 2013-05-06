@@ -95,6 +95,10 @@ typedef struct block_t {
 #define LCAM_PIN 2
 #define RCAM_PIN 3
 	//IR
+
+#define RIGHT_FOR_IR 2
+#define RIGHT_BACK_IR 3
+
 #define RIGHT_IR 5
 #define LEFT_IR	6
 	//Bumpers
