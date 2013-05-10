@@ -48,9 +48,9 @@ bool Movement::turn90(side s){
             timer.start();
             state++;
             if(s == LEFT){
-                turnLeft(1);
+                turnLeft(0.5);
             }else{
-                turnRight(1);
+                turnRight(0.5);
             }
             break;
         }
@@ -77,9 +77,9 @@ bool Movement::turnAround(side s) {
             timer.start();
             state++;
             if(s == LEFT){
-                turnLeft(1);
+                turnLeft(0.5);
             }else{
-                turnRight(1);
+                turnRight(0.5);
             }
             break;
         }
