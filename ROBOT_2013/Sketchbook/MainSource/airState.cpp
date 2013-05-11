@@ -10,8 +10,8 @@ static Timer timer(1000);
 extern Sonar sonarRight;
 extern Sonar sonarLeft;
 
-extern IRAverager leftIR;
-extern IRAverager rightIR;
+IRAverager leftIR(0);
+IRAverager rightIR(0);
 
 extern cam leftCam;
 extern cam rightCam;

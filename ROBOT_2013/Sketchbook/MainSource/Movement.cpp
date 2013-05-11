@@ -45,17 +45,18 @@ bool Movement::turn90(side s){
     switch( state ){
         case 0: //Setup
         {
-            timer.start();
-            state++;
-            if(s == LEFT){
-                turnLeft(1);
-            }else{
-                turnRight(1);
-            }
+        	if(backwardForDuration(0.1,100))
+        		state++;
+        	timer.start();
             break;
         }
         case 1: //Run
         {
+        	if(s == LEFT){
+                turnLeft(.1);
+            }else{
+                turnRight(.1);
+            }
             if( timer.isDone() ){
                 stop();
                 timer.stop();
@@ -74,17 +75,18 @@ bool Movement::turnAround(side s) {
     switch( state ){
         case 0: //Setup
         {
-            timer.start();
-            state++;
-            if(s == LEFT){
-                turnLeft(1);
-            }else{
-                turnRight(1);
-            }
+        	if(backwardForDuration(0.1,100))
+        		state++;
+        	timer.start();
             break;
         }
         case 1: //Run
         {
+        	if(s == LEFT){
+                turnLeft(.1);
+            }else{
+                turnRight(.1);
+            }
             if( timer.isDone() ){
                 stop();
                 timer.stop();
@@ -144,6 +146,7 @@ bool Movement::pickupClaw(side s) {
         case 2:
             if(closeClaw(s))
                 switchInt++;
+        break;
         case 3:
             if(retractClaw(s)){
             	switchInt = 0;
@@ -406,10 +409,10 @@ void Movement::setSpeed(Servo motor, float speed, bool inverted){
 void Movement::slideWall(side s){
 	switch(s){
 		case RIGHT:
-			setSpeed(.25,0,-.1,-.1);
+			setSpeed(.25,0,-.05,-.05);
 			break;
 		case LEFT:
-    		setSpeed(0,.25,.1,.1);
+    		setSpeed(0,.25,.05,.05);
 			break;
 		default:
 			break;
@@ -465,15 +468,19 @@ void Movement::forwardForDuration(float speed, int time_ms) {
 /**
  * move backward at speed: speed and for duration: time_ms
  */
-void Movement::backwardForDuration(float speed, int time_ms){
+bool Movement::backwardForDuration(float speed, int time_ms){
 	static Timer timer(time_ms);
 	setSpeed(-speed,-speed,0,0);
 	if(!timer.isStarted()) {
+		timer.init(time_ms);
 		timer.start();
 	}
 	if(timer.isDone()) {
 		stop();
+		timer.stop();
+		return true;
 	}
+	return false;
 }
 
 /**

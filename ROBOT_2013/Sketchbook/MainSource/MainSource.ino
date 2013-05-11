@@ -7,7 +7,7 @@
 #include "IRlib.h"
 #include "common.h"
 #include "RSonar.h"
-
+#include "math.h"
 #define DEBUG_FSM 1
 
 bool checkIR(side,bSize);
@@ -22,8 +22,8 @@ FiniteStateMachine fsm(moveToAirState);
 Sonar sonarLeft(SONAR_LEFT,SONAR_LEFT_INT);
 RSonar sonarRight(1);
 
-IRAverager leftIR(LEFT_IR);
-IRAverager rightIR(RIGHT_IR);
+IRAverager irLeft(LEFT_IR);
+IRAverager irRight(RIGHT_IR);
 
 Movement move;
 
@@ -62,39 +62,58 @@ int curState = 0;
 void loop() {
     sonarLeft.update();
     sonarRight.update();
-    //Serial.print("LEFT ");Serial.println(sonarLeft.getDistance());
+    irLeft.updateIR();
+    Serial.print("LEFTSONAR ");Serial.println(sonarLeft.getDistance());
+    //Serial.print("LEFTIR ");Serial.println(irLeft.getIR());
+    //float bin= 27.3382*pow((analogRead(LEFT_IR)),.4464);
+        float volt = analogRead(LEFT_IR)*5/1024;
+    float bin =  41.543 * pow((volt + 0.30221),-1.5281);
+
+    //Serial.print("RIGHTIR ");Serial.println(analogRead(RIGHT_IR));
+    //Serial.print("LEFTIR ");Serial.println(bin);
+
     //Serial.print("RIGHT ");Serial.println(sonarRight.getDistance());
-    Serial.print("BACK ");Serial.println(analogRead(RIGHT_BACK_IR));
-    Serial.print("FRONT ");Serial.println(analogRead(RIGHT_FOR_IR));
+    //Serial.print("BACK ");Serial.println(analogRead(RIGHT_BACK_IR));
+    //Serial.print("FRONT ");Serial.println(analogRead(RIGHT_FOR_IR));
 #if DEBUG_FSM == 0
     fsm.update();
 #else
     switch(curState){
         case 0:
             if(digitalRead(BUMPER_L)&&digitalRead(BUMPER_R)){
-                curState = 99;
+                curState = 95;
             }
             break;
         //case 98:
             //if(goToWall())
             //    curState++;
         //break;
-        case 99:
+        case 95:
             if(goToBay(POS_PICK_UP, 0, RIGHT))
                 curState++;
+            //skip this
+            curState++;
             break;
-        case 100:
+        case 96:
             if(blocksPickedUp == 6){
                 blocksPickedUp = 0;
                 curState = 200;
             }           
             if(pickUpBlocks(LARGE)){
-                blocksPickedUp += 2;
-                curState++;
+                blocksPickedUp += 1;
+                curState = 98;
             }
         break;
+        case 98:
+            if(move.turn90(LEFT))
+                curState = 100;
+        break;
+        case 100:
+            if(goToWall())
+                curState++;
+        break;
         case 101:
-            if(move.turnAround(LEFT)){
+            if(move.turn90(LEFT)){
                 curState++;
             }
         break;
@@ -105,34 +124,37 @@ void loop() {
             }
         break;
         case 103:
-            if(move.dropClaw(RIGHT)){
-                curState++;
-            }
-        break;
-
-        case 104:
-            if(goToBay(POS_RAIL, nextBay, LEFT)){
+            if(move.dropClaw(LEFT)){
                 nextBay++;
                 curState++;
             }
         break;
 
+        case 104:
+            if(goToBay(POS_RAIL,7,RIGHT))
+                curState++;
+        break;
+
         case 105:
-            if(move.dropClaw(LEFT)){
+            if(move.turn90(RIGHT))
+                curState++;
+        break;
+
+        case 106:
+            if(goToWall()){
                 curState++;
             }
         break;
 
-        case 106:
-            if(move.turnAround(LEFT)){
-                curState = 99;
+        case 107:
+            if(move.turn90(RIGHT)){
+                curState = 96; 
             }
         break;
-
         case 200:
             if(blocksPickedUp == 6)
                 curState = 200;           
-            if(pickUpBlocks(LARGE))
+            if(pickUpBlocks(MED))
                 curState++;            
         break;
         case 666:
@@ -163,8 +185,10 @@ bool pickUpBlocks(bSize size){
                 curClaw==RIGHT;
                 return true;
             }
-            else
+            else{
                 curClaw = LEFT;
+                return true;
+            }
         }
     }
     return false;
@@ -186,7 +210,7 @@ bool checkIR(side s, bSize sizee){
             return true;
     }
     else if(sizee == LARGE){
-        if(analogRead(frontPin)>600) //&& analogRead(backPin)>400)
+        if(analogRead(frontPin)>470) //&& analogRead(backPin)>400)
             return true;
     }
     return false;

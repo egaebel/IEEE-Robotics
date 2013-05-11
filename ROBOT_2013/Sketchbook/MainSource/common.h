@@ -96,11 +96,14 @@ typedef struct block_t {
 #define RCAM_PIN 3
 	//IR
 
-#define RIGHT_FOR_IR 2
-#define RIGHT_BACK_IR 3
+
+#define RIGHT_FOR_IR 3
+#define RIGHT_BACK_IR 2
 
 #define RIGHT_IR 5
-#define LEFT_IR	6
+#define LEFT_IR	4
+
+
 	//Bumpers
 #define BUMPER_L 53
 #define BUMPER_R 52
@@ -114,7 +117,7 @@ typedef struct block_t {
 	//Air State Speeds
 #define VERY_SLOW 0.05 //When threat of falling of ramp is high
 #define SLOW 0.1 
-#define MEDIUM 0.25 
+#define MEDIUM 0.25
 #define FAST 0.5 
 #define VERY_FAST 0.75
 

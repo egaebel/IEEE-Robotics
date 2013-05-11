@@ -6,12 +6,12 @@
 #include "Timer.h"
 
 //Turn Timing
-#define TURN_90_TIME 1150 //1000 //820
-#define TURN_180_TIME 2000
+#define TURN_90_TIME 1450 //1000 //820
+#define TURN_180_TIME 2*TURN_90_TIME
 
 //Start Claw timings---------------
 #define OPEN_CLAW_TIME 500
-#define CLOSE_CLAW_TIME 800
+#define CLOSE_CLAW_TIME 600
 
 #define EXTEND_CLAW_TIME 2500
 #define EXTEND_CLAW_TIME_L 1500
@@ -51,7 +51,7 @@ class Movement {
 		bool setDown();
 		bool timerTest();
 		bool backOffWall();
-		void backwardForDuration(float speed, int time_ms);
+		bool backwardForDuration(float speed, int time_ms);
 		void forwardForDuration(float speed, int time_ms);
 		void slideLeftForDuration(float speed, int time_ms);
 		void slideRightForDuration(float speed, int time_ms);

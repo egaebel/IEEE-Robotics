@@ -1,10 +1,11 @@
 #include "SimpleFunctions.h"
-
+#include "IRlib.h"
 extern Movement move;
 extern cam rightCam;
 extern cam leftCam;
 extern Sonar sonarRight;
 extern Sonar sonarLeft;
+extern IRAverager irLeft;
 
 void updateBayBool(Block * blocks, int size, bool * done) {
 
@@ -90,13 +91,19 @@ bool goToBay(bPosition bay, int nBay, side clawSide) {
 
 		int dist = getBayDist(bay,nBay,clawSide);
 
-		if(bay==POS_SEA || bay == POS_PICK_UP)
+		if(bay==POS_SEA || bay == POS_PICK_UP || bay==POS_RAIL)
 			tempSonar = &sonarLeft;
 		else
 			tempSonar = &sonarRight;
-		
-		if(tempSonar->getDistance() > dist){
-			if(bay == POS_SEA || bay == POS_PICK_UP){
+		int curDist = tempSonar->getDistance();
+
+		if(bay==POS_PICK_UP){
+			if(analogRead(LEFT_IR)>295)
+				curDist = 20;
+		}
+
+		if(curDist > dist){
+			if(bay == POS_SEA || bay == POS_PICK_UP || bay==POS_RAIL){
 				move.slideWall(LEFT);
 			}
 			else {
@@ -104,8 +111,8 @@ bool goToBay(bPosition bay, int nBay, side clawSide) {
 			}
 			return false;
 		}
-		else if(tempSonar->getDistance() < dist){
-			if(bay == POS_SEA || bay == POS_PICK_UP) {
+		else if(curDist < dist){
+			if(bay == POS_SEA || bay == POS_PICK_UP || bay==POS_RAIL) {
 
 				move.slideWall(RIGHT);
 			}
@@ -133,7 +140,8 @@ int getBayDist(bPosition bay, int nBay, side clawSide) {
 			dist = 21 + (nBay*7) - clawAddition;
 			break;
 		case POS_RAIL:
-			dist = 142 - (nBay*7) + clawAddition;
+			//dist = 142 - (nBay*7) + clawAddition;
+			dist = 73 + (nBay*7) - clawAddition;
 			break;
 		case POS_SEA:
 			dist =  37 + (nBay*7) - clawAddition;
