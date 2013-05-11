@@ -119,7 +119,6 @@ void loop() {
         break;
         case 102:
             if(goToBay(POS_RAIL, nextBay, RIGHT)){
-                nextBay++;
                 curState++;
             }
         break;
@@ -131,7 +130,7 @@ void loop() {
         break;
 
         case 104:
-            if(goToBay(POS_RAIL,7,RIGHT))
+            if(goToBay(POS_RAIL,11,RIGHT))
                 curState++;
         break;
 
