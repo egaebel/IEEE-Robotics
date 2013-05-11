@@ -14,8 +14,8 @@ IRAverager::IRAverager(int pin) {
 
 void IRAverager::updateIR() {
 	sum -= valArray[slot];
-	valArray[slot] = analogRead(ir_pin);
-	valArray[slot] = 27.3382*pow(.4464,valArray[slot]);
+	double x = analogRead(ir_pin);
+	valArray[slot] = 306.439 + x * (-512.611 + x * (382.268 + x * (-129.893 + x * 16.2537)));
 	sum += valArray[slot];
 	slot++;
 	if (slot > lengthArray-1) {
