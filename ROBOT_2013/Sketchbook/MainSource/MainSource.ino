@@ -58,24 +58,31 @@ int blocksPickedUp = 0;
 bool leftClawBlock = 0;
 bool rightClawBlock = 0;
 int nextBay = 0;
-int curState = 666;
+int curState = 0;
 void loop() {
     sonarLeft.update();
     sonarRight.update();
     //Serial.print("LEFT ");Serial.println(sonarLeft.getDistance());
     //Serial.print("RIGHT ");Serial.println(sonarRight.getDistance());
-    
-    Serial.print(analogRead(RIGHT_FOR_IR));Serial.print(" \t");Serial.println(analogRead(RIGHT_BACK_IR)-150);
+    Serial.print("BACK ");Serial.println(analogRead(RIGHT_BACK_IR)-150);
+    Serial.print("FRONT ");Serial.println(analogRead(RIGHT_FOR_IR));
 #if DEBUG_FSM == 0
     fsm.update();
 #else
     switch(curState){
-
+        case 0:
+            if(digitalRead(BUMPER_L)&&digitalRead(BUMPER_R)){
+                curState = 99;
+            }
+            break;
+        //case 98:
+            //if(goToWall())
+            //    curState++;
+        //break;
         case 99:
-            if(goToWall())
+            if(goToBay(POS_PICK_UP, 0, RIGHT))
                 curState++;
-        break;
-
+            break;
         case 100:
             if(blocksPickedUp == 6){
                 blocksPickedUp = 0;
@@ -145,7 +152,8 @@ bool pickUpBlocks(bSize size){
     static int state = 0;
     switch(state){
     case 0:
-        move.slideWall(RIGHT);
+        if(goToWall())
+            move.slideWall(RIGHT);
         if(checkIR(curClaw,size)){
             state++;
         }
@@ -181,7 +189,7 @@ bool checkIR(side s, bSize sizee){
             return true;
     }
     else if(sizee == LARGE){
-        if(analogRead(frontPin)>IR_BLOCK_THRES && (analogRead(backPin)-150)>IR_BLOCK_THRES)
+        if(analogRead(frontPin)>IR_BLOCK_THRES)// && (analogRead(backPin)-150)>IR_BLOCK_THRES)
             return true;
     }
     return false;

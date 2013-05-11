@@ -90,13 +90,13 @@ bool goToBay(bPosition bay, int nBay, side clawSide) {
 
 		int dist = getBayDist(bay,nBay,clawSide);
 
-		if(bay==POS_SEA)
+		if(bay==POS_SEA || bay == POS_PICK_UP)
 			tempSonar = &sonarLeft;
 		else
 			tempSonar = &sonarRight;
 		
 		if(tempSonar->getDistance() > dist){
-			if(bay == POS_SEA){
+			if(bay == POS_SEA || bay == POS_PICK_UP){
 				move.slideWall(LEFT);
 			}
 			else {
@@ -105,7 +105,7 @@ bool goToBay(bPosition bay, int nBay, side clawSide) {
 			return false;
 		}
 		else if(tempSonar->getDistance() < dist){
-			if(bay == POS_SEA) {
+			if(bay == POS_SEA || bay == POS_PICK_UP) {
 
 				move.slideWall(RIGHT);
 			}
@@ -130,7 +130,7 @@ int getBayDist(bPosition bay, int nBay, side clawSide) {
 
 	switch(bay){
 		case POS_PICK_UP:
-			dist = 122 - (nBay*7) + clawAddition;
+			dist = 21 + (nBay*7) - clawAddition;
 			break;
 		case POS_RAIL:
 			dist = 142 - (nBay*7) + clawAddition;
