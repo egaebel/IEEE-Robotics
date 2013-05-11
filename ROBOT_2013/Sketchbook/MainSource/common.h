@@ -96,8 +96,9 @@ typedef struct block_t {
 #define RCAM_PIN 3
 	//IR
 
-#define RIGHT_FOR_IR 2
-#define RIGHT_BACK_IR 3
+#define RIGHT_FOR_IR 3
+#define RIGHT_BACK_IR 2
+#define IR_BLOCK_THRES 470
 
 #define RIGHT_IR 5
 #define LEFT_IR	6

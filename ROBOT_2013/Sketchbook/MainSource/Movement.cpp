@@ -48,9 +48,9 @@ bool Movement::turn90(side s){
             timer.start();
             state++;
             if(s == LEFT){
-                turnLeft(0.5);
+                turnLeft(0.1);
             }else{
-                turnRight(0.5);
+                turnRight(0.1);
             }
             break;
         }
@@ -77,9 +77,9 @@ bool Movement::turnAround(side s) {
             timer.start();
             state++;
             if(s == LEFT){
-                turnLeft(0.5);
+                turnLeft(0.1);
             }else{
-                turnRight(0.5);
+                turnRight(0.1);
             }
             break;
         }
@@ -144,6 +144,7 @@ bool Movement::pickupClaw(side s) {
         case 2:
             if(closeClaw(s))
                 switchInt++;
+        break;
         case 3:
             if(retractClaw(s)){
             	switchInt = 0;
@@ -398,6 +399,8 @@ void Movement::setSpeed(Servo motor, float speed, bool inverted){
 		speed = -speed;
 	}
 
+    //scale speed
+    
 	//Adjust speed to correct range
 	speed = (90*speed)+90; //0-180
 	motor.write(speed); //set speed
