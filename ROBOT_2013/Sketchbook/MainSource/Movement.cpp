@@ -45,9 +45,11 @@ bool Movement::turn90(side s){
     switch( state ){
         case 0: //Setup
         {
-        	if(backwardForDuration(0.1,100))
-        		state++;
-        	timer.start();
+        	if(backwardForDuration(0.1,100)){
+				state++;
+        		timer.start();        		
+        	}
+
             break;
         }
         case 1: //Run
@@ -75,9 +77,11 @@ bool Movement::turnAround(side s) {
     switch( state ){
         case 0: //Setup
         {
-        	if(backwardForDuration(0.1,100))
+        	if(backwardForDuration(0.1,100)){
         		state++;
-        	timer.start();
+        		timer.start();
+        	}
+
             break;
         }
         case 1: //Run
@@ -401,6 +405,8 @@ void Movement::setSpeed(Servo motor, float speed, bool inverted){
 		speed = -speed;
 	}
 
+    //scale speed
+    
 	//Adjust speed to correct range
 	speed = (90*speed)+90; //0-180
 	motor.write(speed); //set speed

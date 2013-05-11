@@ -158,6 +158,10 @@ void loop() {
                 curState++;            
         break;
         case 666:
+          if(digitalRead(BUMPER_L) && digitalRead(BUMPER_R)){
+  		curState = 99;
+                delay(1000);
+  	  }
         break;
     }
 
@@ -166,7 +170,6 @@ void loop() {
 }
 
 bool pickUpBlocks(bSize size){
-    //static side curClaw = RIGHT;
     static side curClaw = LEFT;
     static int state = 0;
     switch(state){
@@ -183,12 +186,12 @@ bool pickUpBlocks(bSize size){
             state = 0;
             if(curClaw==LEFT){
                 curClaw==RIGHT;
-                return true;
             }
             else{
                 curClaw = LEFT;
                 return true;
             }
+            return true;
         }
     }
     return false;
@@ -206,11 +209,11 @@ bool checkIR(side s, bSize sizee){
         backPin = 0;
     }
     if(sizee == MED){
-        if(analogRead(backPin)>400)
+        if(analogRead(backPin)>IR_BLOCK_THRES)
             return true;
     }
     else if(sizee == LARGE){
-        if(analogRead(frontPin)>470) //&& analogRead(backPin)>400)
+        if(analogRead(frontPin)>IR_BLOCK_THRES)// && (analogRead(backPin)-150)>IR_BLOCK_THRES)
             return true;
     }
     return false;
