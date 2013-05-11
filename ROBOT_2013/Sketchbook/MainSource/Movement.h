@@ -6,9 +6,10 @@
 #include "Timer.h"
 
 //Turn Timing
-#define TURN_90_TIME 1400
+#define TURN_90_R_TIME 1500
+#define TURN_90_L_TIME 1400
 
-#define TURN_180_TIME 2*TURN_90_TIME
+#define TURN_180_TIME 2*TURN_90_L_TIME
 
 //Start Claw timings---------------
 #define OPEN_CLAW_TIME 500

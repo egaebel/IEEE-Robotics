@@ -6,8 +6,11 @@ Timer::Timer(int end) {
 }
 
 void Timer::init(int end)  {
-	endDuration = end;
-	started = false;
+	
+	if (!started) {
+		endDuration = end;
+		started = false;
+	}
 }
 	
 bool Timer::isDone(){

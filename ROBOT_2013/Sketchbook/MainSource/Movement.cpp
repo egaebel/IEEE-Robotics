@@ -41,7 +41,9 @@ void Movement::init(){
 
 bool Movement::turn90(side s){
     static int state;
-    static Timer timer(TURN_90_TIME);
+    int initTime = (s == LEFT) ? TURN_90_L_TIME : TURN_90_R_TIME;
+    static Timer timer(initTime);
+    timer.init(initTime);
     switch( state ){
         case 0: //Setup
         {
@@ -74,6 +76,7 @@ bool Movement::turn90(side s){
 bool Movement::turnAround(side s) {
     static int state;
     static Timer timer(TURN_180_TIME);
+
     switch( state ){
         case 0: //Setup
         {
