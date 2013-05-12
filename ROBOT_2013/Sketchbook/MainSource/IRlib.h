@@ -12,6 +12,8 @@ public:
 	float sum;
 	void updateIR();
 	float getIR();
+private:
+        int ir_pin;
 };
 
 #endif
