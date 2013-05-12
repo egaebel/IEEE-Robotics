@@ -63,8 +63,8 @@ void loop() {
     sonarLeft.update();
     sonarRight.update();
     irLeft.updateIR();
-    Serial.print("LEFTSONAR ");Serial.println(sonarLeft.getDistance());
-    //Serial.print("LEFTIR ");Serial.println(irLeft.getIR());
+    //Serial.print("LEFTSONAR ");Serial.println(sonarLeft.getDistance());
+    Serial.print("LEFTIR ");Serial.println(irLeft.getIR());
     //float bin= 27.3382*pow((analogRead(LEFT_IR)),.4464);
         float volt = analogRead(LEFT_IR)*5/1024;
     float bin =  41.543 * pow((volt + 0.30221),-1.5281);
@@ -101,13 +101,20 @@ void loop() {
             }           
             if(pickUpBlocks(LARGE)){
                 blocksPickedUp += 1;
-                curState = 98;
+                curState++;
             }
+        break;
+        case 97:
+            if(goToBay(POS_PICK_UP,0,LEFT))
+                curState++;
         break;
         case 98:
             if(move.turn90(LEFT))
-                curState = 100;
+                curState++;
         break;
+        case 99:
+            if(goToBay(POS_SEA,0,RIGHT))
+                curState++;
         case 100:
             if(goToWall())
                 curState++;
@@ -158,9 +165,9 @@ void loop() {
         break;
         case 666:
           if(digitalRead(BUMPER_L) && digitalRead(BUMPER_R)){
-  		curState = 99;
+  		        curState = 99;
                 delay(1000);
-  	  }
+  	         }
         break;
     }
 
