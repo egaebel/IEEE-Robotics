@@ -1,7 +1,6 @@
 #include "IRlib.h"
-#include <math.h>
-
-int ir_pin;
+#include <cmath>
+#include "Arduino.h"
 
 IRAverager::IRAverager(int pin) {
 	ir_pin = pin;
@@ -14,8 +13,11 @@ IRAverager::IRAverager(int pin) {
 
 void IRAverager::updateIR() {
 	sum -= valArray[slot];
-	double x = analogRead(ir_pin);
-	valArray[slot] = 306.439 + x * (-512.611 + x * (382.268 + x * (-129.893 + x * 16.2537)));
+    double x = analogRead(ir_pin);
+    double distance3 = 10650.08*pow(x,-0.935)-10;
+    if (distance3 > 150)
+      distance3 = 150;
+	valArray[slot] = distance3;
 	sum += valArray[slot];
 	slot++;
 	if (slot > lengthArray-1) {
@@ -30,10 +32,10 @@ float IRAverager::getIR() {
 		devsum += pow((valArray[i] - mean),2);
 	}
 	
-	float stdDev = sqrt((1.0/(lengthArray-1)*devsum));
+	float stdDev = sqrt(devsum/(lengthArray));
 
 	int out = 0;
-	int newSum;
+	float newSum;
 	for (int i = 0; i < lengthArray-1; i++) {
 		if (valArray[i] > mean - (2*stdDev) && valArray[i] < mean + (2*stdDev))
 		{
