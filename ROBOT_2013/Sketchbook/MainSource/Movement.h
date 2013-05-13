@@ -6,8 +6,8 @@
 #include "Timer.h"
 
 //Turn Timing
-#define TURN_90_R_TIME 1500
-#define TURN_90_L_TIME 1400
+#define TURN_90_R_TIME 1100
+#define TURN_90_L_TIME 1100
 
 #define TURN_180_TIME 2*TURN_90_L_TIME
 

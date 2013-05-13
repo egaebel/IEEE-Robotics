@@ -49,7 +49,9 @@ bool Movement::turn90(side s){
         {
         	if(backwardForDuration(0.1,100)){
 				state++;
-        		timer.start();        		
+				stop();
+				delay(300);
+        		timer.start();  		
         	}
 
             break;
@@ -57,9 +59,9 @@ bool Movement::turn90(side s){
         case 1: //Run
         {
         	if(s == LEFT){
-                turnLeft(.1);
+                turnLeft(.08);
             }else{
-                turnRight(.1);
+                turnRight(.08);
             }
             if( timer.isDone() ){
                 stop();
@@ -288,11 +290,11 @@ void Movement::slideRight(float speed){
 }
 
 void Movement::turnLeft(float speed){
-	setSpeed(-speed,speed,0,0);	
+	setSpeed(-speed,speed,-speed,-speed);	
 }
 
 void Movement::turnRight(float speed){
-	setSpeed(speed,-speed,0,0);
+	setSpeed(speed,-speed,speed,speed);
 }
 
 void Movement::forward(float speed){
