@@ -59,18 +59,17 @@ bool leftClawBlock = 0;
 bool rightClawBlock = 0;
 int nextBay = 0;
 int curState = 0;
+side curClaw;
+
+
 void loop() {
     sonarLeft.update();
     sonarRight.update();
     irLeft.updateIR();
-    //Serial.print("LEFTSONAR ");Serial.println(sonarLeft.getDistance());
+    irRight.updateIR();
+    Serial.print("LEFTSONAR ");Serial.println(sonarLeft.getDistance());
+    Serial.print("RIGHTIR ");Serial.println(irRight.getIR());
     Serial.print("LEFTIR ");Serial.println(irLeft.getIR());
-    //float bin= 27.3382*pow((analogRead(LEFT_IR)),.4464);
-        float volt = analogRead(LEFT_IR)*5/1024;
-    float bin =  41.543 * pow((volt + 0.30221),-1.5281);
-
-    //Serial.print("RIGHTIR ");Serial.println(analogRead(RIGHT_IR));
-    //Serial.print("LEFTIR ");Serial.println(bin);
 
     //Serial.print("RIGHT ");Serial.println(sonarRight.getDistance());
     //Serial.print("BACK ");Serial.println(analogRead(RIGHT_BACK_IR));
@@ -97,16 +96,23 @@ void loop() {
         case 96:
             if(blocksPickedUp == 6){
                 blocksPickedUp = 0;
+                nextBay = 0;
                 curState = 200;
-            }           
+            }
+            else
+                curClaw = LEFT;
+             //force it to skip the right claw           
             if(pickUpBlocks(LARGE)){
                 blocksPickedUp += 1;
-                curState++;
+                if(sonarLeft.getDistance()>80)
+                    curState++;
+                else
+                    curState = 98;
             }
         break;
         case 97:
-            if(goToBay(POS_PICK_UP,0,LEFT))
-                curState++;
+            if(move.turnAround())
+                curState = 102;
         break;
         case 98:
             if(move.turn90(LEFT))
@@ -115,6 +121,7 @@ void loop() {
         case 99:
             if(goToBay(POS_SEA,0,RIGHT))
                 curState++;
+        break;
         case 100:
             if(goToWall())
                 curState++;
@@ -137,7 +144,7 @@ void loop() {
         break;
 
         case 104:
-            if(goToBay(POS_RAIL,11,RIGHT))
+            if(goToBay(POS_RAIL,7,RIGHT))
                 curState++;
         break;
 
@@ -159,15 +166,52 @@ void loop() {
         break;
         case 200:
             if(blocksPickedUp == 6)
-                curState = 200;           
-            if(pickUpBlocks(MED))
-                curState++;            
+                curState = 666;           
+            if(pickUpBlocks(MED)){
+                blocksPickedUp += 2;
+                curState = 201;   
+            }         
+        break;
+        case 201:
+            if(goToBay(POS_PICK_UP,0,LEFT))
+                curState++;
+        break;
+        case 202:
+            if(move.turn90(LEFT))
+                curState++;
+        break;
+        case 203:
+            if(goToBay(POS_SEA,nextBay,LEFT))
+                curState++;
+        break;
+        case 204:
+            if(move.dropClaw(LEFT)){
+                curState++;
+                nextBay++;
+            }
+        break;
+        case 205:
+            if(goToBay(POS_SEA,nextBay,RIGHT))
+                curState++;
+        break;
+        case 206:
+            if(move.dropClaw(RIGHT)){
+                curState++;
+                nextBay++;
+            }
+        break;
+        case 207:
+            if(goToBay(POS_SEA,2,RIGHT)){
+                curState++;
+            }
+        break;
+        case 208:
+            if(move.turn90(RIGHT)){
+                curState = 200;
+            }
         break;
         case 666:
-          if(digitalRead(BUMPER_L) && digitalRead(BUMPER_R)){
-  		        curState = 99;
-                delay(1000);
-  	         }
+            move.stop();
         break;
     }
 
@@ -176,14 +220,14 @@ void loop() {
 }
 
 bool pickUpBlocks(bSize size){
-    static side curClaw = LEFT;
     static int state = 0;
     switch(state){
     case 0:
-        if(goToWall())
+        if(goToWall()){
             move.slideWall(RIGHT);
-        if(checkIR(curClaw,size)){
-            state++;
+            if(checkIR(curClaw,size)){
+                state++;
+            }
         }
     break;
     case 1:
@@ -191,13 +235,12 @@ bool pickUpBlocks(bSize size){
         if(move.pickupClaw(curClaw)){
             state = 0;
             if(curClaw==LEFT){
-                curClaw==RIGHT;
+                curClaw = RIGHT;
+                return true;
             }
             else{
                 curClaw = LEFT;
-                return true;
             }
-            return true;
         }
     }
     return false;
@@ -207,15 +250,15 @@ bool checkIR(side s, bSize sizee){
     int frontPin;
     int backPin;
     if(s == LEFT){
+        frontPin = LEFT_FOR_IR;
+        backPin = LEFT_BACK_IR;
+    }
+    else {
         frontPin = RIGHT_FOR_IR;
         backPin = RIGHT_BACK_IR;
     }
-    else {
-        frontPin = 0;
-        backPin = 0;
-    }
     if(sizee == MED){
-        if(analogRead(backPin)>IR_BLOCK_THRES)
+        if(analogRead(backPin)>IR_BLOCK_THRES+150)
             return true;
     }
     else if(sizee == LARGE){

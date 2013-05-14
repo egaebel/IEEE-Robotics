@@ -6,6 +6,7 @@ extern cam leftCam;
 extern Sonar sonarRight;
 extern Sonar sonarLeft;
 extern IRAverager irLeft;
+extern IRAverager irRight;
 
 void updateBayBool(Block * blocks, int size, bool * done) {
 
@@ -88,37 +89,50 @@ bool goToBay(bPosition bay, int nBay, side clawSide) {
 	if(goToWall()){
 		
 		Sonar *tempSonar;
+		side sideRef;
 
-		int dist = getBayDist(bay,nBay,clawSide);
 
-		if(bay==POS_SEA || bay == POS_PICK_UP || bay==POS_RAIL)
+		if(bay==POS_SEA || bay == POS_PICK_UP || bay==POS_RAIL){
+			sideRef = LEFT;
 			tempSonar = &sonarLeft;
-		else
+		}
+		else{
+			sideRef = RIGHT;
 			tempSonar = &sonarRight;
+		}
+
 		int curDist = tempSonar->getDistance();
 
 		if(bay==POS_PICK_UP){
-			if(analogRead(LEFT_IR)>295)
-				curDist = 20;
+			//if(analogRead(LEFT_IR)>295)
+				//curDist = 20;
+			curDist = irLeft.getIR();
 		}
+		
+		else if(bay==POS_RAIL){
+			if(irRight.getIR()<75){
+				//curDist = irRight.getIR();
+				//sideRef = RIGHT;
+				curDist = 999;
+			}
+		}
+		
+		int dist = getBayDist(bay,nBay,clawSide,sideRef);
 
 		if(curDist > dist){
-			if(bay == POS_SEA || bay == POS_PICK_UP || bay==POS_RAIL){
+
+			if(sideRef == LEFT)
 				move.slideWall(LEFT);
-			}
-			else {
+			else
 				move.slideWall(RIGHT);
-			}
 			return false;
 		}
 		else if(curDist < dist){
-			if(bay == POS_SEA || bay == POS_PICK_UP || bay==POS_RAIL) {
-
+			if(sideRef == LEFT)
 				move.slideWall(RIGHT);
-			}
-			else {
+			else
 				move.slideWall(LEFT);
-			}
+			
 			return false;
 		}
 		else{
@@ -129,7 +143,7 @@ bool goToBay(bPosition bay, int nBay, side clawSide) {
 
 }
 
-int getBayDist(bPosition bay, int nBay, side clawSide) {
+int getBayDist(bPosition bay, int nBay, side clawSide, side refSide) {
 	int dist;
 	int clawAddition = 0;
 	if(clawSide == LEFT)
@@ -137,14 +151,19 @@ int getBayDist(bPosition bay, int nBay, side clawSide) {
 
 	switch(bay){
 		case POS_PICK_UP:
-			dist = 21 + (nBay*7) - clawAddition;
+			if(refSide==LEFT)
+				dist = 24 + (nBay*7) + clawAddition;
 			break;
 		case POS_RAIL:
 			//dist = 142 - (nBay*7) + clawAddition;
-			dist = 73 + (nBay*7) - clawAddition;
+			if(refSide==LEFT)
+				dist = 68 + (nBay*7) + clawAddition;
+			else
+				dist = 140 - (nBay*7) - clawAddition; //TODO: 170 prolly not good enough
 			break;
 		case POS_SEA:
-			dist =  37 + (nBay*7) - clawAddition;
+			if(refSide==LEFT)
+				dist =  33 + (nBay*7) + clawAddition;
 			break;
 	}
 	

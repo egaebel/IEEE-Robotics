@@ -47,7 +47,7 @@ bool Movement::turn90(side s){
     switch( state ){
         case 0: //Setup
         {
-        	if(backwardForDuration(0.1,100)){
+        	if(backwardForDuration(0.1,400)){
 				state++;
 				stop();
 				delay(300);
@@ -82,8 +82,10 @@ bool Movement::turnAround(side s) {
     switch( state ){
         case 0: //Setup
         {
-        	if(backwardForDuration(0.1,100)){
+        	if(backwardForDuration(0.1,800)){
         		state++;
+        		stop();
+				delay(300);
         		timer.start();
         	}
 
@@ -92,9 +94,9 @@ bool Movement::turnAround(side s) {
         case 1: //Run
         {
         	if(s == LEFT){
-                turnLeft(.1);
+                turnLeft(.08);
             }else{
-                turnRight(.1);
+                turnRight(.08);
             }
             if( timer.isDone() ){
                 stop();

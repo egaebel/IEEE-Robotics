@@ -15,5 +15,5 @@ bool goToWall();
 bool centerBay(side strafeDir, bPosition pos ,side );
 Block* getZoneByPos(bPosition pos, Block * seaZone, Block * railZone, Block * loadingZone);
 bool goToBay(bPosition, int nBay, side clawSide);
-int getBayDist(bPosition,int,side);
+int getBayDist(bPosition,int,side,side s = LEFT);
 #endif
