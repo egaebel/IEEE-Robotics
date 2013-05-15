@@ -99,8 +99,8 @@ void cam::getTrackingData(bColour colour){
     curColour = colour;
   }
   cmuCam->getTypeTDataPacket(&tData); // Get a tracking packet
-  Serial.print("pixels");Serial.println(tData.pixels);
-  Serial.print("confidence");Serial.println(tData.confidence);
+  //Serial.print("pixels");Serial.println(tData.pixels);
+  //Serial.print("confidence");Serial.println(tData.confidence);
 }
 void cam::getTrackingData(){
   cmuCam->getTypeTDataPacket(&tData);

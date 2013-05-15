@@ -53,7 +53,7 @@ class cam{
 		void setWindow(bPosition pos);
         int cmToPx(float cm);
 		CMUcam4* cmuCam;
-		CMUcam4_tracking_data_t tData; //stands for Travis Data
+		CMUcam4_tracking_data_t tData; //stands for Travis Data -- NO IT DOES NOT
 };
 
 #endif
