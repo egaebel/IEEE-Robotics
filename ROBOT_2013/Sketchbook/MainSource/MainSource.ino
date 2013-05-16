@@ -298,7 +298,7 @@ bool pickUpBlocks(bSize size){
                 return true;
             }
             else{
-                state = 2;
+                state = 0;
                 curClaw = LEFT;
             }
         }
@@ -342,7 +342,7 @@ int getBayNum(bColour col,bPosition pos){
 
     for(int i = 0;i<6;i++){
         if(ptr[i]==col){
-            //egads theres a block already there! lets find an empty spot
+            /*//egads theres a block already there! lets find an empty spot
             if(ptrb[i]==1){
                 for(int j =0;j<6;j++){
                     if(ptrb[j]==0){
@@ -351,10 +351,10 @@ int getBayNum(bColour col,bPosition pos){
                     }
                 }
             }
-            else{
+            else{*/
                 ptrb[i] = 1;
                 return i;
-            }
+            //}
         }
     }
     return 8;
