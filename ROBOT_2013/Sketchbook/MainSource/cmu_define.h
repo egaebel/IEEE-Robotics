@@ -26,7 +26,7 @@
 #define YELLOW_G_MIN 200
 #define YELLOW_G_MAX 255
 #define YELLOW_B_MIN 150
-#define YELLOW_B_MAX 255
+#define YELLOW_B_MAX 200
 
 #define GREEN_R_MIN 60
 #define GREEN_R_MAX 95
