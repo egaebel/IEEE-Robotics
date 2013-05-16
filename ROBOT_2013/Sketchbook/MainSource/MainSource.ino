@@ -16,6 +16,9 @@
 
 bool checkIR(side,bSize);
 bool pickUpBlocks(bSize);
+int getBayNum(bColour, bPosition);
+
+#define USE_COLOUR 0
 
 
 extern State initState;
@@ -68,6 +71,12 @@ int nextBay = 0;
 int curState = 0;
 side curClaw;
 
+bColour railBlocks[6] = {BLUE,RED,BROWN,YELLOW,GREEN,PURPLE};
+bColour seaBlocks[6] = {PURPLE,GREEN,BROWN,YELLOW,BLUE,RED};
+
+bColour colRight, colLeft;
+
+
 void loop() {
     sonarLeft.update();
     sonarRight.update();
@@ -118,35 +127,30 @@ void loop() {
              //force it to skip the right claw           
             if(pickUpBlocks(LARGE)){
                 blocksPickedUp += 1;
-                if(sonarLeft.getDistance()>80)
-                    curState++;
-                else
-                    curState = 98;
+                curState++;
             }
         break;
         case 97:
             if(move.turnAround())
+            #if USE_COLOUR
+                curState++;
+            #else
                 curState = 102;
+            #endif
         break;
+
         case 98:
-            if(move.turn90(LEFT))
-                curState++;
-        break;
-        case 99:
-            if(goToBay(POS_SEA,0,RIGHT))
-                curState++;
-        break;
-        case 100:
-            if(goToWall())
-                curState++;
-        break;
-        case 101:
-            if(move.turn90(LEFT)){
+            if(goToBay(POS_RAIL,getBayNum(colLeft,POS_RAIL),LEFT)){
                 curState++;
             }
         break;
+        case 99:
+            if(move.dropClaw(LEFT))
+                curState = 104;
+        break;
+
         case 102:
-            if(goToBay(POS_RAIL, nextBay, RIGHT)){
+            if(goToBay(POS_RAIL, nextBay, LEFT)){
                 curState++;
             }
         break;
@@ -238,7 +242,7 @@ bool pickUpBlocks(bSize size){
     switch(state){
     case 0:
         if(goToWall()){
-            move.slideWall(RIGHT);
+            move.slideWall(RIGHT,.05);
             if(checkIR(curClaw,size)){
                 state++;
             }
@@ -246,13 +250,24 @@ bool pickUpBlocks(bSize size){
     break;
     case 1:
         move.stop();
+        #if USE_COLOUR
+            if(curClaw==LEFT)
+                colLeft = leftCam.getBlockColour();
+            else
+                colRight = rightCam.getBlockColour();
+        #endif
+        state++;
+    break;
+    case 2:
+        move.stop();
         if(move.pickupClaw(curClaw)){
-            state = 0;
             if(curClaw==LEFT){
                 curClaw = RIGHT;
+                state = 0;
                 return true;
             }
             else{
+                state = 2;
                 curClaw = LEFT;
             }
         }
@@ -281,3 +296,18 @@ bool checkIR(side s, bSize sizee){
     }
     return false;
 }
+
+int getBayNum(bColour col,bPosition pos){
+    bColour * ptr;
+    if(pos==POS_SEA)
+        ptr = seaBlocks;
+    else
+        ptr = railBlocks;
+    int i=0;
+    for(;i<6;i++){
+        if(ptr[i]==col)
+            return i;
+    }
+    return 0;
+}
+

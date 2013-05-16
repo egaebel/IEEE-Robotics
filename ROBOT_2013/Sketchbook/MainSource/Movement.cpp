@@ -12,29 +12,12 @@ void Movement::init(){
     
     rightClawMotor.attach(RCLAW_SERVO);
     leftClawMotor.attach(LCLAW_SERVO);
-    //leftClawMotor.write(180);
-    //rightClawMotor.write(0);
 
     rightExtendMotor.attach(RCLAW_EXTEND_SERVO);
     leftExtendMotor.attach(LCLAW_EXTEND_SERVO);
     rightExtendMotor.write(EXTEND_R_ZERO);
     leftExtendMotor.write(EXTEND_L_ZERO);
 
-    //topMotor.attach(3);
-    //leftTrebMotor.attach(TREB_LEFT_SERVO);
-    //rightTrebMotor.attach(TREB_RIGHT_SERVO);
-    
-    //leftClawMotor.write(180);
-    //rightClawMotor.write(0);
-
-    //topMotor.attach(3);
-    //leftTrebMotor.attach(TREB_LEFT_SERVO);
-    //rightTrebMotor.attach(TREB_RIGHT_SERVO);
-    //rightExtendMotor.write(90);
-    //leftExtendMotor.write(90);
-    //leftExtendMotor.write(90);
-    //leftTrebMotor.write(0);
-    //rightTrebMotor.write(180);
     stop();
     Serial.println("MOVEMENT INITED");
 }
@@ -47,7 +30,7 @@ bool Movement::turn90(side s){
     switch( state ){
         case 0: //Setup
         {
-        	if(backwardForDuration(0.1,400)){
+        	if(backwardForDuration(0.1,600)){
 				state++;
 				stop();
 				delay(300);
@@ -82,7 +65,7 @@ bool Movement::turnAround(side s) {
     switch( state ){
         case 0: //Setup
         {
-        	if(backwardForDuration(0.1,800)){
+        	if(backwardForDuration(0.1,900)){
         		state++;
         		stop();
 				delay(300);
@@ -121,7 +104,7 @@ bool Movement::dropClaw(side s) {
 			}
 			break;
 		case 1:
-			if (openClaw(s)) {
+			if (openClaw(s,-5)) {
 				zeState++;
 			}
 			break;
@@ -147,7 +130,7 @@ bool Movement::pickupClaw(side s) {
 	static int switchInt = 0;
     switch(switchInt){
         case 0:
-            if(openClaw(s))
+            if(openClaw(s,20))
                 switchInt++;
         break;
         case 1:
@@ -168,7 +151,7 @@ bool Movement::pickupClaw(side s) {
 	return false;
 }
 
-bool Movement::openClaw(side s) {
+bool Movement::openClaw(side s, int width) {
 
 	static Timer timer(OPEN_CLAW_TIME);
 
@@ -180,9 +163,9 @@ bool Movement::openClaw(side s) {
 	}
 	else {
 		if (s == RIGHT)
-			getClawMotor(s)->write(118);
+			getClawMotor(s)->write(118 + width);//118
 		else
-			getClawMotor(s)->write(62);	
+			getClawMotor(s)->write(62 - width);	//62
 		return false;
 	}
 }
@@ -200,9 +183,9 @@ bool Movement::closeClaw(side s) {
 	}
 	else {
 		if (s == RIGHT)
-			getClawMotor(s)->write(70);
+			getClawMotor(s)->write(65);
 		else
-			getClawMotor(s)->write(110);	
+			getClawMotor(s)->write(115);	
 
 		return false;
 	}
@@ -419,17 +402,21 @@ void Movement::setSpeed(Servo motor, float speed, bool inverted){
 	motor.write(speed); //set speed
 }
 
-void Movement::slideWall(side s){
+void Movement::slideWall(side s, float speed){
 	switch(s){
 		case RIGHT:
-			setSpeed(.25,0,-.05,-.05);
+			setSpeed(.25,0,-1*speed,-1*speed);
 			break;
 		case LEFT:
-    		setSpeed(0,.25,.05,.05);
+    		setSpeed(0,.25,speed,speed);
 			break;
 		default:
 			break;
 	}
+}
+
+void Movement::slideWall(side s){
+	slideWall(s,.2);
 }
 
 

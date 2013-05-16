@@ -30,6 +30,7 @@ class Movement {
 	public:
 		void init();
 		void slideWall(side s);
+		void slideWall(side s, float speed);
 		void slideLeft(float speed);
 		void slideRight(float speed);
 		void turnLeft(float speed);
@@ -43,7 +44,7 @@ class Movement {
 		bool dropClaw(side s);
 		bool pickupClaw(side s);
 
-		bool openClaw(side s);
+		bool openClaw(side s,int width = 0);
 		bool closeClaw(side s);
 		bool extendClaw(side s);
 		bool retractClaw(side s);
