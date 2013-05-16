@@ -110,7 +110,7 @@ bool goToBay(bPosition bay, int nBay, side clawSide) {
 		}
 		
 		else if(bay==POS_RAIL){
-			if(irRight.getIR()<75){
+			if(irRight.getIR()<40){
 				//curDist = irRight.getIR();
 				//sideRef = RIGHT;
 				curDist = 999;
@@ -140,12 +140,13 @@ bool goToBay(bPosition bay, int nBay, side clawSide) {
 		}
 		int diff;
 		diff = curDist - dist;
-		if(diff<0)
+		if(diff<0){
 			diff = diff *-1;
-
-		if(diff<10)
-			move.slideWall(moveDir,.05);
-		if(diff<20)
+                        move.slideWall(moveDir,.7);
+                }
+		else if(diff<20)
+			move.slideWall(moveDir,.03);
+		else if(diff<30)
 			move.slideWall(moveDir,.1);
 		else
 			move.slideWall(moveDir,.2);
@@ -168,13 +169,13 @@ int getBayDist(bPosition bay, int nBay, side clawSide, side refSide) {
 		case POS_RAIL:
 			//dist = 142 - (nBay*7) + clawAddition;
 			if(refSide==LEFT)
-				dist = 64 + (nBay*8) + clawAddition;
+				dist = 63 + ((float)nBay * 7.5) + clawAddition;
 			else
-				dist = 140 - (nBay*8) - clawAddition; //TODO: 170 prolly not good enough
+				dist = 140 - ((float)nBay * 7.5)- clawAddition; //TODO: 170 prolly not good enough
 			break;
 		case POS_SEA:
 			if(refSide==LEFT)
-				dist =  33 + (nBay*8) + clawAddition;
+				dist =  33 + ((nBay <= 3) ? (nBay * 8) : (nBay*8)-2) + clawAddition;
 			break;
 	}
 	

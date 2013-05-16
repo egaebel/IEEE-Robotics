@@ -29,13 +29,11 @@
 #define YELLOW_B_MAX 200
 
 #define GREEN_R_MIN 60
-#define GREEN_R_MAX 95
+#define GREEN_R_MAX 75//95
 #define GREEN_G_MIN 100
 #define GREEN_G_MAX 180
 #define GREEN_B_MIN 80
 #define GREEN_B_MAX 170
-
-
 
 #define BROWN_R_MIN 60
 #define BROWN_R_MAX 95

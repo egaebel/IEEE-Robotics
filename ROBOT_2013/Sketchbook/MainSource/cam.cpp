@@ -98,10 +98,10 @@ void cam::getTrackingData(bColour colour){
     trackColour(colour);
     curColour = colour;
   }
+
   cmuCam->getTypeTDataPacket(&tData); // Get a tracking packet
-  Serial.print("pixels");Serial.println(tData.pixels);
-  Serial.print("confidence");Serial.println(tData.confidence);
 }
+
 void cam::getTrackingData(){
   cmuCam->getTypeTDataPacket(&tData);
 }
@@ -128,23 +128,44 @@ void cam::setWindow(bPosition pos){
 }
 
 bColour cam::getBlockColour(){
-  return getColour(BLOCK_PIXEL_DENSITY, BLOCK_CONFIDENCE);
+  return getColourWrapper(BLOCK_PIXEL_DENSITY);
 }
 
 bColour cam::getBayColour(){
-  return getColour(BAY_PIXEL_DENSITY, BAY_CONFIDENCE);
+  return getColourWrapper(BAY_PIXEL_DENSITY);
+}
+
+bColour cam::getColourWrapper(int pixelDense) {
+
+  getColour(pixelDense, 0);
+  return getColour(pixelDense, 0);
 }
 
 bColour cam::getColour(int pixelDense, int pixelConf){
+  
+  memset(&tData, '\0', sizeof(tData));
   int i;
+  int highest = -1;
+  int highestIndex = -1;
+  int temp;
   //loop through all the colours
   for(i = ((int) WHITE) + 1;i < (int)BLACK; i++){
+
     getTrackingData((bColour) i);
-    //if we see enough pixels of that colour, we found the block
-    if(tData.pixels > pixelDense){// && tData.confidence > pixelConf) {
-      return (bColour) i;
+    temp = tData.pixels;
+    if(temp > highest) {// && tData.confidence > pixelConf) {
+      highest = temp;  
+      highestIndex = i;
     }
+
+    //if we see enough pixels of that colour, we found the block
+    Serial.print("enum is:: "); Serial.print(i); Serial.print("\n");
+    Serial.print("Pixels:: "); Serial.print(temp); Serial.print("\n");
   }
+Serial.print("highest is:: "); Serial.print(highest);
+Serial.print("\n");
+Serial.print("pixelDense"); Serial.println(pixelDense);
+  return (bColour) highestIndex;
   return BROWN; //devault to brown cause why not
 }
 

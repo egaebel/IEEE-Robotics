@@ -44,7 +44,7 @@ void handleSonarLeft(){
 //void handleSonarRight(){
 //  sonarRight.setDataReady(true);
 //}
-bColour TEST_COLOR = YELLOW;
+bColour TEST_COLOR = GREEN;
 bColour RETURN_COLOR;
 void setup() {
     Serial.begin(9600);
@@ -59,6 +59,7 @@ void setup() {
     //TODO:
     rightCam.init();
     leftCam.init();
+    delay(200);
 
     Serial.println("SETUP COMPLETED!!");
 }
@@ -76,14 +77,12 @@ int railBlocksExist[6] = {0,0,0,0,0,0};
 int seaBlocksExist[6] = {0,0,0,0,0,0};
 
 bColour colRight, colLeft;
-
-
 void loop() {
     sonarLeft.update();
     //sonarRight.update();
     irLeft.updateIR();
     irRight.updateIR();
-    Serial.print("LEFTSONAR ");Serial.println(sonarLeft.getDistance());
+    //Serial.print("LEFTSONAR ");Serial.println(sonarLeft.getDistance());
     //Serial.print("RIGHTIR ");Serial.println(irRight.getIR());
     //Serial.print("LEFTIR ");Serial.println(irLeft.getIR());
 
@@ -91,15 +90,21 @@ void loop() {
     //Serial.print("BACK ");Serial.println(analogRead(RIGHT_BACK_IR));
     //Serial.print("FRONT ");Serial.println(analogRead(RIGHT_FOR_IR));
 #if DEBUG_FSM == 0
-    Serial.print("STUFF\n");
+    //Serial.print("STUFF\n");
 
-    rightCam.getTrackingData(TEST_COLOR);
-    leftCam.getTrackingData(TEST_COLOR);
-    //RETURN_COLOR = rightCam.getBlockColour(); 
-    if (RETURN_COLOR == TEST_COLOR)
-        Serial.print("YOU DID IT!\n");
-    else
-        Serial.print("YOU PHAILED!\n");
+    //rightCam.getTrackingData(TEST_COLOR);
+    //leftCam.getTrackingData(TEST_COLOR);
+    if (digitalRead(52) || digitalRead(53)) {
+        RETURN_COLOR = leftCam.getBlockColour();
+        leftCam.getTrackingData(RETURN_COLOR);
+        Serial.print("RETURN COLOR IS::");
+        Serial.print(RETURN_COLOR);
+        Serial.print("\n");
+    }
+    //if (RETURN_COLOR == TEST_COLOR)
+        //Serial.print("YOU DID IT!\n");
+    //else
+        //Serial.print("YOU PHAILED!\n");
 #else
     switch(curState){
         case 0:
@@ -355,6 +360,33 @@ int getBayNum(bColour col,bPosition pos){
                 ptrb[i] = 1;
                 return i;
             //}
+        }
+        else if (col == BLUE) {
+
+            return 0;
+        }
+        else if (col == RED) {
+
+            return 1;
+        }
+        else if (col == BROWN) {
+
+            return 2;
+        }
+        else if (col == YELLOW) {
+
+            return 3;
+        }
+        else if (col == GREEN) {
+
+            return 4;
+        }
+        else if (col == PURPLE) {
+
+            return 5;
+        }
+        else {
+            return 12;
         }
     }
     return 8;

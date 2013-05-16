@@ -7,7 +7,7 @@
 
 //Turn Timing
 #define TURN_90_R_TIME 1100
-#define TURN_90_L_TIME 1100
+#define TURN_90_L_TIME 1200
 
 #define TURN_180_TIME 2*TURN_90_L_TIME
 
@@ -16,7 +16,7 @@
 #define CLOSE_CLAW_TIME 600
 
 #define EXTEND_CLAW_TIME 2500
-#define EXTEND_CLAW_TIME_L 1500
+#define EXTEND_CLAW_TIME_L 2500
 #define RETRACT_CLAW_TIME 2000
 
 #define DROP_CLAW_TIME 3000
@@ -24,7 +24,7 @@
 //End Claw timings---------------
 
 //movement timing
-#define WALL_BACKUP_TIME 500
+#define WALL_BACKUP_TIME 600
 
 class Movement {
 	public:
