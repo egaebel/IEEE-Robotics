@@ -41,7 +41,7 @@ void handleSonarLeft(){
 //void handleSonarRight(){
 //  sonarRight.setDataReady(true);
 //}
-bColour TEST_COLOR = YELLOW;
+bColour TEST_COLOR = RED;
 bColour RETURN_COLOR;
 void setup() {
     Serial.begin(9600);
@@ -56,6 +56,8 @@ void setup() {
     //TODO:
     rightCam.init();
     leftCam.init();
+
+    rightCam.setReadingBlock(false);
 
     Serial.println("SETUP COMPLETED!!");
 }
@@ -80,6 +82,7 @@ void loop() {
     //Serial.print("FRONT ");Serial.println(analogRead(RIGHT_FOR_IR));
 #if DEBUG_FSM == 0
     Serial.print("STUFF\n");
+
     rightCam.getTrackingData(TEST_COLOR);
     leftCam.getTrackingData(TEST_COLOR);
     //RETURN_COLOR = rightCam.getBlockColour(); 
