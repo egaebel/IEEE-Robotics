@@ -72,15 +72,18 @@ side curClaw;
 bColour railBlocks[6] = {BLUE,RED,BROWN,YELLOW,GREEN,PURPLE};
 bColour seaBlocks[6] = {PURPLE,GREEN,BROWN,YELLOW,BLUE,RED};
 
+int railBlocksExist[6] = {0,0,0,0,0,0};
+int seaBlocksExist[6] = {0,0,0,0,0,0};
+
 bColour colRight, colLeft;
 
 
 void loop() {
     sonarLeft.update();
-    sonarRight.update();
+    //sonarRight.update();
     irLeft.updateIR();
     irRight.updateIR();
-    //Serial.print("LEFTSONAR ");Serial.println(sonarLeft.getDistance());
+    Serial.print("LEFTSONAR ");Serial.println(sonarLeft.getDistance());
     //Serial.print("RIGHTIR ");Serial.println(irRight.getIR());
     //Serial.print("LEFTIR ");Serial.println(irLeft.getIR());
 
@@ -193,8 +196,13 @@ void loop() {
                 curState++;
         break;
         case 202:
-            if(move.turn90(LEFT))
-                curState++;
+            if(move.turn90(LEFT)){
+                #if USE_COLOUR
+                    curState = 220;
+                #else
+                    curState++;
+                #endif
+            }
         break;
         case 203:
             if(goToBay(POS_SEA,nextBay,LEFT))
@@ -224,6 +232,27 @@ void loop() {
         case 208:
             if(move.turn90(RIGHT)){
                 curState = 200;
+            }
+        break;
+
+        case 220:
+            if(goToBay(POS_SEA,getBayNum(colLeft,POS_SEA),LEFT)){
+                curState++;
+            }
+        break;
+        case 221:
+            if(move.dropClaw(LEFT)){
+                curState++;
+            }
+        break;
+        case 222:
+            if(goToBay(POS_SEA,getBayNum(colRight,POS_SEA),RIGHT)){
+                curState++;
+            }
+        break;
+        case 223:
+            if(move.dropClaw(RIGHT)){
+                curState =207;
             }
         break;
         case 666:
@@ -301,15 +330,33 @@ bool checkIR(side s, bSize sizee){
 
 int getBayNum(bColour col,bPosition pos){
     bColour * ptr;
-    if(pos==POS_SEA)
+    int * ptrb;
+    if(pos==POS_SEA){
         ptr = seaBlocks;
-    else
-        ptr = railBlocks;
-    int i=0;
-    for(;i<6;i++){
-        if(ptr[i]==col)
-            return i;
+        ptrb = seaBlocksExist;
     }
-    return 0;
+    else{
+        ptr = railBlocks;
+        ptrb = railBlocksExist;
+    }
+
+    for(int i = 0;i<6;i++){
+        if(ptr[i]==col){
+            //egads theres a block already there! lets find an empty spot
+            if(ptrb[i]==1){
+                for(int j =0;j<6;j++){
+                    if(ptrb[j]==0){
+                        ptrb[j] = 1;
+                        return j;
+                    }
+                }
+            }
+            else{
+                ptrb[i] = 1;
+                return i;
+            }
+        }
+    }
+    return 8;
 }
 

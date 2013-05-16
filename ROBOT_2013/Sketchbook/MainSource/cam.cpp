@@ -141,7 +141,7 @@ bColour cam::getColour(int pixelDense, int pixelConf){
   for(i = ((int) WHITE) + 1;i < (int)BLACK; i++){
     getTrackingData((bColour) i);
     //if we see enough pixels of that colour, we found the block
-    if(tData.pixels > pixelDense && tData.confidence > pixelConf) {
+    if(tData.pixels > pixelDense){// && tData.confidence > pixelConf) {
       return (bColour) i;
     }
   }

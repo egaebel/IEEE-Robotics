@@ -148,7 +148,7 @@ bool goToBay(bPosition bay, int nBay, side clawSide) {
 		if(diff<20)
 			move.slideWall(moveDir,.1);
 		else
-			move.slideWall(moveDir,.3);
+			move.slideWall(moveDir,.2);
 		return false;
 	}
 
@@ -168,7 +168,7 @@ int getBayDist(bPosition bay, int nBay, side clawSide, side refSide) {
 		case POS_RAIL:
 			//dist = 142 - (nBay*7) + clawAddition;
 			if(refSide==LEFT)
-				dist = 65 + (nBay*8) + clawAddition;
+				dist = 64 + (nBay*8) + clawAddition;
 			else
 				dist = 140 - (nBay*8) - clawAddition; //TODO: 170 prolly not good enough
 			break;
