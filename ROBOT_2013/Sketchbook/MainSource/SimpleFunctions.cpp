@@ -110,7 +110,7 @@ bool goToBay(bPosition bay, int nBay, side clawSide) {
 		}
 		
 		else if(bay==POS_RAIL){
-			if(irRight.getIR()<40){
+			if(irRight.getIR()<75){
 				//curDist = irRight.getIR();
 				//sideRef = RIGHT;
 				curDist = 999;

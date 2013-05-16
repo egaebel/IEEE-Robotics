@@ -68,7 +68,7 @@ bool leftClawBlock = 0;
 bool rightClawBlock = 0;
 int nextBay = 0;
 int curState = 0;
-side curClaw;
+side curClaw = RIGHT;
 
 bColour railBlocks[6] = {BLUE,RED,BROWN,YELLOW,GREEN,PURPLE};
 bColour seaBlocks[6] = {PURPLE,GREEN,BROWN,YELLOW,BLUE,RED};
@@ -84,7 +84,7 @@ void loop() {
     irRight.updateIR();
     //Serial.print("LEFTSONAR ");Serial.println(sonarLeft.getDistance());
     //Serial.print("RIGHTIR ");Serial.println(irRight.getIR());
-    //Serial.print("LEFTIR ");Serial.println(irLeft.getIR());
+    Serial.print("LEFTIR ");Serial.println(irLeft.getIR());
 
     //Serial.print("RIGHT ");Serial.println(sonarRight.getDistance());
     //Serial.print("BACK ");Serial.println(analogRead(RIGHT_BACK_IR));
@@ -109,7 +109,8 @@ void loop() {
     switch(curState){
         case 0:
             if(digitalRead(BUMPER_L)&&digitalRead(BUMPER_R)){
-                curState = 95;
+                //curState = 95;
+                curState = 200;
             }
             break;
         //case 98:
@@ -360,33 +361,6 @@ int getBayNum(bColour col,bPosition pos){
                 ptrb[i] = 1;
                 return i;
             //}
-        }
-        else if (col == BLUE) {
-
-            return 0;
-        }
-        else if (col == RED) {
-
-            return 1;
-        }
-        else if (col == BROWN) {
-
-            return 2;
-        }
-        else if (col == YELLOW) {
-
-            return 3;
-        }
-        else if (col == GREEN) {
-
-            return 4;
-        }
-        else if (col == PURPLE) {
-
-            return 5;
-        }
-        else {
-            return 12;
         }
     }
     return 8;
