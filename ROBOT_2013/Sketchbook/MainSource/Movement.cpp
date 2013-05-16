@@ -183,9 +183,9 @@ bool Movement::closeClaw(side s) {
 	}
 	else {
 		if (s == RIGHT)
-			getClawMotor(s)->write(65);
+			getClawMotor(s)->write(60);
 		else
-			getClawMotor(s)->write(115);	
+			getClawMotor(s)->write(120);	
 
 		return false;
 	}

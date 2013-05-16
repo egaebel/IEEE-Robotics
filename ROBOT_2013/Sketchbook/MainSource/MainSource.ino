@@ -12,7 +12,7 @@
 
 #include "cam.h"
 
-#define DEBUG_FSM 0
+#define DEBUG_FSM 1
 
 bool checkIR(side,bSize);
 bool pickUpBlocks(bSize);
