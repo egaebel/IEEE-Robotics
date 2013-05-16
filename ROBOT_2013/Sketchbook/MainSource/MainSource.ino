@@ -12,13 +12,13 @@
 
 #include "cam.h"
 
-#define DEBUG_FSM 0
+#define DEBUG_FSM 1
 
 bool checkIR(side,bSize);
 bool pickUpBlocks(bSize);
 int getBayNum(bColour, bPosition);
 
-#define USE_COLOUR 0
+#define USE_COLOUR 1
 
 
 extern State initState;
@@ -249,10 +249,14 @@ bool pickUpBlocks(bSize size){
     case 1:
         move.stop();
         #if USE_COLOUR
-            if(curClaw==LEFT)
+            if(curClaw==LEFT){
+                //leftCam.setWindow(POS_PICK_UP);
                 colLeft = leftCam.getBlockColour();
-            else
+            }
+            else{
+                //rightCam.setWindow(POS_PICK_UP);
                 colRight = rightCam.getBlockColour();
+            }
         #endif
         state++;
     break;

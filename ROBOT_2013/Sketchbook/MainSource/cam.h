@@ -40,7 +40,8 @@ class cam{
 		bSize getBlockSize(bColour colour);
 		void getTrackingData(bColour colour);
 		void getTrackingData();
-
+		void setWindow(bPosition pos);
+		
 	private:
 		int trackX1;
 		int trackX2;
@@ -50,7 +51,7 @@ class cam{
 		bColour curColour;
 		bPosition curPos;
 		void trackColour(bColour colour);
-		void setWindow(bPosition pos);
+
         int cmToPx(float cm);
 		CMUcam4* cmuCam;
 		CMUcam4_tracking_data_t tData; //stands for Travis Data -- NO IT DOES NOT
