@@ -119,26 +119,37 @@ bool goToBay(bPosition bay, int nBay, side clawSide) {
 		
 		int dist = getBayDist(bay,nBay,clawSide,sideRef);
 
+
+		side moveDir;
 		if(curDist > dist){
 
 			if(sideRef == LEFT)
-				move.slideWall(LEFT);
+				moveDir= LEFT;
 			else
-				move.slideWall(RIGHT);
-			return false;
+				moveDir = RIGHT;
 		}
 		else if(curDist < dist){
 			if(sideRef == LEFT)
-				move.slideWall(RIGHT);
+				moveDir = RIGHT;
 			else
-				move.slideWall(LEFT);
-			
-			return false;
+				moveDir = LEFT;
 		}
 		else{
 			move.stop();
 			return true;
 		}
+		int diff;
+		diff = curDist - dist;
+		if(diff<0)
+			diff = diff *-1;
+
+		if(diff<10)
+			move.slideWall(moveDir,.05);
+		if(diff<20)
+			move.slideWall(moveDir,.1);
+		else
+			move.slideWall(moveDir,.3);
+		return false;
 	}
 
 }
@@ -152,18 +163,18 @@ int getBayDist(bPosition bay, int nBay, side clawSide, side refSide) {
 	switch(bay){
 		case POS_PICK_UP:
 			if(refSide==LEFT)
-				dist = 24 + (nBay*7) + clawAddition;
+				dist = 24 + (nBay*8) + clawAddition;
 			break;
 		case POS_RAIL:
 			//dist = 142 - (nBay*7) + clawAddition;
 			if(refSide==LEFT)
-				dist = 68 + (nBay*7) + clawAddition;
+				dist = 65 + (nBay*8) + clawAddition;
 			else
-				dist = 140 - (nBay*7) - clawAddition; //TODO: 170 prolly not good enough
+				dist = 140 - (nBay*8) - clawAddition; //TODO: 170 prolly not good enough
 			break;
 		case POS_SEA:
 			if(refSide==LEFT)
-				dist =  33 + (nBay*7) + clawAddition;
+				dist =  33 + (nBay*8) + clawAddition;
 			break;
 	}
 	
