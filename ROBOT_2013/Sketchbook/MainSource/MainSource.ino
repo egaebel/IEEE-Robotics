@@ -44,7 +44,7 @@ void handleSonarLeft(){
 //void handleSonarRight(){
 //  sonarRight.setDataReady(true);
 //}
-bColour TEST_COLOR = RED;
+bColour TEST_COLOR = YELLOW;
 bColour RETURN_COLOR;
 void setup() {
     Serial.begin(9600);
@@ -59,8 +59,6 @@ void setup() {
     //TODO:
     rightCam.init();
     leftCam.init();
-
-    rightCam.setReadingBlock(false);
 
     Serial.println("SETUP COMPLETED!!");
 }

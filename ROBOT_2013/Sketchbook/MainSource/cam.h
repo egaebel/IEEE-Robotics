@@ -46,7 +46,7 @@ class cam{
 		int trackX2;
 		int trackY1;
 		int trackY2;
-		bColour getColour(int pixels);
+		bColour getColour(int pixels, int pixelConf);
 		bColour curColour;
 		bPosition curPos;
 		void trackColour(bColour colour);

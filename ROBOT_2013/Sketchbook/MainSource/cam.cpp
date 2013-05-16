@@ -99,8 +99,8 @@ void cam::getTrackingData(bColour colour){
     curColour = colour;
   }
   cmuCam->getTypeTDataPacket(&tData); // Get a tracking packet
-  //Serial.print("pixels");Serial.println(tData.pixels);
-  //Serial.print("confidence");Serial.println(tData.confidence);
+  Serial.print("pixels");Serial.println(tData.pixels);
+  Serial.print("confidence");Serial.println(tData.confidence);
 }
 void cam::getTrackingData(){
   cmuCam->getTypeTDataPacket(&tData);
@@ -128,21 +128,21 @@ void cam::setWindow(bPosition pos){
 }
 
 bColour cam::getBlockColour(){
-  return getColour(30);
+  return getColour(BLOCK_PIXEL_DENSITY, BLOCK_CONFIDENCE);
 }
 
 bColour cam::getBayColour(){
-  return getColour(20);
+  return getColour(BAY_PIXEL_DENSITY, BAY_CONFIDENCE);
 }
 
-bColour cam::getColour(int pixelDense){
+bColour cam::getColour(int pixelDense, int pixelConf){
   int i;
   //loop through all the colours
-  for(i=((int)WHITE)+1;i<(int)BLACK;i++){
-    getTrackingData((bColour)i);
+  for(i = ((int) WHITE) + 1;i < (int)BLACK; i++){
+    getTrackingData((bColour) i);
     //if we see enough pixels of that colour, we found the block
-    if(tData.pixels>pixelDense){
-      return (bColour)i;
+    if(tData.pixels > pixelDense && tData.confidence > pixelConf) {
+      return (bColour) i;
     }
   }
   return BROWN; //devault to brown cause why not

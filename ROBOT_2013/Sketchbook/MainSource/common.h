@@ -19,6 +19,11 @@
 #define RAIL_BLOCK 10
 #define BLOCK_WIDTH 4
 
+#define BLOCK_PIXEL_DENSITY 47
+#define BLOCK_CONFIDENCE 115
+
+#define BAY_PIXEL_DENSITY 30
+#define BAY_CONFIDENCE 30
 /*
  * This is where all globals and constants should be defined
 */
