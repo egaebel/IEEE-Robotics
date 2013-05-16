@@ -8,7 +8,11 @@
 #include "common.h"
 #include "RSonar.h"
 #include "math.h"
-#define DEBUG_FSM 1
+
+
+#include "cam.h"
+
+#define DEBUG_FSM 0
 
 bool checkIR(side,bSize);
 bool pickUpBlocks(bSize);
@@ -40,7 +44,8 @@ void handleSonarLeft(){
 //void handleSonarRight(){
 //  sonarRight.setDataReady(true);
 //}
-
+bColour TEST_COLOR = YELLOW;
+bColour RETURN_COLOR;
 void setup() {
     Serial.begin(9600);
     Serial.println("serial started");
@@ -51,9 +56,9 @@ void setup() {
     Wire.begin();
     delay(200);
     move.init();
-
     //TODO:
-    //rightCam.init();
+    rightCam.init();
+    leftCam.init();
 
     Serial.println("SETUP COMPLETED!!");
 }
@@ -75,15 +80,22 @@ void loop() {
     sonarRight.update();
     irLeft.updateIR();
     irRight.updateIR();
-    Serial.print("LEFTSONAR ");Serial.println(sonarLeft.getDistance());
-    Serial.print("RIGHTIR ");Serial.println(irRight.getIR());
-    Serial.print("LEFTIR ");Serial.println(irLeft.getIR());
+    //Serial.print("LEFTSONAR ");Serial.println(sonarLeft.getDistance());
+    //Serial.print("RIGHTIR ");Serial.println(irRight.getIR());
+    //Serial.print("LEFTIR ");Serial.println(irLeft.getIR());
 
     //Serial.print("RIGHT ");Serial.println(sonarRight.getDistance());
     //Serial.print("BACK ");Serial.println(analogRead(RIGHT_BACK_IR));
     //Serial.print("FRONT ");Serial.println(analogRead(RIGHT_FOR_IR));
 #if DEBUG_FSM == 0
-    fsm.update();
+    Serial.print("STUFF\n");
+    rightCam.getTrackingData(TEST_COLOR);
+    leftCam.getTrackingData(TEST_COLOR);
+    //RETURN_COLOR = rightCam.getBlockColour(); 
+    if (RETURN_COLOR == TEST_COLOR)
+        Serial.print("YOU DID IT!\n");
+    else
+        Serial.print("YOU PHAILED!\n");
 #else
     switch(curState){
         case 0:
