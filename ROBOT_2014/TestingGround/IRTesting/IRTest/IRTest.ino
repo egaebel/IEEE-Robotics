@@ -1,7 +1,8 @@
 #include "Arduino.h"
 #include "IRLib.h"
 
-IRAverager ir;
+IRAverager ir(0);
+int val;
 
 void setup() {
   
@@ -11,7 +12,8 @@ void setup() {
 
 void loop() {
 
-    val = Serial.analogRead(0);
+	ir.updateIR();
+    val = ir.getIR();
     Serial.print("The val is:: ");
     Serial.println(val);
 }
