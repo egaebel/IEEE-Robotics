@@ -26,35 +26,28 @@
 #define CONFIDENCE_THRESHOLD 50
 
 
-class cam{
+class Cam{
 
 	public:
-		cam(int pin);
+		Cam(int pin);
 		void init();
 		void initLeft();
-		side inZone(bPosition pos=POS_PICK_UP);
-        bool betweenZones();
-        side locateZone(); 
-		bColour getBlockColour();
-		bColour getBayColour();
-		bSize getBlockSize(bColour colour);
-		void getTrackingData(bColour colour);
+		void getTrackingData(CmuColor color);
 		void getTrackingData();
-		void setWindow(bPosition pos);
+		void setTrackingWindow(int trackX1, int trackY1, int trackX2, int trackY2);
 		
 	private:
 		int trackX1;
 		int trackX2;
 		int trackY1;
 		int trackY2;
-		bColour getColour(int pixels, int pixelConf);
-		bColour getColourWrapper(int pixels);
-		bColour curColour;
-		bPosition curPos;
-		void trackColour(bColour colour);
+		CmuColor getColor(int pixels, int pixelConf);
+		CmuColor getColorWrapper(int pixels);
+		CmuColor curColor;
+		void trackColor(CmuColor color);
 
         int cmToPx(float cm);
-		CMUcam4* cmuCam;
+		CMUcam4 * cmuCam;
 		CMUcam4_tracking_data_t tData; //stands for Travis Data -- NO IT DOES NOT
 };
 
