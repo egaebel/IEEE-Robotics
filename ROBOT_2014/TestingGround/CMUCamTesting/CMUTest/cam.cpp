@@ -7,10 +7,8 @@ Cam::Cam(int pin){
 //Initialize settings in the camera
 //settings may need to be tweaked for our purposes
 void Cam::init(){
-    //Serial.println("cam init CALLED");
+
     cmuCam->begin();/*
-    //Serial.println("begin called in init");
-    cmuCam->monitorOn();
     //Serial.println("monitorOn called in init");*/
     cmuCam->autoGainControl(false);
     //Serial.println("autoGainControl called in init");
