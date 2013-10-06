@@ -23,5 +23,5 @@
 
 //******************other constants
 
-#define CAM_BRIGHTNESS  0
-#define CAM_CONTRAST    0
+#define CAM_BRIGHTNESS  50
+#define CAM_CONTRAST    25

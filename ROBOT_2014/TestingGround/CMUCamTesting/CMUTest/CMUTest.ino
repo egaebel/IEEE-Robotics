@@ -20,7 +20,7 @@ void setup() {
     delay(3000);
     cmuCam.getTrackingData(RED);
     //cmuCam.setTrackingWindow(0, 0, 50000, 50000);
-    //Serial.println("tracking red!");
+    //Serial.println("tracking red");
 }
 
 
