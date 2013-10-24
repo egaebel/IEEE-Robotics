@@ -21,6 +21,7 @@ void setup() {
     cmuCam.getTrackingData(RED);
     //cmuCam.setTrackingWindow(0, 0, 50000, 50000);
     //Serial.println("tracking red");
+    //HEY LOOK I CHANGED THIS THING RIGHT HERE!
 }
 
 
