@@ -14,14 +14,14 @@
 #define BLUE_B_MIN 25
 #define BLUE_B_MAX 255
 
-#define RED_R_MIN 130
-#define RED_R_MAX 270
+#define RED_R_MIN 80
+#define RED_R_MAX 255
 #define RED_G_MIN 0
 #define RED_G_MAX 80
-#define RED_B_MIN 50
-#define RED_B_MAX 100
+#define RED_B_MIN 0
+#define RED_B_MAX 200
 
 //******************other constants
 
-#define CAM_BRIGHTNESS  50
+#define CAM_BRIGHTNESS  0
 #define CAM_CONTRAST    25
