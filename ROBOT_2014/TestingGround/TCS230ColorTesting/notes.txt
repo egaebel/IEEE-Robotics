@@ -1,0 +1,12 @@
+notes for the two ArduinoColorRecognitionDriver libraries
+
+Libraries downloaded from here:
+https://github.com/dalmirdasilva/ArduinoColorRecognitionDriver
+
+There are two different approaches here:
+Using interrupts to increment a variable each time the line rises. Doing it from a while (van be 1 second) .
+Using pulseIn method, collecting a given number of samples and making the average in order to calculate the frequency,
+
+initialize takes as arguments the arduino pin numbers that are connected to the sensor out, S2, and S3 pins. VCC pin is connected to +5V and GND pin is connected to ground. All other pins are not necessary for the sensor to work.
+
+There is a datasheet and there are code examples in the library subfolders.

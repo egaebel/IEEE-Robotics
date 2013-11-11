@@ -19,11 +19,11 @@ void Cam::init(){
     //Serial.println("cameraBrightness called in init");
     cmuCam->cameraContrast(CAM_CONTRAST);
     //Serial.println("camContrast called in init");
-    /*cmuCam->pollMode(1);
+    cmuCam->pollMode(0);
     //Serial.println("pollMode called in init");
 
-  	cmuCam->noiseFilter(NOISE_FILTER);
-    trackX1 = 0;
+    cmuCam->noiseFilter(NOISE_FILTER);
+    /*trackX1 = 0;
     trackX2 = 500;
     trackY1 = 0;
     trackY2 = 500;

@@ -18,9 +18,10 @@ void setup() {
     cmuCam.init();    //start CMUCam4 library to use the other functions
     //Serial.println("Camera inited");
     delay(3000);
-    cmuCam.getTrackingData(RED);
+    cmuCam.getTrackingData(BLUE);
     //cmuCam.setTrackingWindow(0, 0, 50000, 50000);
     //Serial.println("tracking red");
+    //HEY LOOK I CHANGED THIS THING RIGHT HERE!
 }
 
 
