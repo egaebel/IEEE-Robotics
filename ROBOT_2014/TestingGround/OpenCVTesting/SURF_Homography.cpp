@@ -11,6 +11,7 @@
 #include "opencv2/imgproc/imgproc.hpp"
 #include "opencv2/calib3d/calib3d.hpp"
 #include "opencv2/nonfree/nonfree.hpp"
+#include "opencv2/photo/photo.hpp"
 
 using namespace std;
 using namespace cv;
@@ -26,36 +27,77 @@ int main( int argc, char** argv )
   if( argc != 3 )
   { readme(); return -1; }
 
+  Mat img_object = imread( argv[1], CV_LOAD_IMAGE_GRAYSCALE );
+  // Old object filtering code
+/*
   Mat bgr_object = imread( argv[1], CV_LOAD_IMAGE_COLOR );
-  Mat hsv_object, upr_object, lwr_object, img_object;
+
+  // construct an object mask for our hue range
+  Mat hsv_object, upr_object, lwr_object, sum_object, obj_erd, obj_mask;
   cvtColor( bgr_object, hsv_object, CV_BGR2HSV );
   inRange( hsv_object, Scalar( 170, 20, 70 ), Scalar( 179, 255, 255 ), upr_object );
   inRange( hsv_object, Scalar( 0, 20, 70 ), Scalar( 9, 255, 255 ), lwr_object );
-  add( upr_object, lwr_object, img_object );
+  add( upr_object, lwr_object, sum_object );
+   imwrite( "./sum_object.png", sum_object );
+//  blur( sum_object, obj_mask, Size( 5, 5 ) );
+  erode( sum_object, obj_erd, getStructuringElement( MORPH_ELLIPSE, Size ( 3, 3 ) ) );
+  dilate( obj_erd, obj_mask, getStructuringElement( MORPH_ELLIPSE, Size ( 3, 3 ) ) );
+    imwrite( "./obj_mask.png", obj_mask );
 
-  imwrite( "./object_hue.png", img_object );
+  // apply the hue mask and convert to grayscale for feature detection
+  Mat gry_object, eq_object, img_object;
+  cvtColor( bgr_object, gry_object, CV_BGR2GRAY );
+  equalizeHist( gry_object, eq_object );
+    imwrite( "./eq_object.png", eq_object );
+//  img_object = eq_object & obj_mask;
+  img_object = obj_mask;
+    imwrite( "./img_object.png", img_object );
+*/
 
   Mat bgr_scene = imread( argv[2], CV_LOAD_IMAGE_COLOR );
-  Mat hsv_scene, upr_scene, lwr_scene, img_scene;
-  cvtColor( bgr_scene, hsv_scene, CV_BGR2HSV );
-  inRange( hsv_scene, Scalar( 170, 20, 70 ), Scalar( 179, 255, 255 ), upr_scene );
-  inRange( hsv_scene, Scalar( 0, 20, 70 ), Scalar( 9, 255, 255 ), lwr_scene );
-  add( upr_scene, lwr_scene, img_scene );
 
-  imwrite( "./scene_hue.png", img_scene );
+  Mat dns_scene;
+  fastNlMeansDenoisingColored( bgr_scene, dns_scene );
+   imwrite ( "./dns_scene.png", dns_scene );
+
+  // construct a scene mask for our hue range
+  Mat hsv_scene, upr_scene, lwr_scene, sum_scene, scn_erd, scn_mask;
+  cvtColor( dns_scene, hsv_scene, CV_BGR2HSV );
+  inRange( hsv_scene, Scalar( 172, 120, 70 ), Scalar( 179, 150, 150 ), upr_scene );
+  inRange( hsv_scene, Scalar( 0, 120, 70 ), Scalar( 5, 150, 150 ), lwr_scene );
+  add( upr_scene, lwr_scene, sum_scene );
+   imwrite( "./sum_scene.png", sum_scene );
+//  blur( sum_scene, scn_mask, Size ( 5, 5 ) );
+  erode( sum_scene, scn_erd, getStructuringElement( MORPH_ELLIPSE, Size ( 3, 3 ) ) );
+  dilate( scn_erd, scn_mask, getStructuringElement( MORPH_ELLIPSE, Size ( 5, 5 ) ) );
+   imwrite( "./scn_mask.png", scn_mask );
+
+  // apply the hue mask and convert to grayscale for feature detection
+  Mat gry_scene, eq_scene, img_scene;
+  cvtColor( bgr_scene, gry_scene, CV_BGR2GRAY );
+  equalizeHist( gry_scene, eq_scene );
+    imwrite( "./eq_scene.png", eq_scene );
+//  img_scene = eq_scene & scn_mask;
+  img_scene = scn_mask;
+    imwrite( "./img_scene.png", img_scene );
 
   if( !img_object.data || !img_scene.data )
   { std::cout<< " --(!) Error reading images " << std::endl; return -1; }
 
   //-- Step 1: Detect the keypoints using SURF Detector
-  int minHessian = 400;
-
+  int minHessian = 600;
   SurfFeatureDetector detector( minHessian );
-
   std::vector<KeyPoint> keypoints_object, keypoints_scene;
 
   detector.detect( img_object, keypoints_object );
+  Mat kpt_object;
+  drawKeypoints( img_object, keypoints_object, kpt_object );
+    imwrite( "./kpt_object.png", kpt_object );
+
   detector.detect( img_scene, keypoints_scene );
+  Mat kpt_scene;
+  drawKeypoints( img_scene, keypoints_scene, kpt_scene );
+    imwrite( "./kpt_scene.png", kpt_scene );
 
   //-- Step 2: Calculate descriptors (feature vectors)
   SurfDescriptorExtractor extractor;
@@ -86,7 +128,7 @@ int main( int argc, char** argv )
   std::vector< DMatch > good_matches;
 
   for( int i = 0; i < descriptors_object.rows; i++ )
-  { if( matches[i].distance < 3*min_dist )
+  { if( matches[i].distance < 30*min_dist )
     { good_matches.push_back( matches[i]); }
   }
 
