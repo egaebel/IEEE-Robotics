@@ -35,8 +35,12 @@ bool compareContourAreas ( std::vector<cv::Point> contour1, std::vector<cv::Poin
  * @function main
  * @brief Main function
  */
-int main()
+int main(  int argc, char** argv )
 {
+  int num_shots = 100;
+  if( argc >= 2 )
+    num_shots = strtol(argv[1], NULL, 10);
+
   VideoCapture cap(0);
   if( !cap.isOpened() )
   {
@@ -53,13 +57,13 @@ int main()
   cap.grab();
 
   Mat scene;
-  while(1)
+  for( int snapshot = 0; snapshot < num_shots; snapshot++ )
   {
     cap >> scene;
     if( scene.data )
     {
       #ifdef DEBUG
-        // Mat scene_original = scene.clone();
+        Mat scene_original = scene.clone();
       #endif
 
       // convert the scene to HSV
@@ -151,7 +155,14 @@ int main()
       {
         centroid = Point( (cms[0].x + cms[1].x + cms[2].x + cms[3].x) / 4,
                           (cms[0].y + cms[1].y + cms[2].y + cms[3].y) / 4 );
-        printf("(%d, %d)\n", centroid.x, centroid.y);
+        #ifdef DEBUG
+          circle( scene_original, centroid, 3, Scalar(255, 255, 255) );
+          char buffer[10];
+          sprintf( buffer, "%d", snapshot );
+          string filename = "./snapshot" + string(buffer) + ".png";
+          imwrite( filename, scene_original );
+          printf("(%d, %d)\n", centroid.x, centroid.y);
+        #endif
       }
 
       // convert coordinates to angle
