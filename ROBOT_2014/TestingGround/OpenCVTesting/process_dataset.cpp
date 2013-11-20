@@ -6,6 +6,8 @@
 
 #include <cstdio>
 #include <cmath>
+#include <string>
+#include <iostream>
 #include "opencv2/core/core.hpp"
 #include "opencv2/highgui/highgui.hpp"
 #include "opencv2/imgproc/imgproc.hpp"
@@ -35,32 +37,20 @@ bool compareContourAreas ( std::vector<cv::Point> contour1, std::vector<cv::Poin
  * @function main
  * @brief Main function
  */
-int main()
+int main( int argc, char** argv )
 {
-  VideoCapture cap(0);
-  if( !cap.isOpened() )
-  {
-    printf( "failed to open camera\n" );
-    return -1;
-  }
-
-  // try to set the camera properties
-  cap.set(CV_CAP_PROP_FRAME_WIDTH, 320);
-  cap.set(CV_CAP_PROP_FRAME_HEIGHT, 240);
-  cap.set(CV_CAP_PROP_FPS, 30);
-
-  // initialize the camera
-  cap.grab();
+  if( argc < 2 )
+  { cout << "no dataset was specified" << endl; return -1; }
 
   Mat scene;
-  while(1)
+  for( int scene_num = 1; scene_num < argc; scene_num++ )
   {
-    cap >> scene;
+    if( argv[scene_num] != NULL )
+    {
+    scene = imread( argv[scene_num], CV_LOAD_IMAGE_COLOR );
     if( scene.data )
     {
-      #ifdef DEBUG
-        // Mat scene_original = scene.clone();
-      #endif
+      Mat scene_original = scene.clone();
 
       // convert the scene to HSV
       cvtColor( scene, scene, CV_BGR2HSV );
@@ -147,17 +137,23 @@ int main()
 
       // calculate vertex centroid of top four centers of mass
       Point centroid;
+      string new_filename = "./" + string(argv[scene_num]) + "_processed.png";
       if( hulls.size() >= 4 )
       {
         centroid = Point( (cms[0].x + cms[1].x + cms[2].x + cms[3].x) / 4,
                           (cms[0].y + cms[1].y + cms[2].y + cms[3].y) / 4 );
-        printf("(%d, %d)\n", centroid.x, centroid.y);
+        circle( scene_original, centroid, 3, Scalar(255, 255, 255) );
+        imwrite( new_filename, scene_original );
+        cout << new_filename << endl;
       }
-
-      // convert coordinates to angle
-
-      // send angle to servos
+      else
+        cout << "centroid not found in " << new_filename << endl;
     }
+    else
+      cout << "could not open file" << endl;
+    }
+    else
+      cout << "invalid parameter" << endl;
   }
 
   return 0;
