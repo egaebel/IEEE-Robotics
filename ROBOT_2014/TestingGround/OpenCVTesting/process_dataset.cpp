@@ -17,19 +17,22 @@ using namespace cv;
 
 // FYI: hue ranges from 0 to 179 in OpenCV
 const unsigned int MIN_HUE = 0;
-const unsigned int LOWER_HUE = 13;
-const unsigned int UPPER_HUE = 157;
+const unsigned int LOWER_HUE = 10;
+const unsigned int UPPER_HUE = 160;
 const unsigned int MAX_HUE = 179;
 // FYI: saturation ranges from 0 to 255 in OpenCV
-const unsigned int LOWER_SAT = 163;
+const unsigned int LOWER_SAT = 160;
 const unsigned int UPPER_SAT = 255;
 // FYI: value ranges from 0 to 255 in OpenCV
-const unsigned int LOWER_VAL = 58;
-const unsigned int UPPER_VAL = 122;
+const unsigned int LOWER_VAL = 60;
+const unsigned int UPPER_VAL = 190;
 
 // hull size filter range
-const int MIN_SIZE = 50; // about 1/4 the size of one corner of the target
-const int MAX_SIZE = 5000; // about 4 times the size of one corner of the target
+const int MIN_SIZE = 100; // one corner of the target at furthest distance is about 180 square pixels
+const int MAX_SIZE = 1000; // one corner of the target at closest distance is about 650 square pixels
+
+// hull proximity distance filter limit
+const int PROXIMITY_LIMIT = 70; // diagonal corners of the target at closest distance is about 60 pixels
 
 bool compareContourAreas ( std::vector<cv::Point> contour1, std::vector<cv::Point> contour2 );
 
@@ -120,34 +123,56 @@ int main( int argc, char** argv )
         }
       }
 
-      // TODO: implement this
-      // filter remaining hulls for proximity to at least three other hulls
-      //const int PROXIMITY_LIMIT = 100;
       bool removed_something = true;
       while( removed_something )
       {
         removed_something = false;
         for( int i = hulls.size() - 1; i >= 0; i-- )
         {
-          //int proximate = 0;
-          // calculate distance to every other center and increment counter if less than limit
-          // if counter less than three, remove hull from list and set removal flag to true
+          int proximate = 0;
+          for( int j = hulls.size() - 1; j >= 0; j-- )
+          {
+            double cm_dist = sqrt( pow( (cms[i].x - cms[j].x), 2 ) + pow( (cms[i].y - cms[j].y), 2 ) );
+            // calculate distance to every other center and increment counter if less than limit
+            if( cm_dist < PROXIMITY_LIMIT )
+            {
+              // filter for proximity to at least three other hulls
+              proximate++;
+            }
+          }
+          // if fewer than three proximate hulls besides itself, remove hull from list and set removal flag to true
+          if( proximate < 4 )
+          {
+            cout << "removing hull at (" << cms[i].x << ", " << cms[i].y << ")" << endl;
+            hulls.erase( hulls.begin() + i );
+            cms.erase( cms.begin() + i );
+            areas.erase( areas.begin() + i );
+            removed_something = true;
+          }
         }
       }
 
       // calculate vertex centroid of top four centers of mass
       Point centroid;
+      for( unsigned int i = 0; i < hulls.size(); i++ )
+      {
+        drawContours( scene_original, hulls, i, Scalar(((10*i) % 255), 255, 255), 1, 8, vector<Vec4i>(), 0, Point() );
+      }
+
       string new_filename = "./" + string(argv[scene_num]) + "_processed.png";
       if( hulls.size() >= 4 )
       {
         centroid = Point( (cms[0].x + cms[1].x + cms[2].x + cms[3].x) / 4,
                           (cms[0].y + cms[1].y + cms[2].y + cms[3].y) / 4 );
-        circle( scene_original, centroid, 3, Scalar(255, 255, 255) );
-        imwrite( new_filename, scene_original );
-        cout << new_filename << endl;
+        circle( scene_original, centroid, 3, Scalar(0, 0, 255) );
+        cout << "centroid found at (" << centroid.x << ", " << centroid.y << ") based on hulls: ";
+        cout << areas[0] << ", " << areas[1] << ", " << areas[2] << ", " << areas[3] << endl;
       }
       else
+      {
         cout << "centroid not found in " << new_filename << endl;
+      }
+      imwrite( new_filename, scene_original );
     }
     else
       cout << "could not open file" << endl;
