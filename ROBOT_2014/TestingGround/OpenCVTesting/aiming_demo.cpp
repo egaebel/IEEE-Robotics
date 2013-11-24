@@ -195,7 +195,7 @@ int main()
         int margin = 2; // allowance for number of pixels from nominal position
 
         // pan control
-        if( centroid.x < ( scene.width() / 2 ) - margin )
+        if( centroid.x < ( scene.size().width / 2 ) - margin )
         {
           // enable pan advance pin, disable retreat pin
           // Set output to 50 high, 60 low
@@ -214,7 +214,7 @@ int main()
           fwrite(&setValue, sizeof(char), 1, myOutputHandle);
           fclose(myOutputHandle);
         }
-        else if( centroid.x > ( scene.width() / 2 ) - margin )
+        else if( centroid.x > ( scene.size().width / 2 ) - margin )
         {
           // enable pan retreat pin, disable advance pin
           // Set output to 50 low, 60 high
@@ -254,11 +254,11 @@ int main()
         }
 
         // tilt control
-        if( centroid.y < ( scene.height() / 2 ) - margin )
+        if( centroid.y < ( scene.size().height / 2 ) - margin )
         {
           // enable tilt advance pin, disable retreat pin
         }
-        else if( centroid.y > ( scene.height() / 2 ) - margin )
+        else if( centroid.y > ( scene.size().height / 2 ) - margin )
         {
           // enable tilt retreat pin, disable advance pin
         }
@@ -271,6 +271,7 @@ int main()
   }
 
   // Unexport the pin
+/*
   if ((myOutputHandle = fopen("/sys/class/gpio/unexport", "ab")) == NULL) {
       printf("Unable to unexport GPIO pin\n");
       return 1;
@@ -278,6 +279,7 @@ int main()
   strcpy(setValue, GPIOString);
   fwrite(&setValue, sizeof(char), 2, myOutputHandle);
   fclose(myOutputHandle);
+*/
 
   return 0;
 }
