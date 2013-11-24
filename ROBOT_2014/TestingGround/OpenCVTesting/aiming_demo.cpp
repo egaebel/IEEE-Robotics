@@ -35,12 +35,53 @@ bool compareContourAreas ( std::vector<cv::Point> contour1, std::vector<cv::Poin
  * @function main
  * @brief Main function
  */
-int main(  int argc, char** argv )
+int main()
 {
-  int num_shots = 100;
-  if( argc >= 2 )
-    num_shots = strtol(argv[1], NULL, 10);
+  // initialize the pan/tilt servo output pins
+  int GPIOPin50 = 50; // GPIO1_18 or pin 14 on the P9 header
+  int GPIOPin60 = 60; // GPIO1_28 or pin 12 on the P9 header
+  FILE *myOutputHandle = NULL;
+  char setValue[4];
+  char GPIO50String[4], GPIO50Value[64], GPIO50Direction[64];
+  sprintf(GPIO50String, "%d", GPIOPin50);
+  sprintf(GPIO50Value, "/sys/class/gpio/gpio%d/value", GPIOPin50);
+  sprintf(GPIO50Direction, "/sys/class/gpio/gpio%d/direction", GPIOPin50);
+  char GPIO60String[4], GPIO60Value[64], GPIO60Direction[64];
+  sprintf(GPIO60String, "%d", GPIOPin60);
+  sprintf(GPIO60Value, "/sys/class/gpio/gpio%d/value", GPIOPin60);
+  sprintf(GPIO60Direction, "/sys/class/gpio/gpio%d/direction", GPIOPin60);
+  // Export the pins
+  if ((myOutputHandle = fopen("/sys/class/gpio/export", "ab")) == NULL){
+      printf("Unable to export GPIO pin\n");
+      return 1;
+  }
+  strcpy(setValue, GPIO50String);
+  fwrite(&setValue, sizeof(char), 2, myOutputHandle);
+  fclose(myOutputHandle);
+  if ((myOutputHandle = fopen("/sys/class/gpio/export", "ab")) == NULL){
+      printf("Unable to export GPIO pin\n");
+      return 1;
+  }
+  strcpy(setValue, GPIO60String);
+  fwrite(&setValue, sizeof(char), 2, myOutputHandle);
+  fclose(myOutputHandle);
+  // Set direction of the pins to output
+  if ((myOutputHandle = fopen(GPIO50Direction, "rb+")) == NULL){
+      printf("Unable to open direction 50 handle\n");
+      return 1;
+  }
+  strcpy(setValue,"out");
+  fwrite(&setValue, sizeof(char), 3, myOutputHandle);
+  fclose(myOutputHandle);
+  if ((myOutputHandle = fopen(GPIO60Direction, "rb+")) == NULL){
+      printf("Unable to open direction 60 handle\n");
+      return 1;
+  }
+  strcpy(setValue,"out");
+  fwrite(&setValue, sizeof(char), 3, myOutputHandle);
+  fclose(myOutputHandle);
 
+  // initialize the camera
   VideoCapture cap(0);
   if( !cap.isOpened() )
   {
@@ -57,15 +98,11 @@ int main(  int argc, char** argv )
   cap.grab();
 
   Mat scene;
-  for( int snapshot = 0; snapshot < num_shots; snapshot++ )
+  while(1)
   {
     cap >> scene;
     if( scene.data )
     {
-      #ifdef DEBUG
-        Mat scene_original = scene.clone();
-      #endif
-
       // convert the scene to HSV
       cvtColor( scene, scene, CV_BGR2HSV );
 
@@ -155,21 +192,92 @@ int main(  int argc, char** argv )
       {
         centroid = Point( (cms[0].x + cms[1].x + cms[2].x + cms[3].x) / 4,
                           (cms[0].y + cms[1].y + cms[2].y + cms[3].y) / 4 );
-        #ifdef DEBUG
-          circle( scene_original, centroid, 3, Scalar(255, 255, 255) );
-          char buffer[10];
-          sprintf( buffer, "%d", snapshot );
-          string filename = "./snapshot" + string(buffer) + ".png";
-          imwrite( filename, scene_original );
-          printf("(%d, %d)\n", centroid.x, centroid.y);
-        #endif
+        int margin = 2; // allowance for number of pixels from nominal position
+
+        // pan control
+        if( centroid.x < ( scene.width() / 2 ) - margin )
+        {
+          // enable pan advance pin, disable retreat pin
+          // Set output to 50 high, 60 low
+          if ((myOutputHandle = fopen(GPIO50Value, "rb+")) == NULL){
+            printf("Unable to open value handle\n");
+            return 1;
+          }
+          strcpy(setValue, "1"); // Set value high
+          fwrite(&setValue, sizeof(char), 1, myOutputHandle);
+          fclose(myOutputHandle);
+          if ((myOutputHandle = fopen(GPIO60Value, "rb+")) == NULL){
+            printf("Unable to open value handle\n");
+            return 1;
+          }
+          strcpy(setValue, "0"); // Set value low
+          fwrite(&setValue, sizeof(char), 1, myOutputHandle);
+          fclose(myOutputHandle);
+        }
+        else if( centroid.x > ( scene.width() / 2 ) - margin )
+        {
+          // enable pan retreat pin, disable advance pin
+          // Set output to 50 low, 60 high
+          if ((myOutputHandle = fopen(GPIO50Value, "rb+")) == NULL){
+            printf("Unable to open value handle\n");
+            return 1;
+          }
+          strcpy(setValue, "0"); // Set value low
+          fwrite(&setValue, sizeof(char), 1, myOutputHandle);
+          fclose(myOutputHandle);
+          if ((myOutputHandle = fopen(GPIO60Value, "rb+")) == NULL){
+            printf("Unable to open value handle\n");
+            return 1;
+          }
+          strcpy(setValue, "1"); // Set value high
+          fwrite(&setValue, sizeof(char), 1, myOutputHandle);
+          fclose(myOutputHandle);
+        }
+        else
+        {
+          // disable both pan pins
+          // Set output to 50 low, 60 low
+          if ((myOutputHandle = fopen(GPIO50Value, "rb+")) == NULL){
+            printf("Unable to open value handle\n");
+            return 1;
+          }
+          strcpy(setValue, "0"); // Set value low
+          fwrite(&setValue, sizeof(char), 1, myOutputHandle);
+          fclose(myOutputHandle);
+          if ((myOutputHandle = fopen(GPIO60Value, "rb+")) == NULL){
+            printf("Unable to open value handle\n");
+            return 1;
+          }
+          strcpy(setValue, "0"); // Set value low
+          fwrite(&setValue, sizeof(char), 1, myOutputHandle);
+          fclose(myOutputHandle);
+        }
+
+        // tilt control
+        if( centroid.y < ( scene.height() / 2 ) - margin )
+        {
+          // enable tilt advance pin, disable retreat pin
+        }
+        else if( centroid.y > ( scene.height() / 2 ) - margin )
+        {
+          // enable tilt retreat pin, disable advance pin
+        }
+        else
+        {
+          // disable both tilt pins
+        }
       }
-
-      // convert coordinates to angle
-
-      // send angle to servos
     }
   }
+
+  // Unexport the pin
+  if ((myOutputHandle = fopen("/sys/class/gpio/unexport", "ab")) == NULL) {
+      printf("Unable to unexport GPIO pin\n");
+      return 1;
+  }
+  strcpy(setValue, GPIOString);
+  fwrite(&setValue, sizeof(char), 2, myOutputHandle);
+  fclose(myOutputHandle);
 
   return 0;
 }
