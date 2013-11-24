@@ -37,7 +37,10 @@ bool compareContourAreas ( std::vector<cv::Point> contour1, std::vector<cv::Poin
  */
 int main()
 {
-  // initialize the pan/tilt servo output pins
+  // initialize the tilt servo output pins
+  int GPIOPin48 = 48; // GPIO1_16 or pin 15 on the P9 header
+  int GPIOPin51 = 51; // GPIO1_19 or pin 16 on the P9 header
+  // initialize the pan servo output pins
   int GPIOPin50 = 50; // GPIO1_18 or pin 14 on the P9 header
   int GPIOPin60 = 60; // GPIO1_28 or pin 12 on the P9 header
   FILE *myOutputHandle = NULL;
