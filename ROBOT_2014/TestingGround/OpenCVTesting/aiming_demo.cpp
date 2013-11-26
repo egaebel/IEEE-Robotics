@@ -21,22 +21,31 @@ const unsigned int MAX_HUE = 179;
 // FYI: saturation ranges from 0 to 255 in OpenCV
 const unsigned int LOWER_SAT = 160;
 const unsigned int UPPER_SAT = 255;
-//const unsigned int LOWER_SAT = 0;
-//const unsigned int UPPER_SAT = 255;
 // FYI: value ranges from 0 to 255 in OpenCV
 const unsigned int LOWER_VAL = 60;
-const unsigned int UPPER_VAL = 160;
-//const unsigned int LOWER_VAL = 0;
-//const unsigned int UPPER_VAL = 255;
+const unsigned int UPPER_VAL = 190;
+
+const int ERODE_SIZE = 3;
+const int DILATE_SIZE = 5;
 
 // hull size filter range
-const int MIN_SIZE = 50; // about 1/4 the size of one corner of the target
-const int MAX_SIZE = 5000; // about 4 times the size of one corner of the target
+const int MIN_SIZE = 100; // one corner of the target at furthest distance is about 180 square pixels
+const int MAX_SIZE = 1000; // one corner of the target at closest distance is about 650 square pixels
 
-bool compareContourAreas ( std::vector<cv::Point> contour1, std::vector<cv::Point> contour2 );
-bool GPIOExport( int gpio_pin );
-bool setGPIODirection( int gpio_pin, const char *setValue );
-bool setGPIOValue( int gpio_pin, const char *setValue );
+// hull proximity distance filter limit
+const int PROXIMITY_LIMIT = 70; // diagonal corners of the target at closest distance is about 60 pixels
+
+const char PAN_SERVO[6] = "P8_13";
+const int MIN_PAN_POSITION = 550000;
+const int MAX_PAN_POSITION = 2550000;
+
+const char TILT_SERVO[6] = "P8_45";
+const int MIN_TILT_POSITION = 550000;
+const int MAX_TILT_POSITION = 2550000;
+
+bool enable_servo( const char* servo );
+bool set_servo_position( const char* servo, int position );
+bool compareContourAreas( std::vector<cv::Point> contour1, std::vector<cv::Point> contour2 );
 
 /**
  * @function main
@@ -44,27 +53,7 @@ bool setGPIOValue( int gpio_pin, const char *setValue );
  */
 int main()
 {
-  #ifdef DEBUG
-    int snapshot = 0;
-  #endif
-
-  // initialize the tilt servo output pins
-  int GPIOPin48 = 48; // GPIO1_16 or pin 15 on the P9 header
-  int GPIOPin51 = 51; // GPIO1_19 or pin 16 on the P9 header
-  if( !GPIOExport( GPIOPin48 ) || !setGPIODirection( GPIOPin48, "out" ) )
-    return 1;
-  if( !GPIOExport( GPIOPin51 ) || !setGPIODirection( GPIOPin51, "out" ) )
-    return 1;
-
-  // initialize the pan servo output pins
-  int GPIOPin50 = 50; // GPIO1_18 or pin 14 on the P9 header
-  int GPIOPin60 = 60; // GPIO1_28 or pin 12 on the P9 header
-  if( !GPIOExport( GPIOPin50 ) || !setGPIODirection( GPIOPin50, "out" ) )
-    return 1;
-  if( !GPIOExport( GPIOPin60 ) || !setGPIODirection( GPIOPin60, "out" ) )
-    return 1;
-
-  // initialize the camera
+  // open the camera
   VideoCapture cap(0);
   if( !cap.isOpened() )
   {
@@ -80,16 +69,20 @@ int main()
   // initialize the camera
   cap.grab();
 
+  int pan_position = 1550000;
+  if( !enable_servo( PAN_SERVO ) || !set_servo_position( PAN_SERVO, pan_position ) )
+    return 1;
+
+  int tilt_position = 1550000;
+  if( !enable_servo( TILT_SERVO ) || !set_servo_position( TILT_SERVO, tilt_position ) )
+    return 1;
+
   Mat scene;
   while(1)
   {
     cap >> scene;
     if( scene.data )
     {
-      #ifdef DEBUG
-        Mat scene_original = scene.clone();
-      #endif
-
       // convert the scene to HSV
       cvtColor( scene, scene, CV_BGR2HSV );
 
@@ -100,12 +93,8 @@ int main()
       add( upr_scene, lwr_scene, scene );
 
       // erode/dilate to remove small noise clusters
-      erode( scene, scene, getStructuringElement( MORPH_ELLIPSE, Size ( 3, 3 ) ) );
-      dilate( scene, scene, getStructuringElement( MORPH_ELLIPSE, Size ( 5, 5 ) ) );
-
-      #ifdef DEBUG
-        Mat scene_mask = scene.clone();
-      #endif
+      erode( scene, scene, getStructuringElement( MORPH_ELLIPSE, Size ( ERODE_SIZE, ERODE_SIZE ) ) );
+      dilate( scene, scene, getStructuringElement( MORPH_ELLIPSE, Size ( DILATE_SIZE, DILATE_SIZE ) ) );
 
       // detect the edges using Canny
       Canny( scene, scene, 100, 200, 3 );
@@ -162,18 +151,33 @@ int main()
         }
       }
 
-      // TODO: implement this
-      // filter remaining hulls for proximity to at least three other hulls
-      //const int PROXIMITY_LIMIT = 100;
       bool removed_something = true;
       while( removed_something )
       {
         removed_something = false;
         for( int i = hulls.size() - 1; i >= 0; i-- )
         {
-          //int proximate = 0;
           // calculate distance to every other center and increment counter if less than limit
           // if counter less than three, remove hull from list and set removal flag to true
+          int proximate = 0;
+          for( int j = hulls.size() - 1; j >= 0; j-- )
+          {
+            double cm_dist = sqrt( pow( (cms[i].x - cms[j].x), 2 ) + pow( (cms[i].y - cms[j].y), 2 ) );
+            // calculate distance to every other center and increment counter if less than limit
+            if( cm_dist < PROXIMITY_LIMIT )
+            {
+              // filter for proximity to at least three other hulls
+              proximate++;
+            }
+          }
+          // if fewer than three proximate hulls besides itself, remove hull from list and set removal flag to true
+          if( proximate < 4 )
+          {
+            hulls.erase( hulls.begin() + i );
+            cms.erase( cms.begin() + i );
+            areas.erase( areas.begin() + i );
+            removed_something = true;
+          }
         }
       }
 
@@ -184,84 +188,30 @@ int main()
         centroid = Point( (cms[0].x + cms[1].x + cms[2].x + cms[3].x) / 4,
                           (cms[0].y + cms[1].y + cms[2].y + cms[3].y) / 4 );
 
-        #ifdef DEBUG
-          printf("%d: (%d, %d)\n", snapshot, centroid.x, centroid.y);
-   //       circle( scene_original, centroid, 3, Scalar(255, 255, 255) );
-        #endif
+        pan_position += ( scene.size().width / 2 ) - centroid.x;
+        if( pan_position < MIN_PAN_POSITION )
+          pan_position = MIN_PAN_POSITION;
+        else if( pan_position > MAX_PAN_POSITION )
+          pan_position = MAX_PAN_POSITION;
 
-        int margin = 10; // allowance for number of pixels from nominal position
+        tilt_position += ( scene.size().height / 2 ) - centroid.y;
+        if( tilt_position < MIN_TILT_POSITION )
+          tilt_position = MIN_TILT_POSITION;
+        else if( tilt_position > MAX_TILT_POSITION )
+          tilt_position = MAX_TILT_POSITION;
 
-        // pan control
-        if( centroid.x < ( scene.size().width / 2 ) - margin )
-        {
-          // enable pan advance pin, disable retreat pin
-          setGPIOValue( 50, "1" );
-          setGPIOValue( 60, "0" );
-        }
-        else if( centroid.x > ( scene.size().width / 2 ) + margin )
-        {
-          // enable pan retreat pin, disable advance pin
-          setGPIOValue( 50, "0" );
-          setGPIOValue( 60, "1" );
-        }
-        else
-        {
-          // disable both pan pins
-          setGPIOValue( 50, "0" );
-          setGPIOValue( 60, "0" );
-        }
-
-        // tilt control
-        if( centroid.y < ( scene.size().height / 2 ) - margin )
-        {
-          // enable tilt advance pin, disable retreat pin
-          setGPIOValue( 48, "1" );
-          setGPIOValue( 51, "0" );
-        }
-        else if( centroid.y > ( scene.size().height / 2 ) + margin )
-        {
-          // enable tilt retreat pin, disable advance pin
-          setGPIOValue( 48, "0" );
-          setGPIOValue( 51, "1" );
-        }
-        else
-        {
-          // disable both tilt pins
-          setGPIOValue( 48, "0" );
-          setGPIOValue( 51, "0" );
-        }
+        // update servo positions
+        set_servo_position( PAN_SERVO, pan_position );
+        set_servo_position( TILT_SERVO, tilt_position );
       }
       else
       {
         #ifdef DEBUG
           printf("target not found\n");
         #endif
-        // disable all pan/tilt pins
-        setGPIOValue( 50, "0" );
-        setGPIOValue( 60, "0" );
-        setGPIOValue( 48, "0" );
-        setGPIOValue( 51, "0" );
       }
-      #ifdef DEBUG
-        char buffer[10];
-        sprintf( buffer, "%d", snapshot );
-        string filename = "./snapshot" + string(buffer) + ".png";
-        imwrite( filename, scene_original );
-        snapshot++;
-      #endif
     }
   }
-
-  // Unexport the pin
-/*
-  if ((myOutputHandle = fopen("/sys/class/gpio/unexport", "ab")) == NULL) {
-      printf("Unable to unexport GPIO pin\n");
-      return 1;
-  }
-  strcpy(setValue, GPIOString);
-  fwrite(&setValue, sizeof(char), 2, myOutputHandle);
-  fclose(myOutputHandle);
-*/
 
   return 0;
 }
@@ -273,6 +223,74 @@ bool compareContourAreas ( std::vector<cv::Point> contour1, std::vector<cv::Poin
     double i = fabs( contourArea(cv::Mat(contour1)) );
     double j = fabs( contourArea(cv::Mat(contour2)) );
     return ( i > j );
+}
+
+bool enable_servo( const char* servo )
+{
+  FILE *myOutputHandle = NULL;
+
+  // enable pwm hardware
+  if( ( myOutputHandle = fopen( "/sys/devices/bone_capemgr.9/slots", "rb+" ) ) == NULL ) {
+    printf( "Unable to open cape manager to enable pwm hardware\n" );
+    return false;
+  }
+  fwrite( "am33xx_pwm", sizeof(char), 10, myOutputHandle );
+  fclose( myOutputHandle );
+
+  // enable particular pwm output pin
+  if( ( myOutputHandle = fopen( "/sys/devices/bone_capemgr.9/slots", "rb+" ) ) == NULL ) {
+    printf( "Unable to open cape manager to enable pwm pin\n" );
+    return false;
+  }
+  fwrite( &servo, sizeof(char), 5, myOutputHandle );
+  fclose( myOutputHandle );
+
+  // set positive polarity
+  char polarity_handle[64];
+  sprintf( polarity_handle, "/sys/devices/ocp.3/pwm_test_%s.15/polarity", servo );
+  if( ( myOutputHandle = fopen( polarity_handle, "rb+" ) ) == NULL ) {
+    printf( "Unable to open polarity handle\n" );
+    return false;
+  }
+  fwrite( "0", sizeof(char), 1, myOutputHandle );
+  fclose( myOutputHandle );
+
+  // set 20ms period for 50Hz frequency
+  char period_handle[64];
+  sprintf( period_handle, "/sys/devices/ocp.3/pwm_test_%s.15/period", servo );
+  if( ( myOutputHandle = fopen( period_handle, "rb+" ) ) == NULL ) {
+    printf( "Unable to open period handle\n" );
+    return false;
+  }
+  fwrite( "20000000", sizeof(char), 1, myOutputHandle );
+  fclose( myOutputHandle );
+
+  // activate pwm output pin
+  char run_handle[64];
+  sprintf( run_handle, "/sys/devices/ocp.3/pwm_test_%s.15/run", servo );
+  if( ( myOutputHandle = fopen( run_handle, "rb+" ) ) == NULL ) {
+    printf( "Unable to open run handle\n" );
+    return false;
+  }
+  fwrite( "1", sizeof(char), 1, myOutputHandle );
+  fclose( myOutputHandle );
+  return true;
+}
+
+bool set_servo_position( const char* servo, int position )
+{
+  FILE *myOutputHandle = NULL;
+  char duty_handle[64];
+  sprintf( duty_handle, "/sys/devices/ocp.3/pwm_test_%s.15/duty", servo );
+  if( ( myOutputHandle = fopen( duty_handle, "rb+" ) ) == NULL ) {
+    printf( "Unable to open duty handle\n" );
+    return false;
+  }
+  char setValue[8];
+  int length = sprintf( setValue, "%d", position );
+  fwrite( &setValue, sizeof(char), length, myOutputHandle );
+  fclose( myOutputHandle );
+  return true;
 }
 
 bool GPIOExport( int gpio_pin )
