@@ -36,15 +36,17 @@ const int MAX_SIZE = 1000; // one corner of the target at closest distance is ab
 const int PROXIMITY_LIMIT = 70; // diagonal corners of the target at closest distance is about 60 pixels
 
 // HS-475HB range is approximately 550000 to 2550000
+int old_pan_position;
 const char PAN_SERVO[9] = "P8_13.15";
-const int MIN_PAN_POSITION = 600000;
-const int CTR_PAN_POSITION = 1500000;
-const int MAX_PAN_POSITION = 2400000;
+const int MIN_PAN_POSITION = 800000;
+const int CTR_PAN_POSITION = 1400000;
+const int MAX_PAN_POSITION = 2000000;
 
+int old_tilt_position;
 const char TILT_SERVO[9] = "P9_14.16";
-const int MIN_TILT_POSITION = 850000;
-const int CTR_TILT_POSITION = 1600000;
-const int MAX_TILT_POSITION = 2350000;
+const int MIN_TILT_POSITION = 1750000;
+const int CTR_TILT_POSITION = 1900000;
+const int MAX_TILT_POSITION = 2050000;
 
 bool enable_servo( const char* servo );
 bool set_servo_position( const char* servo, int position );
@@ -73,12 +75,14 @@ int main()
   // initialize the camera
   cap.grab();
 
-  int pan_position = 1550000;
-  if( !enable_servo( PAN_SERVO ) || !set_servo_position( PAN_SERVO, pan_position ) )
+  int pan_position = CTR_PAN_POSITION;
+  old_pan_position = CTR_PAN_POSITION;
+  if( !enable_servo( PAN_SERVO ) || !set_servo_position( PAN_SERVO, CTR_PAN_POSITION ) )
     return 1;
   check_servo_range( PAN_SERVO, MIN_PAN_POSITION, CTR_PAN_POSITION, MAX_PAN_POSITION );
 
-  int tilt_position = 1550000;
+  int tilt_position = CTR_TILT_POSITION;
+  old_tilt_position = CTR_TILT_POSITION;
   if( !enable_servo( TILT_SERVO ) || !set_servo_position( TILT_SERVO, tilt_position ) )
     return 1;
   check_servo_range( TILT_SERVO, MIN_TILT_POSITION, CTR_TILT_POSITION, MAX_TILT_POSITION );
@@ -203,21 +207,39 @@ int main()
           }
         #endif
 
-        pan_position += 1000 * ( ( scene.size().width / 2 ) - centroid.x );
+        int pan_difference = ( scene.size().width / 2 ) - centroid.x;
+        pan_position -= 100 * pan_difference;
         if( pan_position < MIN_PAN_POSITION )
           pan_position = MIN_PAN_POSITION;
         else if( pan_position > MAX_PAN_POSITION )
           pan_position = MAX_PAN_POSITION;
 
-        tilt_position += 1000 * ( ( scene.size().height / 2 ) - centroid.y );
+        int tilt_difference = ( scene.size().height / 2 ) - centroid.y;
+        tilt_position -= 100 * tilt_difference;
         if( tilt_position < MIN_TILT_POSITION )
           tilt_position = MIN_TILT_POSITION;
         else if( tilt_position > MAX_TILT_POSITION )
           tilt_position = MAX_TILT_POSITION;
 
         // update servo positions
-        set_servo_position( PAN_SERVO, pan_position );
-        set_servo_position( TILT_SERVO, tilt_position );
+        if( pan_position != old_pan_position )
+        {
+          printf( "moving %s: %d to %d (%d)\n", PAN_SERVO, old_pan_position, pan_position, (int)abs( pan_position - old_pan_position ) );
+          set_servo_position( PAN_SERVO, pan_position );
+          old_pan_position = pan_position;
+        }
+        if( tilt_position != old_tilt_position )
+        {
+          printf( "moving %s: %d to %d (%d)\n", TILT_SERVO, old_tilt_position, tilt_position, (int)abs( tilt_position - old_tilt_position ) );
+          set_servo_position( TILT_SERVO, tilt_position );
+          old_tilt_position = tilt_position;
+        }
+
+        // HS485HB is 0.23sec/60deg at 4.8V with no load
+        // camera is 75deg/320px at 320x240
+        //int us_per_pixel = ( 75 / 320 ) * ( .23 / 60 ) * ( 1000000 / 1 );
+        // so wait one clock pulse plus approximate microseconds needed for servo movement
+        //usleep( 20000 + ( fmax( pan_difference, tilt_difference ) * us_per_pixel ) );
       }
       else
       {
@@ -307,7 +329,6 @@ bool set_servo_position( const char* servo, int position )
   }
   char setValue[8];
   int length = sprintf( setValue, "%d", position );
-  printf( "moving %s to %s (%d)\n", servo, setValue, length );
   fwrite( &setValue, sizeof(char), length, myOutputHandle );
   fclose( myOutputHandle );
   return true;
@@ -316,9 +337,9 @@ bool set_servo_position( const char* servo, int position )
 bool check_servo_range( const char* servo, int min_position, int ctr_position, int max_position )
 {
   set_servo_position( servo, min_position );
-  usleep( 2000000 );
+  usleep( 500000 );
   set_servo_position( servo, max_position );
-  usleep( 3000000 );
+  usleep( 500000 );
   set_servo_position( servo, ctr_position );
   return true;
 }
