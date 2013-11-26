@@ -35,16 +35,20 @@ const int MAX_SIZE = 1000; // one corner of the target at closest distance is ab
 // hull proximity distance filter limit
 const int PROXIMITY_LIMIT = 70; // diagonal corners of the target at closest distance is about 60 pixels
 
-const char PAN_SERVO[6] = "P8_13";
-const int MIN_PAN_POSITION = 550000;
-const int MAX_PAN_POSITION = 2550000;
+// HS-475HB range is approximately 550000 to 2550000
+const char PAN_SERVO[9] = "P8_13.15";
+const int MIN_PAN_POSITION = 600000;
+const int CTR_PAN_POSITION = 1500000;
+const int MAX_PAN_POSITION = 2400000;
 
-const char TILT_SERVO[6] = "P8_45";
-const int MIN_TILT_POSITION = 550000;
-const int MAX_TILT_POSITION = 2550000;
+const char TILT_SERVO[9] = "P9_14.16";
+const int MIN_TILT_POSITION = 850000;
+const int CTR_TILT_POSITION = 1600000;
+const int MAX_TILT_POSITION = 2350000;
 
 bool enable_servo( const char* servo );
 bool set_servo_position( const char* servo, int position );
+bool check_servo_range( const char* servo, int min_position, int ctr_position, int max_position );
 bool compareContourAreas( std::vector<cv::Point> contour1, std::vector<cv::Point> contour2 );
 
 /**
@@ -72,11 +76,14 @@ int main()
   int pan_position = 1550000;
   if( !enable_servo( PAN_SERVO ) || !set_servo_position( PAN_SERVO, pan_position ) )
     return 1;
+  check_servo_range( PAN_SERVO, MIN_PAN_POSITION, CTR_PAN_POSITION, MAX_PAN_POSITION );
 
   int tilt_position = 1550000;
   if( !enable_servo( TILT_SERVO ) || !set_servo_position( TILT_SERVO, tilt_position ) )
     return 1;
+  check_servo_range( TILT_SERVO, MIN_TILT_POSITION, CTR_TILT_POSITION, MAX_TILT_POSITION );
 
+  bool target_found = false;
   Mat scene;
   while(1)
   {
@@ -188,13 +195,21 @@ int main()
         centroid = Point( (cms[0].x + cms[1].x + cms[2].x + cms[3].x) / 4,
                           (cms[0].y + cms[1].y + cms[2].y + cms[3].y) / 4 );
 
-        pan_position += ( scene.size().width / 2 ) - centroid.x;
+        #ifdef DEBUG
+          if( !target_found )
+          {
+            target_found = true;
+            printf( "target found at (%d, %d)\n", centroid.x, centroid.y );
+          }
+        #endif
+
+        pan_position += 1000 * ( ( scene.size().width / 2 ) - centroid.x );
         if( pan_position < MIN_PAN_POSITION )
           pan_position = MIN_PAN_POSITION;
         else if( pan_position > MAX_PAN_POSITION )
           pan_position = MAX_PAN_POSITION;
 
-        tilt_position += ( scene.size().height / 2 ) - centroid.y;
+        tilt_position += 1000 * ( ( scene.size().height / 2 ) - centroid.y );
         if( tilt_position < MIN_TILT_POSITION )
           tilt_position = MIN_TILT_POSITION;
         else if( tilt_position > MAX_TILT_POSITION )
@@ -207,7 +222,11 @@ int main()
       else
       {
         #ifdef DEBUG
-          printf("target not found\n");
+          if( target_found )
+          {
+            target_found = false;
+            printf("target not found\n");
+          }
         #endif
       }
     }
@@ -235,21 +254,21 @@ bool enable_servo( const char* servo )
     return false;
   }
   fwrite( "am33xx_pwm", sizeof(char), 10, myOutputHandle );
+  fflush( myOutputHandle );
+  char pin[6];
+  strncpy( pin, servo, 5 );
+  char setValue[64];
+  int length = sprintf( setValue, "bone_pwm_%s", pin );
+  fwrite( &setValue, sizeof(char), length, myOutputHandle );
   fclose( myOutputHandle );
 
-  // enable particular pwm output pin
-  if( ( myOutputHandle = fopen( "/sys/devices/bone_capemgr.9/slots", "rb+" ) ) == NULL ) {
-    printf( "Unable to open cape manager to enable pwm pin\n" );
-    return false;
-  }
-  fwrite( &servo, sizeof(char), 5, myOutputHandle );
-  fclose( myOutputHandle );
+  usleep( 2000000 ); // revisit: the pin takes some time to show up
 
   // set positive polarity
   char polarity_handle[64];
-  sprintf( polarity_handle, "/sys/devices/ocp.3/pwm_test_%s.15/polarity", servo );
+  sprintf( polarity_handle, "/sys/devices/ocp.3/pwm_test_%s/polarity", servo );
   if( ( myOutputHandle = fopen( polarity_handle, "rb+" ) ) == NULL ) {
-    printf( "Unable to open polarity handle\n" );
+    printf( "Unable to open polarity handle %s\n", polarity_handle );
     return false;
   }
   fwrite( "0", sizeof(char), 1, myOutputHandle );
@@ -257,17 +276,17 @@ bool enable_servo( const char* servo )
 
   // set 20ms period for 50Hz frequency
   char period_handle[64];
-  sprintf( period_handle, "/sys/devices/ocp.3/pwm_test_%s.15/period", servo );
+  sprintf( period_handle, "/sys/devices/ocp.3/pwm_test_%s/period", servo );
   if( ( myOutputHandle = fopen( period_handle, "rb+" ) ) == NULL ) {
     printf( "Unable to open period handle\n" );
     return false;
   }
-  fwrite( "20000000", sizeof(char), 1, myOutputHandle );
+  fwrite( "20000000", sizeof(char), 8, myOutputHandle );
   fclose( myOutputHandle );
 
   // activate pwm output pin
   char run_handle[64];
-  sprintf( run_handle, "/sys/devices/ocp.3/pwm_test_%s.15/run", servo );
+  sprintf( run_handle, "/sys/devices/ocp.3/pwm_test_%s/run", servo );
   if( ( myOutputHandle = fopen( run_handle, "rb+" ) ) == NULL ) {
     printf( "Unable to open run handle\n" );
     return false;
@@ -281,15 +300,26 @@ bool set_servo_position( const char* servo, int position )
 {
   FILE *myOutputHandle = NULL;
   char duty_handle[64];
-  sprintf( duty_handle, "/sys/devices/ocp.3/pwm_test_%s.15/duty", servo );
+  sprintf( duty_handle, "/sys/devices/ocp.3/pwm_test_%s/duty", servo );
   if( ( myOutputHandle = fopen( duty_handle, "rb+" ) ) == NULL ) {
     printf( "Unable to open duty handle\n" );
     return false;
   }
   char setValue[8];
   int length = sprintf( setValue, "%d", position );
+  printf( "moving %s to %s (%d)\n", servo, setValue, length );
   fwrite( &setValue, sizeof(char), length, myOutputHandle );
   fclose( myOutputHandle );
+  return true;
+}
+
+bool check_servo_range( const char* servo, int min_position, int ctr_position, int max_position )
+{
+  set_servo_position( servo, min_position );
+  usleep( 2000000 );
+  set_servo_position( servo, max_position );
+  usleep( 3000000 );
+  set_servo_position( servo, ctr_position );
   return true;
 }
 
