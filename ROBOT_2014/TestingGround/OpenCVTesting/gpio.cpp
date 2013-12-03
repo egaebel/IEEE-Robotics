@@ -1,6 +1,9 @@
 #include "gpio.h"
 #include "config.h"
 
+#include <cstring>
+#include <cstdio>
+
 bool GPIOExport( int gpio_pin )
 {
   FILE *myOutputHandle = NULL;
