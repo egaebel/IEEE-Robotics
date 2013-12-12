@@ -29,7 +29,7 @@ const int ERODE_SIZE = 3;
 const int DILATE_SIZE = 5;
 
 // hull size filter range
-const int MIN_SIZE = 100; // one corner of the target at furthest distance is about 180 square pixels
+const int MIN_SIZE = 10; // one corner of the target at furthest distance is about 180 square pixels
 const int MAX_SIZE = 1000; // one corner of the target at closest distance is about 650 square pixels
 
 // hull proximity distance filter limit
@@ -54,7 +54,7 @@ const int TILT_DIRECTION = 1;
 const char FIRE_ONE_SERVO[9] = "P9_21.17";
 const int REST_FIRE_ONE_POSITION = 1290000;
 const int FIRE_FIRE_ONE_POSITION = 1200000;
-const int FIRE_ONE_X = 150;
+const int FIRE_ONE_X = 140;
 const int FIRE_ONE_Y = 120;
 
 bool enable_servo( const char* servo );
@@ -81,15 +81,15 @@ int main()
   if( !enable_servo( FIRE_ONE_SERVO ) || !set_servo_position( FIRE_ONE_SERVO, REST_FIRE_ONE_POSITION ) )
     return 1;
 
-  printf( "checking tilt servo\n" );
+//  printf( "checking tilt servo\n" );
 
-  check_servo_range( TILT_SERVO, MIN_TILT_POSITION, INL_TILT_POSITION, MAX_TILT_POSITION );
+//  check_servo_range( TILT_SERVO, MIN_TILT_POSITION, INL_TILT_POSITION, MAX_TILT_POSITION );
 
-  printf( "checking pan servo\n" );
+//  printf( "checking pan servo\n" );
 
-  check_servo_range( PAN_SERVO, MIN_PAN_POSITION, INL_PAN_POSITION, MAX_PAN_POSITION );
+//  check_servo_range( PAN_SERVO, MIN_PAN_POSITION, INL_PAN_POSITION, MAX_PAN_POSITION );
 
-  printf( "initializing camera\n" );
+//  printf( "initializing camera\n" );
 
   // open the camera
   VideoCapture cap(0);
