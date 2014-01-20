@@ -16,5 +16,6 @@ void loop() {
     val = ir.getIR();
     Serial.print("The val is:: ");
     Serial.println(val);
+    delay(100);
 }
 
