@@ -1,3 +1,9 @@
+/**
+ * @file target
+ * @brief target recognition and location detection using OpenCV
+ * @author D. Butenhoff
+ */
+
 #include <cmath>
 #include "opencv2/core/core.hpp"
 #include "opencv2/highgui/highgui.hpp"

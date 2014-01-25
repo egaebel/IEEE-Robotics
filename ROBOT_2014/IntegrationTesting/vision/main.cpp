@@ -1,6 +1,6 @@
 /**
- * @file aiming_demo
- * @brief Canny + findContours + convexHull
+ * @file main
+ * @brief main vision loop with hardware pwm pan/tilt/fire control
  * @author D. Butenhoff
  */
 
