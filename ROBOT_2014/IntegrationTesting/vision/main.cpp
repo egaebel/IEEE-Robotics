@@ -155,9 +155,28 @@ int main()
 					}
 				}
 			}
+			else
+			{
+		        #ifdef DEBUG
+					if( target_found )
+					{
+						target_found = false;
+						printf("target not found\n");
+					}
+		        #endif
+			}
 		}
 	}
 
-	// wait for firing servo to trigger, then disable all servos
+	// wait for firing servo to trigger, then back it off
+	usleep( 500000 );
+	set_servo_position( FIRE_ONE_SERVO, REST_FIRE_ONE_POSITION );
 
+	// disable all servos
+	usleep( 500000 );
+	disable_servo( PAN_SERVO );
+	disable_servo( TILT_SERVO );
+	disable_servo( FIRE_ONE_SERVO );
+
+	return 0;
 }
