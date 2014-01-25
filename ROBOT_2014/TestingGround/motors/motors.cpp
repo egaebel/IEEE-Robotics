@@ -1,5 +1,4 @@
-#ifndef MOTORS_H
-#define MOTORS_H
+
 #include "motors.h"
 void motors::setup()
 {
@@ -18,7 +17,7 @@ void motors::setup()
 
 
 
-void motors::motorDrive(boolean motorNumber, boolean motorDirection)
+void motors::motorDrive(bool motorNumber, bool motorDirection)
 {
   /*
   This Drives a specified motor, in a specific direction, at a specified speed:
@@ -27,7 +26,7 @@ void motors::motorDrive(boolean motorNumber, boolean motorDirection)
     - motorSpeed: 0 to 255 ---> 0 = stop / 255 = fast
   */
 
-  boolean pinIn1;  //Relates to AIN1 or BIN1 (depending on the motor number specified)
+  bool pinIn1;  //Relates to AIN1 or BIN1 (depending on the motor number specified)
 
  
 //Specify the Direction to turn the motor
@@ -59,7 +58,7 @@ void motors::motorDrive(boolean motorNumber, boolean motorDirection)
 
 }
 
-void motors::motorBrake(boolean motorNumber)
+void motors::motorBrake(bool motorNumber)
 {
 /*
 This "Short Brake"s the specified motor, by setting speed to zero
@@ -73,7 +72,7 @@ This "Short Brake"s the specified motor, by setting speed to zero
 }
 
 
-void motors::motorStop(boolean motorNumber)
+void motors::motorStop(bool motorNumber)
 {
   /*
   This stops the specified motor by setting both IN pins to LOW
@@ -97,4 +96,3 @@ void motors::motorsStandby()
   */
   digitalWrite(pinSTBY, LOW);
 }
-#endif
