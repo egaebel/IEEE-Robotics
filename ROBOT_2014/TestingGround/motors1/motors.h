@@ -1,5 +1,8 @@
 
+#ifndef MOTORS_H
+#define MOTORS_H
 
+#include <Arduino.h>
 
 class motors
 {
@@ -31,28 +34,29 @@ Connections:
 //Define the Pins
 
 //Motor 1
-#define pinAIN1 9; //Direction
-#define pinAIN2 8; //Direction
-#define pinPWMA 3; //Speed
+#define pinAIN1 9 //Direction
+#define pinAIN2 8 //Direction
+#define pinPWMA 3 //Speed
 
 //Motor 2
-#define pinBIN1 11; //Direction
-#define pinBIN2 12; //Direction
-#define pinPWMB 5; //Speed
+#define pinBIN1 11 //Direction
+#define pinBIN2 12 //Direction
+#define pinPWMB 5 //Speed
 
 //Standby
-#define pinSTBY 10;
+#define pinSTBY 10
 
 //Constants to help remember the parameters
-#define turnCW false;  //for motorDrive function
-#define turnCCW true; //for motorDrive function
-#define motor1 false;  //for motorDrive, motorStop, motorBrake functions
-#define motor2 true;  //for motorDrive, motorStop, motorBrake functions
+#define turnCW false  //for motorDrive function
+#define turnCCW true //for motorDrive function
+#define motor1 false  //for motorDrive, motorStop, motorBrake functions
+#define motor2 true  //for motorDrive, motorStop, motorBrake functions
 public:
 	void setup();
-	void motorDrive(boolean motorNumber, boolean motorDirection);
-	void motorBrake(boolean motorNumber);
-	void motorStop(boolean motorNumber);
+	void motorDrive(bool motorNumber, bool motorDirection);
+	void motorBrake(bool motorNumber);
+	void motorStop(bool motorNumber);
 	void motorsStandby();
 	int speed;
 };
+#endif
