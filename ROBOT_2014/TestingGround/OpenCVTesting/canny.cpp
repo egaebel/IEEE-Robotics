@@ -1,6 +1,6 @@
 /**
- * @file aiming_demo
- * @brief Canny + findContours + convexHull
+ * @file canny
+ * @brief testing different tuning parameters on individual image channels
  * @author D. Butenhoff
  */
 
