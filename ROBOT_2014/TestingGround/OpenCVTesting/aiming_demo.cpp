@@ -29,7 +29,7 @@ const int ERODE_SIZE = 3;
 const int DILATE_SIZE = 5;
 
 // hull size filter range
-const int MIN_SIZE = 10; // one corner of the target at furthest distance is about 180 square pixels
+const int MIN_SIZE = 1; // one corner of the target at furthest distance is about 180 square pixels
 const int MAX_SIZE = 1000; // one corner of the target at closest distance is about 650 square pixels
 
 // hull proximity distance filter limit
@@ -43,6 +43,8 @@ const int MIN_PAN_POSITION = 800000;
 const int INL_PAN_POSITION = 1400000;
 const int MAX_PAN_POSITION = 2000000;
 const int PAN_DIRECTION = -1;
+const int PAN_RATE = 400;
+const int PAN_POW = 1;
 
 int old_tilt_position;
 const char TILT_SERVO[9] = "P9_14.16";
@@ -50,6 +52,10 @@ const int MIN_TILT_POSITION = 1150000;
 const int INL_TILT_POSITION = 1300000;
 const int MAX_TILT_POSITION = 1450000;
 const int TILT_DIRECTION = 1;
+const int TILT_RATE = 200;
+const int TILT_POW = 1;
+
+const int MARGIN = 5;
 
 const char FIRE_ONE_SERVO[9] = "P9_21.17";
 const int REST_FIRE_ONE_POSITION = 1290000;
@@ -278,20 +284,20 @@ int main()
         int goal_y = FIRE_ONE_Y;
 
         int pan_difference = goal_x - centroid.x;
-        pan_position += 100 * pan_difference * PAN_DIRECTION;
+        pan_position += PAN_RATE * pow( pan_difference, PAN_POW ) * PAN_DIRECTION;
         if( pan_position < MIN_PAN_POSITION )
           pan_position = MIN_PAN_POSITION;
         else if( pan_position > MAX_PAN_POSITION )
           pan_position = MAX_PAN_POSITION;
 
         int tilt_difference = goal_y - centroid.y;
-        tilt_position += 100 * tilt_difference * TILT_DIRECTION;
+        tilt_position += TILT_RATE * pow( tilt_difference, TILT_POW ) * TILT_DIRECTION;
         if( tilt_position < MIN_TILT_POSITION )
           tilt_position = MIN_TILT_POSITION;
         else if( tilt_position > MAX_TILT_POSITION )
           tilt_position = MAX_TILT_POSITION;
 
-        if( abs( pan_difference ) < 4 && abs( tilt_difference ) < 4 )
+        if( abs( pan_difference ) < MARGIN && abs( tilt_difference ) < MARGIN )
         {
           printf( "FIRE!\n" );
           set_servo_position( FIRE_ONE_SERVO, FIRE_FIRE_ONE_POSITION );
