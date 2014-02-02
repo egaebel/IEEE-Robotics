@@ -1,0 +1,74 @@
+HUB-ee BMD Arduino Lib
+Provides an object for a single motor using the BMD motor driver, includes optional standby control.
+Designed for the BMD or BMD-S motor driver which uses the Toshiba TB6593FNG motor driver IC
+Created by Creative Robotics Ltd in 2012.
+Released into the public domain.
+
+The BMD (Basic Motor Driver) HUB-ee wheel includes an on-board Toshiba TB6593FNG Motor driver IC which requires three control lines in order to control the speed and direction of the wheel. An optional fourth co ntrol line can be used to set the device into standby (power saving) mode.
+
+To use a wheel you need to choose the three arduino pins for control- one of these needs to be a PWM pin- then create a wheel object in your sketch:
+
+
+HUBeeBMDWheel myWheel(In1Pin, In2Pin, PWMPin);
+
+or if you are using the STBY pin:
+
+HUBeeBMDWheel myWheel(In1Pin, In2Pin, PWMPin, STBYPin);
+
+Functions:
+----------------------------------------------------------
+setBrakeMode(boolean brakeMode)
+
+Sets the braking mode for the motor - this determines how the motor behaves when the power is set to zero. With braking mode enabled the motor terminals are shorted and the motor will stop quickly, resisting attempts to move it. With motor braking mode disabled the motor will freewheel more easily.
+
+1 = Brake mode enabled. 
+0 = Brake mode disabled. (DEFAULT)
+
+return value: none
+----------------------------------------------------------
+setDirectionMode(boolean direction)
+
+Sets the direction mode - this inverts the normal direction of the motor in relation to the motor power values.
+Example - If you have a two wheeled bot and set both motors to a power of 100 then the bot will go in a circle, you can use the inverted setting to invert one of the motors so that setting both to a value of 100 will mean the bot goes forward, setting both to -100 will make it go backwards ...  etc.
+
+0 = Normal direction (DEFAULT)
+1 = Inverted
+
+return value: none
+
+----------------------------------------------------------
+getDirectionMode();
+Returns the direction mode.
+
+return value: Boolean
+----------------------------------------------------------
+stopMotor()
+
+Halts the motor using the current braking mode.
+
+return value: none
+
+----------------------------------------------------------
+setStandbyMode(boolean standbyMode)
+
+Puts the motor driver IC into standby mode if the standby function is enabled.
+1 = Enable standby mode
+0 = Disable standby mode (DEFAULT)
+
+return value: none
+
+----------------------------------------------------------
+setMotorPower(int MPower)
+
+Sets the speed and direction of the motor - Values can be in the range -255 to 255. Any values above this will be capped to these limits.
+If you want to invert the response of the motor (so a positive value makes it go backwards instead of forwards) you can use the setDirectionMode() function.
+
+return value: none
+
+Default 0
+----------------------------------------------------------
+getMotorPower()
+
+Returns the current motor power value.
+
+return value: int

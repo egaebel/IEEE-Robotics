@@ -1,0 +1,151 @@
+
+White2380
+ Blue6858
+ Red:8906
+ Green:8071
+
+
+
+
+White708
+ Blue1999
+ Red:2912
+ Green:3496
+
+
+
+
+White512
+ Blue1289
+ Red:1481
+ Green:1356
+
+
+
+
+White267
+ Blue648
+ Red:745
+ Green:816
+
+
+
+
+White386
+ Blue952
+ Red:1005
+ Green:1011
+
+
+
+
+White132
+ Blue363
+ Red:321
+ Green:398
+
+
+
+
+
+ White--------------------------------------------------------------------------------------------------------
+
+
+White8
+ Blue25
+ Red:29
+ Green:43
+
+
+
+
+White7
+ Blue25
+ Red:28
+ Green:28
+
+
+
+
+White4
+ Blue19
+ Red:18
+ Green:20
+
+
+
+
+White6
+ Blue20
+ Red:19
+ Green:22
+
+
+
+
+White6
+ Blue19
+ Red:18
+ Green:20
+
+
+
+
+
+ --------------------------------------------------------------- BLUE
+
+
+ White157
+ Blue620
+ Red:221
+ Green:377
+
+
+
+
+White49
+ Blue264
+ Red:74
+ Green:150
+
+
+
+
+White46
+ Blue310
+ Red:67
+ Green:148
+
+
+
+
+White45
+ Blue348
+ Red:74
+ Green:154
+
+
+
+
+White52
+ Blue410
+ Red:81
+ Green:162
+
+
+
+
+White41
+ Blue283
+ Red:64
+ Green:142
+
+
+
+
+White: 41
+ Blue229
+ Red:69
+ Green:159
+
+

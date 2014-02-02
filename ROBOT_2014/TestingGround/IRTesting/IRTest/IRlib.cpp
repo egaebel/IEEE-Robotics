@@ -14,7 +14,7 @@ IRAverager::IRAverager(int pin) {
 void IRAverager::updateIR() {
 	sum -= valArray[slot];
     double x = analogRead(ir_pin);
-    double distance3 = 10650.08*pow(x,-0.935)-10;
+    double distance3 = 10650.08 * pow(x, -0.935) - 10;
     if (distance3 > 150)
       distance3 = 150;
 	valArray[slot] = distance3;
@@ -27,9 +27,9 @@ void IRAverager::updateIR() {
 
 float IRAverager::getIR() {
 	float devsum = 0;
-	float mean = sum/lengthArray;
-	for (int i = 0; i < lengthArray-1; i++) {
-		devsum += pow((valArray[i] - mean),2);
+	float mean = sum / lengthArray;
+	for (int i = 0; i < lengthArray - 1; i++) {
+		devsum += pow((valArray[i] - mean), 2);
 	}
 	
 	float stdDev = sqrt(devsum/(lengthArray));
@@ -37,12 +37,13 @@ float IRAverager::getIR() {
 	int out = 0;
 	float newSum;
 	for (int i = 0; i < lengthArray-1; i++) {
-		if (valArray[i] > mean - (2*stdDev) && valArray[i] < mean + (2*stdDev))
+
+		if (valArray[i] > mean - (2 * stdDev) && valArray[i] < mean + (2 * stdDev))
 		{
 			newSum += valArray[i];
 		}
 		else
 			out++;
 	}
-	return newSum/(lengthArray-out);
+	return newSum / (lengthArray-out);
 }
