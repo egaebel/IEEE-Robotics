@@ -1,3 +1,9 @@
+/**
+ * @file target
+ * @brief target recognition and location detection using OpenCV
+ * @author D. Butenhoff
+ */
+
 #include <cmath>
 #include "opencv2/core/core.hpp"
 #include "opencv2/highgui/highgui.hpp"
@@ -10,42 +16,13 @@ using namespace cv;
 /*
  * returns true if a centroid was found, false otherwise
  */
-bool locateTarget( cv::Mat &scene, cv::Point &centroid )
+bool locateTarget( cv::Mat scene, cv::Point &centroid )
 {
-  // rough denoising before any other processing
-  //fastNlMeansDenoisingColored( scene, scene );
-
-  /*
-  // split the scene into bgr channels
-  vector<Mat> channels;
-  split( scene_orig, channels );
-  for( int i = 0; i < 3; i++ )
-  {
-    char chnl_buffer[10];
-    sprintf( chnl_buffer, "%d", i );
-    string filename = "./" + string(argv[scene_num]) + "_bgr" + string(chnl_buffer) + "_orig.png";
-    imwrite( filename, channels[i] );
-  }
-
-  // split the scene into hsv channels
-  Mat scene_hsv;
-  vector<Mat> channels_hsv;
-  cvtColor( scene_orig, scene_hsv, CV_BGR2HSV );
-  split( scene_hsv, channels_hsv );
-  for( int i = 0; i < 3; i++ )
-  {
-    char chnl_buffer[10];
-    sprintf( chnl_buffer, "%d", i );
-    string filename = "./" + string(argv[scene_num]) + "_hsv" + string(chnl_buffer) + "_orig.png";
-    imwrite( filename, channels_hsv[i] );
-  }
-  */
-
   // convert the scene to HSV
   cvtColor( scene, scene, CV_BGR2HSV );
 
   // filter the scene by tuned HSV ranges
-  cv::Mat upr_scene, lwr_scene;
+  Mat upr_scene, lwr_scene;
   inRange( scene, Scalar( UPPER_HUE, LOWER_SAT, LOWER_VAL ), Scalar( MAX_HUE, UPPER_SAT, UPPER_VAL ), upr_scene );
   inRange( scene, Scalar( MIN_HUE, LOWER_SAT, LOWER_VAL ), Scalar( LOWER_HUE, UPPER_SAT, UPPER_VAL ), lwr_scene );
   add( upr_scene, lwr_scene, scene );
@@ -55,37 +32,18 @@ bool locateTarget( cv::Mat &scene, cv::Point &centroid )
   dilate( scene, scene, getStructuringElement( MORPH_ELLIPSE, Size ( DILATE_SIZE, DILATE_SIZE ) ) );
 
   // detect the edges of the remaining blobs using Canny
-  Canny( scene, scene, CANNY_LOW_THRESHOLD, CANNY_HIGH_THRESHOLD, CANNY_KERNEL_SIZE );
+  Canny( scene, scene, 100, 200, 3 );
 
   // get contours from edges
   vector< vector<Point> > contours;
   vector<Vec4i> hierarchy;
   findContours( scene, contours, hierarchy, CV_RETR_TREE, CV_CHAIN_APPROX_SIMPLE, Point(0, 0) );
 
-  /*
-  // match shapes
-  cv::Mat shp_scene = cv::Mat::zeros( cny_scene.size(), CV_8UC3 );
-  cv::Mat hul_scene = cv::Mat::zeros( cny_scene.size(), CV_8UC3 );
-  vector<vector<Point> > shapes( contours.size() );
-  vector<vector<Point> > hulls( contours.size() );
-  for( unsigned int shape = 0; shape < contours.size(); shape++ )
-  {
-    // fit contours to 5% of arc length to approximate polygons
-    approxPolyDP( contours[shape], shapes[shape], arcLength(cv::Mat(contours[shape]), true)*0.05, true);
-    // fit convex hulls around shapes
-    convexHull( cv::Mat(shapes[shape]), hulls[shape] );
-    #ifdef DEBUG
-      drawContours( shp_scene, shapes, shape, Scalar(255, 0, 0), 1, 8, vector<Vec4i>(), 0, Point() );
-      drawContours( hul_scene, hulls, shape, Scalar(255, 0, 0), 1, 8, vector<Vec4i>(), 0, Point() );
-    #endif
-  }
-  */
-
   // normalize contours into convex hulls
   vector< vector<Point> > hulls( contours.size() );
   for( unsigned int i = 0; i < contours.size(); i++ )
   {
-    convexHull( cv::Mat(contours[i]), hulls[i] );
+    convexHull( Mat(contours[i]), hulls[i] );
   }
 
   // calculate area for each hull
