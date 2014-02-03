@@ -29,6 +29,8 @@ bool LineFollower::isCentered(byte& L_bits, byte& R_bits) // Has to be changed a
 
 bool LineFollower::intersection(byte& L_bits, byte& R_bits)
 {
+  Get_Line_Data();
+  
   L_bits = this->L_bits;
   R_bits = this->R_bits;
   
