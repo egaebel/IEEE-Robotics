@@ -207,8 +207,6 @@ void Demo_Run()
     {
       Get_Line_Data();
       Follow_the_line();
-    }
-    U_Turn();
   }
 return;
 }
