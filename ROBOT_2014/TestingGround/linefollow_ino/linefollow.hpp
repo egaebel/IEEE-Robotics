@@ -8,6 +8,7 @@
 // Coonect ShiftRegister IC inverted OUTPUT pin(7) to digital PIN #50(MISO)
 //                     For 74HC165 IC
 // Do not forget to connect PIN15 (Clock Inhibit) to the ground!
+// Bit Reversal is implemented in hardware. See below the wiring instruction.
 
 //James Reed
 //Computer Engineering Sophomore, Class 2016
@@ -27,7 +28,7 @@
 //
 //Preprocessor Directives:
 // -Symbol DEBUG_STANDALONE allows this to be compiled and uploaded as 
-//  a standalone Arduino sketch. The demo methods from yore have been preserved.
+//  a standalone Arduino sketch. The demo methods from core have been preserved.
 // -Symbols DEBUG prints the raw line data byte to the serial output
 
 
@@ -45,8 +46,8 @@ private:
 	static const short sensor  = 24; // Controls LineFollower's Enable pin
 
 	#ifdef DEBUG_STANDALONE
-	static const short L_side_pin = 10; // PWM pin for left treck
-	static const short R_side_pin = 9;  // PWM pin for right treck
+	static const short L_side_pin = 10; // PWM pin for left trek
+	static const short R_side_pin = 9;  // PWM pin for right trek
 	static const short Dir_Right_Side  =  30; // Controls direction of the right track(LOW - forward, HIGH - Reverse)
 	static const short Dir_Left_Side  =   31; // Controls direction of the left track (LOW - forward, HIGH - Reverse)
 	static const byte max_speed = 100;   // PWM value 0-255
@@ -67,7 +68,7 @@ private:
 	
 	void Get_Line_Data();
 	
-	/* NOTE: theme methods are part of the demo code.
+	/* NOTE: these methods are part of the demo code.
 	 *
 	 * Follow_the_line(), Move_Control(), Left_Turn(), U_Turn(), Demo_Run(), Halt()
 	 *
