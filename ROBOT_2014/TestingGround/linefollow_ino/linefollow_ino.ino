@@ -34,7 +34,7 @@ bool LineFollower::intersection(byte& L_bits, byte& R_bits)
   L_bits = this->L_bits;
   R_bits = this->R_bits;
   
-  return ( (L_bits == 0x7) && (R_bits == 0x7) )
+  return ( (L_bits == 0x7) && (R_bits == 0x7) );
 }
 
 
