@@ -10,8 +10,8 @@ LineFollower::LineFollower()
   U_Turn_flag = 0;
   Num_LT = 0;
   Hor_Line_pass = 1;
-  Line_Data = 0;
   #endif
+  Line_Data = 0;
 }
 
 //**************  Evaluate whether the robot is centered on the line **********
@@ -34,7 +34,7 @@ bool LineFollower::intersection(byte& L_bits, byte& R_bits)
   L_bits = this->L_bits;
   R_bits = this->R_bits;
   
-  return ( (L_bits == 0x7) && (R_bits == 0x7) );
+  return ( Line_Data == 0xFF );
 }
 
 
