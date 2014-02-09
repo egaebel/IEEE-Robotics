@@ -17,7 +17,7 @@ const int PIN_IN1 = 22;
 const int PIN_IN2 = 24;
 //
 // PWM pin on hubee wheel. PWM pin 9
-const int PIN_PWM = 9
+const int PIN_PWM = 9;
 
 //***************Wire assignments ***************
 //
