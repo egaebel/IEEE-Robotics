@@ -16,28 +16,28 @@ using namespace cv;
 /*
  * returns true if a centroid was found, false otherwise
  */
-bool locateTarget( cv::Mat scene, cv::Point &centroid )
+bool locateTarget( cv::Mat *scene, cv::Point *centroid )
 {
   // convert the scene to HSV
-  cvtColor( scene, scene, CV_BGR2HSV );
+  cvtColor( *scene, *scene, CV_BGR2HSV );
 
   // filter the scene by tuned HSV ranges
   Mat upr_scene, lwr_scene;
-  inRange( scene, Scalar( UPPER_HUE, LOWER_SAT, LOWER_VAL ), Scalar( MAX_HUE, UPPER_SAT, UPPER_VAL ), upr_scene );
-  inRange( scene, Scalar( MIN_HUE, LOWER_SAT, LOWER_VAL ), Scalar( LOWER_HUE, UPPER_SAT, UPPER_VAL ), lwr_scene );
-  add( upr_scene, lwr_scene, scene );
+  inRange( *scene, Scalar( UPPER_HUE, LOWER_SAT, LOWER_VAL ), Scalar( MAX_HUE, UPPER_SAT, UPPER_VAL ), upr_scene );
+  inRange( *scene, Scalar( MIN_HUE, LOWER_SAT, LOWER_VAL ), Scalar( LOWER_HUE, UPPER_SAT, UPPER_VAL ), lwr_scene );
+  add( upr_scene, lwr_scene, *scene );
 
   // erode/dilate to remove small noise clusters
-  erode( scene, scene, getStructuringElement( MORPH_ELLIPSE, Size ( ERODE_SIZE, ERODE_SIZE ) ) );
-  dilate( scene, scene, getStructuringElement( MORPH_ELLIPSE, Size ( DILATE_SIZE, DILATE_SIZE ) ) );
+  erode( *scene, *scene, getStructuringElement( MORPH_ELLIPSE, Size ( ERODE_SIZE, ERODE_SIZE ) ) );
+  dilate( *scene, *scene, getStructuringElement( MORPH_ELLIPSE, Size ( DILATE_SIZE, DILATE_SIZE ) ) );
 
   // detect the edges of the remaining blobs using Canny
-  Canny( scene, scene, 100, 200, 3 );
+  Canny( *scene, *scene, 100, 200, 3 );
 
   // get contours from edges
   vector< vector<Point> > contours;
   vector<Vec4i> hierarchy;
-  findContours( scene, contours, hierarchy, CV_RETR_TREE, CV_CHAIN_APPROX_SIMPLE, Point(0, 0) );
+  findContours( *scene, contours, hierarchy, CV_RETR_TREE, CV_CHAIN_APPROX_SIMPLE, Point(0, 0) );
 
   // normalize contours into convex hulls
   vector< vector<Point> > hulls( contours.size() );
@@ -125,7 +125,7 @@ bool locateTarget( cv::Mat scene, cv::Point &centroid )
   // REVISIT: how can we select these more intelligently?
   if( hulls.size() >= 4 )
   {
-    centroid = Point( (cms[0].x + cms[1].x + cms[2].x + cms[3].x) / 4,
+    *centroid = Point( (cms[0].x + cms[1].x + cms[2].x + cms[3].x) / 4,
                       (cms[0].y + cms[1].y + cms[2].y + cms[3].y) / 4 );
     return true;
   }

@@ -9,7 +9,7 @@
 //                     For 74HC165 IC
 // Do not forget to connect PIN15 (Clock Inhibit) to the ground!
 
-#include <SPI.h>
+#include<SPI.h>
 
 // -----[ I/O Definitions ]-------------------------------------------------
 
@@ -207,7 +207,9 @@ void Demo_Run()
     {
       Get_Line_Data();
       Follow_the_line();
-  }
+    }
+      U_Turn();
+    }
 return;
 }
 
