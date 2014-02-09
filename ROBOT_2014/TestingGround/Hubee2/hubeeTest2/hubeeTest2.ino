@@ -17,11 +17,21 @@ const int PIN_IN1 = 22;
 const int PIN_IN2 = 24;
 //
 // PWM pin on hubee wheel. PWM pin 9
-const int PIN_PWM = 9;
+const int PIN_PWM = 9
 
+//***************Wire assignments ***************
+//
+// BLACK: GND
+// WHITE: +V
+// GREY: IN1
+// PURPLE: IN2
+// BLUE: PWM
+// GREEN: Standby (active low - can be left disconnected)
+// YELLOW/ORANGE: Quadrature sensor channels A and B (not used in this)
+//
 HUBeeBMDWheel Wheel; // create our wheel object
 
-int Speed = -150; // static speed for testing purposes
+int Speed = 255; // static speed for testing purposes
 
 signed char timeout= -255; // demonstration timeout
 
