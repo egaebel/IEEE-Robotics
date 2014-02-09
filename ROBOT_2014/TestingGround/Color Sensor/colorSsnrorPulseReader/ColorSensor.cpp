@@ -107,15 +107,15 @@ int ColorSensor::getColor() {
     int greenVal = colorRead(3);
     int blueVal = colorRead(1);
 
-    if(blueVal > redVal + greenVal) {
+    if(blueVal > redVal && blueVal + greenVal + redVal > 70) {
         return 2;
     }
 
-    else if(blueVal + greenVal + redVal < 200) {
+    else if(blueVal + greenVal + redVal < 60) {
         return 0;
     }
 
-    else if(blueVal + greenVal + redVal > 2000) {
+    else if(blueVal + greenVal + redVal > 70) {
         return 1;
     }
 
