@@ -96,7 +96,7 @@ void motors::motorsTurn(Turn motorsTurn){
 }
 
 //Cuts power to the motors, roll to a stop
-void motors::motorsBrake() {
+void motors::motorsStop() {
 
     //Delay 2 milliseconds so we don't explode....
     delay(2);
