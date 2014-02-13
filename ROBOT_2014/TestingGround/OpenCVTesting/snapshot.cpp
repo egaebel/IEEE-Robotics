@@ -5,8 +5,8 @@
  */
 
 #include <cstdio>
-#include "opencv2/core.hpp"
-#include "opencv2/highgui.hpp"
+#include "opencv2/core/core.hpp"
+#include "opencv2/highgui/highgui.hpp"
 
 using namespace std;
 using namespace cv;
@@ -24,15 +24,15 @@ int main()
     return -1;
   }
 
-  printf("%4.1f\n", cap.get(CAP_PROP_FRAME_WIDTH));
-  printf("%4.1f\n", cap.get(CAP_PROP_FRAME_HEIGHT));
+  printf("%4.1f\n", cap.get(CV_CAP_PROP_FRAME_WIDTH));
+  printf("%4.1f\n", cap.get(CV_CAP_PROP_FRAME_HEIGHT));
 
   // try to set the camera properties
-  cap.set(CAP_PROP_FRAME_WIDTH, 640);
-  cap.set(CAP_PROP_FRAME_HEIGHT, 480);
+  cap.set(CV_CAP_PROP_FRAME_WIDTH, 640);
+  cap.set(CV_CAP_PROP_FRAME_HEIGHT, 480);
 
-  printf("%4.1f\n", cap.get(CAP_PROP_FRAME_WIDTH));
-  printf("%4.1f\n", cap.get(CAP_PROP_FRAME_HEIGHT));
+  printf("%4.1f\n", cap.get(CV_CAP_PROP_FRAME_WIDTH));
+  printf("%4.1f\n", cap.get(CV_CAP_PROP_FRAME_HEIGHT));
 
   // initialize the camera
   cap.grab();
