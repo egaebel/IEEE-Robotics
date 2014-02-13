@@ -47,8 +47,8 @@ int main()
 	}
 
 	// try to set the camera properties
-	cap.set(CV_CAP_PROP_FRAME_WIDTH, 320);
-	cap.set(CV_CAP_PROP_FRAME_HEIGHT, 240);
+	cap.set(CV_CAP_PROP_FRAME_WIDTH, 1920);
+	cap.set(CV_CAP_PROP_FRAME_HEIGHT, 1080);
 	cap.set(CV_CAP_PROP_FPS, 30);
 
 	// initialize the camera
