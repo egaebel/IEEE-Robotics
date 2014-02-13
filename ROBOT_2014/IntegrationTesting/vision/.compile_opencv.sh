@@ -1,3 +1,10 @@
+echo "checking bin directory"
+if [[ ! -e bin ]]; then
+    mkdir bin
+elif [[ ! -d bin ]]; then
+    echo "bin already exists but is not a directory" 1>&2
+fi
+
 echo "compiling $1"
 if [[ $1 == *.c ]]
 then
