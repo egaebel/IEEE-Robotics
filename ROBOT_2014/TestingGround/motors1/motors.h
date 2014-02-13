@@ -1,62 +1,48 @@
-
 #ifndef MOTORS_H
 #define MOTORS_H
 
 #include <Arduino.h>
 
+//Define the Pins----------
+//Motor Pair 1 (ON THE LEFT SIDE)
+#define PIN_DIRECTION_LEFT 9 //Direction
+#define PIN_PWM_LEFT 3 //Speed
+
+//Motor Pair 2 (ON THE RIGHT SIDE)
+#define PIN_DIRECTION_RIGHT 8 //Direction
+#define PIN_PWM_RIGHT 4 //Speed
+
+//Enum for specifying direction to move in
+enum Direction { FORWARD = 1, BACKWARD };
+
+//Enum for specifying the direction to turn in
+enum Turn {	LEFT = 1, RIGHT };
+
+//~Class for moving all of the motors at once
 class motors
 {
-private:
+	//==================================================
+	//~~PIN INFORMATION=================================
+	//==================================================
+	/*
+		Connections:
+		- Pin 3 ---> PWM for left motors
+		- Pin 9 ---> PIN_DIRECTION_LEFT
 
-/*
-Sample Code to run the Sparkfun TB6612FNG 1A Dual Motor Driver using Arduino UNO R3
+		- Pin 4 ---> PWM for right motors
+		- Pin 8 ---> PIN_DIRECTION_RIGHT
+	*/
+	//==================================================
 
-This code conducts a few simple manoeuvres to illustrate the functions:
-  - motorDrive(motorNumber, motorDirection, motorSpeed)
-  - motorBrake(motorNumber)
-  - motorStop(motorNumber)
-  - motorsStandby
-
-Connections:
-- Pin 3 ---> PWMA
-- Pin 8 ---> AIN2
-- Pin 9 ---> AIN1
-- Pin 10 ---> STBY
-- Pin 11 ---> BIN1
-- Pin 12 ---> BIN2
-- Pin 5 ---> PWMB
-
-- Motor 1: A01 and A02
-- Motor 2: B01 and B02
-
-*/
-
-//Define the Pins
-
-//Motor 1
-#define pinAIN1 9 //Direction
-#define pinAIN2 8 //Direction
-#define pinPWMA 3 //Speed
-
-//Motor 2
-#define pinBIN1 11 //Direction
-#define pinBIN2 12 //Direction
-#define pinPWMB 5 //Speed
-
-//Standby
-#define pinSTBY 10
-
-//Constants to help remember the parameters
-#define turnCW false  //for motorDrive function
-#define turnCCW true //for motorDrive function
-#define motor1 false  //for motorDrive, motorStop, motorBrake functions
-#define motor2 true  //for motorDrive, motorStop, motorBrake functions
-public:
-	void setup();
-	void motorDrive(bool motorNumber, bool motorDirection);
-	void motorBrake(bool motorNumber);
-	void motorStop(bool motorNumber);
-	void motorsStandby();
-	int speed;
+	public:
+		void setup(int defaultSpeed);
+		void motorsDrive(Direction motorsDirection);
+		void motorsBrake();
+		void motorsStop();
+		void motorsTurnLeft();
+		void motorsTurnRight();
+		int speed;
+	private:
+		void motorsTurn(Turn motorsTurn);
 };
 #endif

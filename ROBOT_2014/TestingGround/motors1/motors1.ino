@@ -4,10 +4,16 @@
 motors m1;
 void setup()
 {
-  m1.speed = 255;  
+	Serial.begin(9600);
+	m1.setup(255);
+    delay(2);
 }
 
 void loop()
 {
- m1.motorDrive(motor1, turnCW); 
+	m1.motorsDrive(FORWARD); 
+	Serial.write("Going.....\n");
+	delay(10000);
+	m1.motorsDrive(BACKWARD);
+	delay(10000);
 }
