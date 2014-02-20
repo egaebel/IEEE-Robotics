@@ -55,9 +55,13 @@ void loop()
   {
     // wait for camera to aim, perhaps have a timeout here that rotates the entire robot or something in case the camera has lost the target completely
   }
+
+  // fire barrel 1
   firing_servo_1.writeMicroseconds( SERVO_FIRE_POSITION );
   delay( TRIGGER_DELAY );
   firing_servo_1.writeMicroseconds( SERVO_REST_POSITION );
+
+  // notify the BeagleBone to start aiming at the target for the next shot
   digitalWrite( AIM_NEXT_BARREL_PIN, HIGH );
   delay( NOTIFY_DELAY );
   digitalWrite( AIM_NEXT_BARREL_PIN, LOW );
@@ -68,9 +72,13 @@ void loop()
   {
     // wait for camera to aim, perhaps have a timeout here that rotates the entire robot or something in case the camera has lost the target completely
   }
+
+  // fire barrel 2
   firing_servo_2.writeMicroseconds( SERVO_FIRE_POSITION );
   delay( TRIGGER_DELAY );
   firing_servo_2.writeMicroseconds( SERVO_REST_POSITION );
+
+  // notify the BeagleBone to start aiming at the target for the next shot
   digitalWrite( AIM_NEXT_BARREL_PIN, HIGH );
   delay( NOTIFY_DELAY );
   digitalWrite( AIM_NEXT_BARREL_PIN, LOW );
@@ -81,6 +89,8 @@ void loop()
   {
     // wait for camera to aim, perhaps have a timeout here that rotates the entire robot or something in case the camera has lost the target completely
   }
+
+  // fire barrel 3
   firing_servo_3.writeMicroseconds( SERVO_FIRE_POSITION );
   delay( TRIGGER_DELAY );
   firing_servo_1.writeMicroseconds( SERVO_REST_POSITION );
