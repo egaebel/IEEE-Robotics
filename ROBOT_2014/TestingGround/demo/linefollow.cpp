@@ -1,5 +1,4 @@
-#include <SPI.h>
-#include "C:/Users/James Reed/Desktop/linefollow_ino/linefollow.hpp"
+#include "C:\Users\ethan\Documents\ACTUAL My Documents\Robotics Team\IEEE-Robotics\ROBOT_2014\TestingGround\demo\linefollow.hpp"
 
 #define DEBUG
 
@@ -30,7 +29,6 @@ bool LineFollower::isCentered(byte& L_bits, byte& R_bits) // Has to be changed a
 bool LineFollower::intersection(byte& L_bits, byte& R_bits)
 {
   Get_Line_Data();
-  
   L_bits = this->L_bits;
   R_bits = this->R_bits;
   
@@ -55,9 +53,14 @@ void LineFollower::Get_Line_Data()
   Serial.println(Line_Data);
   #endif
   
-return;
+  return;
 }
 
+void LineFollower::Get_Line_Data(byte& L_bits, byte& R_bits) {
+
+  L_bits = this->L_bits;
+  R_bits = this->R_bits;
+}
 
 
 // ****** Method graveyard below ******
@@ -70,11 +73,6 @@ return;
 LineFollower lf;
 void setup() {lf.setup();};
 void loop() {lf.loop();};
-
-#else
-
-void setup() {}
-void loop() {}
 
 #endif
 
