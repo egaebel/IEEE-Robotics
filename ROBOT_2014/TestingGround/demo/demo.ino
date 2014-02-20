@@ -1,34 +1,68 @@
 
+#include "motors.h"
 
-static bool onCurvedAdjacentLine;
-static bool started;
+enum State { MAIN_LINE = 1, STRAIGHT_LINE_START, FIRE, STRAIGHT_LINE_END, CURVED_LINE };
 
+//Hardware interfaces
+static Motors motors;
+static LineFollower lineFollower
+
+//
+static State state;
+static byte leftLineFollowBits;
+static byte rightLineFollowBits;
+
+//Setup variables etc
 void setup() {
 
+	Serial.begin(9600);
 	//init all hardware
-
+	motors.setup(255);
+	state = MAIN_LINE;
+	delay(3);
 }
 
 void loop() {
 
-	//If we haven't read the LEDs
-	if (!started) {
+	switch(state) {
 
-		//Read LEDs (not in this demo)
+		case MAIN_LINE:
+
+
+			break;
+		case STRAIGHT_LINE_START:
+			break;
+		case STRAIGHT_LINE_END:
+			break;
+		case FIRE:
+			break;
+		case CURVED_LINE:
+			break;
 	}
-	else {
+}
 
-		//Read Line (might switch these two lines of code)
-		//Process result
+void followTheLine(byte leftBits, byte rightBits)
+{
+	short leftPWM = 0;
+	short rightPWM = 0;
 
-		//if no line intersection
-			//if (onCurvedAdjacentLine)
-				//do navigation
-			//else
-				//Go forward
-		//else
-			//turn left
-
-		//
+	if (leftBits > rightBits)
+	{
+		leftPWM = motors.speed / leftBits;
+		rightPWM = motors.speed;
 	}
+	else if (rightBits > leftBits)
+	{
+		leftPWM = motors.speed;
+		rightPWM = motors.speed / rightBits;
+	}
+	else
+	{
+		leftPWM = motors.speed;
+		rightPWM = motors.speed;
+	}
+
+	motors.motorsTurn(leftPWM, rightPWM);
+
+	return;
 }
