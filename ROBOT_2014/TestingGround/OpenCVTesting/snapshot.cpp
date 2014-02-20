@@ -24,20 +24,32 @@ int main()
     return -1;
   }
 
+  printf("%4.1f\n", cap.get(CV_CAP_PROP_FRAME_WIDTH));
+  printf("%4.1f\n", cap.get(CV_CAP_PROP_FRAME_HEIGHT));
+
   // try to set the camera properties
-  //cap.set(CV_CAP_PROP_FRAME_WIDTH, 320);
-  //cap.set(CV_CAP_PROP_FRAME_HEIGHT, 240);
-  //cap.set(CV_CAP_PROP_FPS, 30);
+  cap.set(CV_CAP_PROP_FRAME_WIDTH, 640);
+  cap.set(CV_CAP_PROP_FRAME_HEIGHT, 480);
+
+  printf("%4.1f\n", cap.get(CV_CAP_PROP_FRAME_WIDTH));
+  printf("%4.1f\n", cap.get(CV_CAP_PROP_FRAME_HEIGHT));
 
   // initialize the camera
   cap.grab();
 
-  // retrieve a frame from the camera
+  printf( "grabbed\n" );
+
+  // read (grab and retrieve) a frame from the camera
   Mat scene;
   cap >> scene;
 
+  printf( "retrieved\n" );
+
   if( scene.data )
+  {
     imwrite( "./snapshot.png", scene );
+    printf( "written\n" );
+  }
   else
   {
     printf( "failed to take snapshot\n" );
