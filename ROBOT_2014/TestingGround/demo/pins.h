@@ -1,4 +1,5 @@
 #ifndef PIN_DEFINITIONS_H_
+#define PIN_DEFINITIONS_H_
 
 //Pin assignments
 
@@ -12,3 +13,5 @@
 //Line Sensor Pins
 #define Load = 22; // Controls ShiftRegister's Shift/Load pin(1)
 #define sensor = 24; // Controls LineFollower's Enable pin
+
+#endif
