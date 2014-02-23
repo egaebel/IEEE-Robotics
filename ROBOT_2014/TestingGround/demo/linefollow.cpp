@@ -1,6 +1,6 @@
 #include "C:\Users\ethan\Documents\ACTUAL My Documents\Robotics Team\IEEE-Robotics\ROBOT_2014\TestingGround\demo\linefollow.hpp"
 
-#define DEBUG
+//#define DEBUG
 
 LineFollower::LineFollower()
 {
