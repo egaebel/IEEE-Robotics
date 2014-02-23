@@ -28,9 +28,13 @@ bool LineFollower::isCentered(byte& L_bits, byte& R_bits) // Has to be changed a
 
 bool LineFollower::intersection(byte& L_bits, byte& R_bits)
 {
+  Serial.println("Checking intersection");
   Get_Line_Data();
   L_bits = this->L_bits;
   R_bits = this->R_bits;
+  Serial.print("Line_Data == ");
+  Serial.print(Line_Data);
+  Serial.print("\n");
   
   return ( Line_Data == 0xFF );
 }
@@ -40,10 +44,13 @@ bool LineFollower::intersection(byte& L_bits, byte& R_bits)
 
 void LineFollower::Get_Line_Data()
 {
+  Serial.println("GET_LINE_DATA_CALLED");
   digitalWrite(Load, LOW); //Let the data get into shift register IC
   delayMicroseconds(10);
   digitalWrite(Load, HIGH); //Loads data into the serial register for output
+  Serial.println("SPI.transfer being called with 0x00");
   Line_Data = SPI.transfer(0x00); // Receives serially 8 bits into Line_Data variable
+  Serial.println("SPI.transfer RETURNED. phew ");
   delay(10);
   L_bits = Line_Data & 0xF0; //Get left most 4 bits
   L_bits >>= 4;
@@ -52,12 +59,13 @@ void LineFollower::Get_Line_Data()
   #ifdef DEBUG					//Debugging creates unnecessary delays which should be avoided if rover runs on timings and not on encoders!
   Serial.println(Line_Data);
   #endif
-  
+  Serial.println("GET_LINE_DATA GOTTEN");
   return;
 }
 
 void LineFollower::Get_Line_Data(byte& L_bits, byte& R_bits) {
 
+  this->Get_Line_Data();
   L_bits = this->L_bits;
   R_bits = this->R_bits;
 }
