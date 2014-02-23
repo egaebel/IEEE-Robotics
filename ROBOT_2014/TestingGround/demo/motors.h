@@ -41,6 +41,7 @@ class Motors
 		void motorsTurnLeft();
 		void motorsTurnRight();
 		void motorsTurn(short leftPWM, short rightPWM);
+		void motorsUTurn();
 		int speed;
 	private:
 		void motorsTurn(Turn motorsTurn);

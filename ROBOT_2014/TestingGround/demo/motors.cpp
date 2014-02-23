@@ -57,6 +57,13 @@ void Motors::motorsTurn(short leftPWM, short rightPWM) {
     analogWrite(PIN_PWM_RIGHT, rightPWM);
 }
 
+//
+void Motors::motorsUTurn() {
+
+    
+    motorsTurn(LEFT);
+}
+
 //Turns the robot left.
 void Motors::motorsTurnLeft() {
     

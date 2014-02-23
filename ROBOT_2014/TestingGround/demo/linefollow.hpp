@@ -35,9 +35,9 @@
 #ifndef LINE_FOLLOW_H
 #define LINE_FOLLOW_H
 
-//#include <SPI.h>
+#include "SPI.h"
 
-#define DEBUG_STANDALONE
+//#define DEBUG_STANDALONE
 
 class LineFollower
 {
@@ -87,6 +87,7 @@ public:
 	LineFollower();
 	bool isCentered(byte& L_bits, byte& R_bits);
 	bool intersection(byte& L_bits, byte& R_bits);
+	void Get_Line_Data(byte& L_bits, byte& R_bits);
 	
 	//these methods allow this to be compiled as a standalone Arduino sketch.
 	#ifdef DEBUG_STANDALONE
