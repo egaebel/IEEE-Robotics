@@ -60,9 +60,9 @@ void loop()
   location = goal_position;
   //present_val = analogRead(analogPin); // read value of A0
   transmit();
+  Serial3.flush();
   send_read_bytes(1, current_position, 2);
   recieve();
-  Serial3.flush();
   char message_bytes[8] = { };
   Serial3.readBytes(message_bytes, 8);
   int current_place = 0;
@@ -74,7 +74,7 @@ void loop()
     Serial.print((byte)message_bytes[idx]);
   }
   Serial.println(""); 
-  Serial.println("Current Place: " + current_place);
+  Serial.println("Current Place: " + String(current_place));
   /*
   if(current_place == positions[counter] )
   {
@@ -152,7 +152,7 @@ void reg_write_2_byte(int id, int location,int val)
  ---------------------------------------*/
 void send_read_bytes(int id, int location, int read_bytes)
 {
-  length = 5; // length of 2-byte read instruction is 5
+  length = 3 + read_bytes; // length of 2-byte read instruction is 5
   checksum = ~((id + length + read_ins + location + read_bytes)%256); //Checksum Value
   Serial3.write(0xFF); // Starts instruction packet
   Serial3.write(0xFF);
