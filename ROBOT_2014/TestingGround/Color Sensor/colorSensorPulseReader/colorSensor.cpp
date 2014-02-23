@@ -8,7 +8,14 @@
 /**
  * calls the setUp method for the TC3200 sensor
  */
-ColorSensor::ColorSensor()    {
+ColorSensor::ColorSensor(int S0, int S1, int s2, int S3, int taosOutPin, int LED)  : S0(S0),\
+                              S1(S1),\
+                              S2(S2),\
+                              S3(S3),\
+                              taosOutPin(taosOutPin),\
+                              LED(LED),
+                              LEDstate(true)\
+{
     TCS3200setup();
 }
 
