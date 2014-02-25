@@ -31,11 +31,11 @@ void Motors::motorsDrive(Direction motorsDirection) {
  
     if (motorsDirection == FORWARD) {
         pinInput = HIGH;
-        Serial.write("pinInput is HIGH!\n");
+        Serial.print("pinInput is HIGH!\n");
     }
     else {
         pinInput = LOW;
-        Serial.write("pinInput is LOW!\n");
+        Serial.print("pinInput is LOW!\n");
     }
 
     digitalWrite(PIN_DIRECTION_LEFT, pinInput);
@@ -51,8 +51,8 @@ void Motors::motorsDrive(Direction motorsDirection) {
 //Adjust the speed of each motor manually by passing a PWM 
 void Motors::motorsTurn(short leftPWM, short rightPWM) {
 
-    digitalWrite(PIN_DIRECTION_LEFT, LOW);
-    digitalWrite(PIN_DIRECTION_RIGHT, LOW);
+    digitalWrite(PIN_DIRECTION_LEFT, HIGH);
+    digitalWrite(PIN_DIRECTION_RIGHT, HIGH);
     analogWrite(PIN_PWM_LEFT, leftPWM);
     analogWrite(PIN_PWM_RIGHT, rightPWM);
 }
@@ -60,8 +60,9 @@ void Motors::motorsTurn(short leftPWM, short rightPWM) {
 //
 void Motors::motorsUTurn() {
 
-    
-    motorsTurn(LEFT);
+    motorsTurn(RIGHT);
+    delay(16000);
+    this->motorsStop();
 }
 
 //Turns the robot left.

@@ -1,7 +1,7 @@
 #ifndef PIN_DEFINITIONS_H_
 #define PIN_DEFINITIONS_H_
 
-//Pin assignments
+//Pin assignments--------------------------
 
 //Motor Pair 1 (ON THE LEFT SIDE)
 #define PIN_DIRECTION_LEFT 8 //Direction
