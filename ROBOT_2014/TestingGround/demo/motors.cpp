@@ -41,7 +41,7 @@ void Motors::motorsDrive(Direction motorsDirection) {
     digitalWrite(PIN_DIRECTION_LEFT, pinInput);
     analogWrite(PIN_PWM_LEFT, speed);   
 
-    digitalWrite(PIN_DIRECTION_RIGHT, pinInput);
+    digitalWrite(PIN_DIRECTION_RIGHT, !pinInput);
     analogWrite(PIN_PWM_RIGHT, speed);
 
     //Delay 2 milliseconds so we don't explode....
@@ -49,20 +49,42 @@ void Motors::motorsDrive(Direction motorsDirection) {
 }
 
 //Adjust the speed of each motor manually by passing a PWM 
-void Motors::motorsTurn(short leftPWM, short rightPWM) {
+void Motors::motorsTurn(short leftPWM, short rightPWM, Turn motorsTurn) {
 
-    digitalWrite(PIN_DIRECTION_LEFT, HIGH);
-    digitalWrite(PIN_DIRECTION_RIGHT, HIGH);
+    delay(2);
+
+    bool pinInput;
+
+    if (motorsTurn == RIGHT) {
+        pinInput = LOW;
+    }
+    else if (motorsTurn == LEFT) {
+        pinInput = HIGH;
+    }
+    else {
+        Serial.println("WTF....");
+        pinInput1 = HIGH;
+        pinInput2 = LOW;
+    }
+
+    digitalWrite(PIN_DIRECTION_LEFT, pinInput1);
+    digitalWrite(PIN_DIRECTION_RIGHT, pinInput2);
     analogWrite(PIN_PWM_LEFT, leftPWM);
     analogWrite(PIN_PWM_RIGHT, rightPWM);
+
+    delay(2);
 }
 
 //
 void Motors::motorsUTurn() {
 
-    motorsTurn(RIGHT);
-    delay(16000);
+    delay(2);
+
+    this->motorsTurn(RIGHT);
+    delay(3000);
     this->motorsStop();
+
+    delay(2);
 }
 
 //Turns the robot left.
@@ -71,7 +93,7 @@ void Motors::motorsTurnLeft() {
     //Delay 2 milliseconds so we don't explode....
     delay(2);
 
-    motorsTurn(LEFT);
+    this->motorsTurn(LEFT);
 
     //Delay 2 milliseconds so we don't explode....
     delay(2);
@@ -83,7 +105,7 @@ void Motors::motorsTurnRight() {
     //Delay 2 milliseconds so we don't explode....
     delay(2);
 
-    motorsTurn(RIGHT);
+    this->motorsTurn(RIGHT);
 
     //Delay 2 milliseconds so we don't explode....
     delay(2);
@@ -97,15 +119,15 @@ void Motors::motorsTurn(Turn motorsTurn){
 
     bool pinInput;
 
-    if (motorsTurn == LEFT) 
-        pinInput = HIGH;
-    else
+    if (motorsTurn == RIGHT) 
         pinInput = LOW;
+    else
+        pinInput = HIGH;
 
     digitalWrite(PIN_DIRECTION_LEFT, pinInput);
     analogWrite(PIN_PWM_LEFT, speed);   
 
-    digitalWrite(PIN_DIRECTION_RIGHT, !pinInput);
+    digitalWrite(PIN_DIRECTION_RIGHT, pinInput);
     analogWrite(PIN_PWM_RIGHT, speed);   
 
     //Delay 2 milliseconds so we don't explode....

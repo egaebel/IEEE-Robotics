@@ -27,7 +27,7 @@ void setup() {
 
 	Serial.begin(9600);
 	delay(4000);
-	Serial.print("BEGINNINGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG\n");
+	Serial.print("BEGINNING\n");
 	//init all hardware
 	motors.setup(255);
 	motors.motorsStop();
@@ -51,16 +51,29 @@ void setup() {
 	state = MAIN_LINE;
 	lineCount = 0;
 	Serial.print("Delaying....\n");
-	motors.motorsDrive(FORWARD);
-	delay(10000);
 	Serial.print("STOPP....\n");
 	motors.motorsStop();
-	delay(10000);
+	delay(5000);
 }
 
 //Loop
 void loop() {
 
+	Serial.print("STOPP....\n");
+	motors.motorsStop();
+	Serial.println("Going Forward");
+	motors.motorsDrive(FORWARD);
+	delay(3000);
+	Serial.println("Going Backward");
+	motors.motorsDrive(BACKWARD);
+	delay(3000);
+	Serial.println("Turning Left");
+	motors.motorsTurnLeft();
+	delay(3000);
+	Serial.println("Turning RIGHT");
+	motors.motorsTurnRight();
+	delay(3000);
+/*
 	switch(state) {
 
 		case MAIN_LINE:
@@ -68,12 +81,17 @@ void loop() {
 			motors.motorsDrive(FORWARD);
 			if (lineFollower.intersection(leftLineFollowBits, rightLineFollowBits)) {
 				Serial.println("INTERSECTION!");
-				//followTheLine(leftLineFollowBits, rightLineFollowBits);
-				motors.motorsStop();
-				Serial.println("Turning LEFT");
-				motors.motorsTurnLeft();
-				delay(10000);
-				motors.motorsStop();
+
+				followTheLine(leftLineFollowBits, rightLineFollowBits, true);
+
+				Serial.println("Entering isCentered Loop..");
+				//Follow the line along the turn until we're done
+				while (!lineFollower.isCentered(leftLineFollowBits, rightLineFollowBits)) {
+					Serial.println("Looping in isCentered...");
+					followTheLine(leftLineFollowBits, rightLineFollowBits, true);
+				}
+				Serial.println("Left bits == " + leftLineFollowBits);   
+   				Serial.println("Right bits == " + rightLineFollowBits);
 				
 				//Switch states depending on which line we've discovered
 				if (lineCount == 0 || lineCount == 2) {
@@ -90,27 +108,12 @@ void loop() {
 			break;
 		case STRAIGHT_LINE_START:
 			Serial.println("ON A SIDE STRAIGHT LINE");
-			delay(5000);
+			//Remove later in favor of navigation to Blue firing block
 			motors.motorsDrive(FORWARD);
-			delay(3000);
 			//lineFollower.Get_Line_Data(leftLineFollowBits, rightLineFollowBits);
 			//followTheLine(leftLineFollowBits, rightLineFollowBits);
 			motors.motorsStop();
 			state = FIRE;
-			break;
-		case STRAIGHT_LINE_END:
-			Serial.println("IN THE STRAIGHT_LINE_END STATE");
-			delay(5000);
-			motors.motorsDrive(FORWARD);
-			if (lineFollower.intersection(leftLineFollowBits, rightLineFollowBits)) {
-				Serial.println("INTERSECTION with the MAIN LINE...turning!\n");
-				state = MAIN_LINE;
-				motors.motorsTurnLeft();
-				delay(10000);
-				motors.motorsStop();
-				state = MAIN_LINE;
-			}
-			//followTheLine(leftLineFollowBits, rightLineFollowBits);
 			break;
 		case FIRE:
 			delay(4000);
@@ -120,12 +123,29 @@ void loop() {
 			motors.motorsStop();
 			state = STRAIGHT_LINE_END;
 			break;
+		case STRAIGHT_LINE_END:
+			Serial.println("IN THE STRAIGHT_LINE_END STATE");
+			motors.motorsDrive(FORWARD);
+			if (lineFollower.intersection(leftLineFollowBits, rightLineFollowBits)) {
+				
+				Serial.println("INTERSECTION with the MAIN LINE...turning!\n");
+				followTheLine(leftLineFollowBits, rightLineFollowBits, true);
+
+				Serial.println("Entering isCentered Loop..");
+				//Follow the line along the turn until we're done
+				while (!lineFollower.isCentered(leftLineFollowBits, rightLineFollowBits)) {
+					Serial.println("Looping in isCentered...");
+					followTheLine(leftLineFollowBits, rightLineFollowBits, true);
+				}
+				state = MAIN_LINE;
+			}
+			//followTheLine(leftLineFollowBits, rightLineFollowBits);
+			break;
 		case CURVED_LINE_START:
 			break;
 		case CURVED_LINE_END:
 			break;
 	}
-	delay(8000);
 //*/
 }
 
@@ -133,14 +153,17 @@ void followTheLine(byte leftBits, byte rightBits)
 {
 	short leftPWM = 0;
 	short rightPWM = 0;
+	Turn turnDirection;
 
-	if (leftBits > rightBits)
+	if (leftBits >= rightBits)
 	{
+		Serial.println("going left....");
 		leftPWM = motors.speed / leftBits;
 		rightPWM = motors.speed;
 	}
 	else if (rightBits > leftBits)
 	{
+		Serial.println("going right....");
 		leftPWM = motors.speed;
 		rightPWM = motors.speed / rightBits;
 	}

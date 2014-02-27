@@ -5,11 +5,11 @@
 
 //Define the Pins----------
 //Motor Pair 1 (ON THE LEFT SIDE)
-#define PIN_DIRECTION_LEFT 8 //Direction
+#define PIN_DIRECTION_LEFT 26 //Direction
 #define PIN_PWM_LEFT 3 //Speed
 
 //Motor Pair 2 (ON THE RIGHT SIDE)
-#define PIN_DIRECTION_RIGHT 9 //Direction
+#define PIN_DIRECTION_RIGHT 28 //Direction
 #define PIN_PWM_RIGHT 4 //Speed
 
 //Enum for specifying direction to move in
@@ -40,10 +40,11 @@ class Motors
 		void motorsStop();
 		void motorsTurnLeft();
 		void motorsTurnRight();
+		void motorsTurn(Turn motorsTurn);
 		void motorsTurn(short leftPWM, short rightPWM);
 		void motorsUTurn();
 		int speed;
 	private:
-		void motorsTurn(Turn motorsTurn);
+		void motorsTurn(short leftPWM, short rightPWM, Turn motorsTurn);
 };
 #endif
