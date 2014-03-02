@@ -14,7 +14,7 @@ typedef enum
 //Hardware interfaces
 static Motors motors;
 static LineFollower lineFollower;
-static ColorSensor cs(CS_S0, CS_S1, CS_S2, CS_S3, CS_OUT, CS_LED);
+static ColorSensor cs;
 
 static j_state j_s = FOLLOW_STRAIGHT_LINE;
 static byte leftLineFollowBits;
@@ -44,6 +44,9 @@ void setup() {
 	//Variables setup
 	//state = MAIN_LINE;
 	lineCount = 0;
+
+        cs.setup(CS_S0, CS_S1, CS_S2, CS_S3, CS_OUT, CS_LED);
+
 }
 
 //Loop

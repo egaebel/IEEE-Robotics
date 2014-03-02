@@ -1,4 +1,4 @@
-\/*
+/*
  * Copyright (c) 2010 by Cristian Maglie <c.maglie@bug.st>
  * SPI Master library for arduino.
  *

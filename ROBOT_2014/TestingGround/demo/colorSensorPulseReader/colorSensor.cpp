@@ -23,7 +23,7 @@ ColorSensor::ColorSensor()
  * @returns the pulse of the desired color
  */
  
-void setup(int S0, int S1, int S2, int S3, int out, int LED);
+void ColorSensor::setup(int S0, int S1, int S2, int S3, int out, int LED)
 {
     this->S0 = S0;
     this->S1 = S1;
