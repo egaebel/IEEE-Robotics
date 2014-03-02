@@ -102,7 +102,6 @@ switch (j_s)
                 j_s = FOLLOW_STRAIGHT_LINE; break;
             }
          case TURN_LEFT:
-             motors.motorsTurnLeft();
              delay(500);
              do {
                  motors.motorsTurnLeft();
