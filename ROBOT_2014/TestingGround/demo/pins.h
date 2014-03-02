@@ -11,7 +11,7 @@
 #define PIN_PWM_RIGHT 4 //Speed
 
 //Line Sensor Pins
-#define Load = 22; // Controls ShiftRegister's Shift/Load pin(1)
-#define sensor = 24; // Controls LineFollower's Enable pin
+#define Load 22 // Controls ShiftRegister's Shift/Load pin(1)
+#define sensor 24 // Controls LineFollower's Enable pin
 
 #endif
