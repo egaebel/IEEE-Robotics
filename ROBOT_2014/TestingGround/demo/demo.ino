@@ -59,21 +59,6 @@ void setup() {
 //Loop
 void loop() {
 
-	Serial.print("STOPP....\n");
-	motors.motorsStop();
-	Serial.println("Going Forward");
-	motors.motorsDrive(FORWARD);
-	delay(3000);
-	Serial.println("Going Backward");
-	motors.motorsDrive(BACKWARD);
-	delay(3000);
-	Serial.println("Turning Left");
-	motors.motorsTurnLeft();
-	delay(3000);
-	Serial.println("Turning RIGHT");
-	motors.motorsTurnRight();
-	delay(3000);
-/*
 	switch(state) {
 
 		case MAIN_LINE:
