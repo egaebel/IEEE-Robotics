@@ -1,5 +1,7 @@
 #include <motors.h>
 #include <linefollow.hpp>
+#include <colorSensor.h>
+#include <pins.h>
 
 //enum State { MAIN_LINE = 1, STRAIGHT_LINE_START, FIRE, STRAIGHT_LINE_END, CURVED_LINE_START, CURVED_LINE_END };
 
@@ -12,28 +14,19 @@ typedef enum
 //Hardware interfaces
 static Motors motors;
 static LineFollower lineFollower;
+static ColorSensor cs(CS_S0, CS_S1, CS_S2, CS_S3, CS_OUT, CS_LED);
 
-//
-//static State state;
 static j_state j_s = FOLLOW_STRAIGHT_LINE;
 static byte leftLineFollowBits;
 static byte rightLineFollowBits;
 static int lineCount;
 
-//Line Sensor pins
-static const short Load    = 22; // Controls ShiftRegister's Shift/Load pin(1)
-static const short sensor  = 24; // Controls LineFollower's Enable pin
-static const short L_side_pin = 10; // PWM pin for left trek
-static const short R_side_pin = 9;  // PWM pin for right trek
-static const short Dir_Right_Side  =  30; // Controls direction of the right track(LOW - forward, HIGH - Reverse)
-static const short Dir_Left_Side  =   31; // Controls direction of the left track (LOW - forward, HIGH - Reverse)
-
 //Setup variables etc
 void setup() {
 
 	Serial.begin(9600);
-	delay(4000);
-	Serial.print("BEGINNING\n");
+	//delay(4000);
+	//Serial.print("BEGINNING\n");
 	//init all hardware
 	motors.setup(255);
 	motors.motorsStop();
@@ -56,10 +49,10 @@ void setup() {
 	//Variables setup
 	//state = MAIN_LINE;
 	lineCount = 0;
-	Serial.print("Delaying....\n");
-	Serial.print("STOPP....\n");
+	//Serial.print("Delaying....\n");
+	//Serial.print("STOPP....\n");
 	motors.motorsStop();
-	delay(5000);
+	//delay(5000);
 }
 
 //Loop
@@ -190,14 +183,14 @@ void followTheLine(byte leftBits, byte rightBits)
 
 	if (leftBits >= rightBits)
 	{
-		Serial.println("going left....");
+		//Serial.println("going left....");
 		leftPWM = motors.speed / leftBits;
 		rightPWM = motors.speed;
                 motors.motorsTurnLeft();
 	}
 	else if (rightBits > leftBits)
 	{
-		Serial.println("going right....");
+		//Serial.println("going right....");
 		leftPWM = motors.speed;
 		rightPWM = motors.speed / rightBits;
                 motors.motorsTurnRight();
