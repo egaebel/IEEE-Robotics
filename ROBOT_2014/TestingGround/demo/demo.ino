@@ -85,13 +85,13 @@ void loop() {
 switch (j_s)
 {
         case FOLLOW_STRAIGHT_LINE:
-            if (lineFollower.isCentered(leftLineFollowBits, rightLineFollowBits))
-            {
-                motors.motorsDrive(FORWARD); break;
-            }
-            else if (lineFollower.intersection(leftLineFollowBits, rightLineFollowBits))
+            if (lineFollower.intersection(leftLineFollowBits, rightLineFollowBits))
             {
                 j_s = TURN_LEFT; break; 
+            }
+            else if (lineFollower.isCentered(leftLineFollowBits, rightLineFollowBits))
+            {
+                motors.motorsDrive(FORWARD); break;
             }
             else
             {
@@ -102,7 +102,14 @@ switch (j_s)
                 j_s = FOLLOW_STRAIGHT_LINE; break;
             }
          case TURN_LEFT:
-             delay(500);
+             do {
+                 motors.motorsDrive(FORWARD);
+                 delay(500);
+                 motors.motorsTurnLeft();
+                 delay(500);
+                 lineFollower.Get_Line_Data(leftLineFollowBits, rightLineFollowBits);
+             } while (leftLineFollowBits || rightLineFollowBits);
+             
              do {
                  motors.motorsTurnLeft();
                  lineFollower.Get_Line_Data(leftLineFollowBits, rightLineFollowBits);
