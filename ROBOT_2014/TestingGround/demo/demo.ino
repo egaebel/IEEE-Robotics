@@ -65,25 +65,9 @@ void setup() {
 //Loop
 void loop() {
 
-  /*
-	Serial.print("STOPP....\n");
-	motors.motorsStop();
-	Serial.println("Going Forward");
-	motors.motorsDrive(FORWARD);
-	delay(3000);
-	Serial.println("Going Backward");
-	motors.motorsDrive(BACKWARD);
-	delay(3000);
-	Serial.println("Turning Left");
-	motors.motorsTurnLeft();
-	delay(3000);
-	Serial.println("Turning RIGHT");
-	motors.motorsTurnRight();
-	delay(3000);
-*/
 
-switch (j_s)
-{
+	switch (j_s)
+	{
         case FOLLOW_STRAIGHT_LINE:
             if (lineFollower.intersection(leftLineFollowBits, rightLineFollowBits))
             {
@@ -103,15 +87,10 @@ switch (j_s)
             }
          case TURN_LEFT:
              do {
-                 motors.motorsDrive(FORWARD);
-                 delay(500);
+             	 motors.motorsDrive(FORWARD);
+             	 delay(500);
                  motors.motorsTurnLeft();
                  delay(500);
-                 lineFollower.Get_Line_Data(leftLineFollowBits, rightLineFollowBits);
-             } while (leftLineFollowBits || rightLineFollowBits);
-             
-             do {
-                 motors.motorsTurnLeft();
                  lineFollower.Get_Line_Data(leftLineFollowBits, rightLineFollowBits);
              } while (leftLineFollowBits || rightLineFollowBits);
              
@@ -126,7 +105,6 @@ switch (j_s)
 
 
 /*	switch(state) {
-
 		case MAIN_LINE:
 			Serial.println("MAIN LINE");
 			motors.motorsDrive(FORWARD);

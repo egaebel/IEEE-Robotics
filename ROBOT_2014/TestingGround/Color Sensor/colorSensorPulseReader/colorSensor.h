@@ -10,7 +10,7 @@ class ColorSensor
         int getColor();
     private:
         void TCS3200setup();
-        int S0;//pinB //digital
+        int S0;//pinB //22 on other //digital
         int S1;//pinA //26 on other //digital
         int S2;//pinE //30 on other //digital
         int S3;//pinF //34 on other //digital
