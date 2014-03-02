@@ -1,7 +1,7 @@
 #include "motors.h"
 
 //Sets up the pin modes and the default speed.
-Motors::Motors(unsigned short pwmPinLeft, unsigned short directionPinLeft, 
+void Motors::setup(unsigned short pwmPinLeft, unsigned short directionPinLeft, 
                 unsigned short pwmPinRight, unsigned short directionPinRight, 
                 unsigned int defaultSpeed) {
 

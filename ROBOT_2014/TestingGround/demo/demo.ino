@@ -12,8 +12,8 @@ typedef enum
 } j_state;
 
 //Hardware interfaces
-static Motors motors(PIN_PWM_LEFT, PIN_DIRECTION_LEFT, PIN_PWM_RIGHT, PIN_DIRECTION_RIGHT, DEFAULT_SPEED);
-static LineFollower lineFollower(PIN_LOAD, PIN_SENSOR);
+static Motors motors;
+static LineFollower lineFollower;
 static ColorSensor cs(CS_S0, CS_S1, CS_S2, CS_S3, CS_OUT, CS_LED);
 
 static j_state j_s = FOLLOW_STRAIGHT_LINE;
@@ -25,8 +25,12 @@ static int lineCount;
 void setup() {
 
 	Serial.begin(9600);
-
+	Serial.println("IN the beginning...");
+	//Initialize Hardware--------------------------------
+	//Motor variables setup
+	motors.setup(PIN_PWM_LEFT, PIN_DIRECTION_LEFT, PIN_PWM_RIGHT, PIN_DIRECTION_RIGHT, DEFAULT_SPEED);
 	//LineFollower variables setup
+	lineFollower.setup(PIN_LOAD, PIN_SENSOR);
 	SPI.begin();
 	SPI.setClockDivider(SPI_CLOCK_DIV2);
 	SPI.setDataMode(SPI_MODE3);
@@ -37,13 +41,6 @@ void setup() {
 	pinMode(PIN_SENSOR, OUTPUT);
 	digitalWrite(PIN_SENSOR, HIGH); //activates LineFollower Kit
 
-	/*
-	pinMode(L_side_pin, OUTPUT);
-	pinMode(R_side_pin, OUTPUT);
-	pinMode(Dir_Right_Side, OUTPUT);
-	pinMode(Dir_Left_Side, OUTPUT);
-	*/
-
 	//Variables setup
 	//state = MAIN_LINE;
 	lineCount = 0;
@@ -52,10 +49,10 @@ void setup() {
 //Loop
 void loop() {
 
-
 	switch (j_s)
 	{
         case FOLLOW_STRAIGHT_LINE:
+        	Serial.println("Follow straight line");
             if (lineFollower.intersection(leftLineFollowBits, rightLineFollowBits))
             {
                 j_s = TURN_LEFT; break; 
@@ -73,6 +70,7 @@ void loop() {
                 j_s = FOLLOW_STRAIGHT_LINE; break;
             }
          case TURN_LEFT:
+         	Serial.println("Turn Left");
              do {
              	 motors.motorsDrive(FORWARD);
              	 delay(500);
@@ -177,14 +175,14 @@ void followTheLine(byte leftBits, byte rightBits)
 
 	if (leftBits >= rightBits)
 	{
-		//Serial.println("going left....");
+		Serial.println("going left....");
 		leftPWM = motors.speed / leftBits;
 		rightPWM = motors.speed;
                 motors.motorsTurnLeft();
 	}
 	else if (rightBits > leftBits)
 	{
-		//Serial.println("going right....");
+		Serial.println("going right....");
 		leftPWM = motors.speed;
 		rightPWM = motors.speed / rightBits;
                 motors.motorsTurnRight();
@@ -195,7 +193,6 @@ void followTheLine(byte leftBits, byte rightBits)
 		rightPWM = motors.speed;
                 motors.motorsDrive(FORWARD);
 	}
-
 
 	return;
 }

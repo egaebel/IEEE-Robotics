@@ -37,7 +37,7 @@ class Motors
 	//==================================================
 
 	public:
-		Motors(unsigned short pwmPinLeft, 
+		void setup(unsigned short pwmPinLeft, 
 					unsigned short directionPinLeft, 
 					unsigned short pwmPinRight, 
 					unsigned short directionPinRight, 
