@@ -5,7 +5,8 @@ class ColorSensor
 {
    
     public:
-        ColorSensor(int S0, int S1, int s2, int S3, int taosOutPin, int LED); //Nescessary color sensor setup called in constructor
+        ColorSensor(); //Nescessary color sensor setup called in constructor
+        voiid setup(int S0, int S1, int S2, int S3, int out, int LED);
         int colorRead(int color);
         int getColor();
     private:

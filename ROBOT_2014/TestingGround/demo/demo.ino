@@ -66,9 +66,9 @@ void loop() {
             }
             else
             {
-                if (!lineFollower.isCentered(leftLineFollowBits, rightLineFollowBits) &&(leftLineFollowBits > rightLineFollowBits))
+                if (!lineFollower.isCentered(leftLineFollowBits, rightLineFollowBits) && (leftLineFollowBits > rightLineFollowBits))
                     motors.motorsTurnLeft();
-                if (!lineFollower.isCentered(leftLineFollowBits, rightLineFollowBits) &&(leftLineFollowBits < rightLineFollowBits))
+                if (!lineFollower.isCentered(leftLineFollowBits, rightLineFollowBits) && (leftLineFollowBits < rightLineFollowBits))
                     motors.motorsTurnRight(); 
                 j_s = FOLLOW_STRAIGHT_LINE; break;
             }

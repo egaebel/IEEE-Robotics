@@ -8,16 +8,9 @@
 /**
  * calls the setUp method for the TC3200 sensor
  */
-ColorSensor::ColorSensor(int S0, int S1, int s2, int S3, int taosOutPin, int LED)  : S0(S0),\
-                              S1(S1),\
-                              S2(S2),\
-                              S3(S3),\
-                              taosOutPin(taosOutPin),\
-                              LED(LED),
-                              LEDstate(true)\
-{
-    TCS3200setup();
-}
+ColorSensor::ColorSensor()
+{}
+
 
 /**
  * Public method called on from the ColorSensor class
@@ -29,6 +22,17 @@ ColorSensor::ColorSensor(int S0, int S1, int s2, int S3, int taosOutPin, int LED
  *
  * @returns the pulse of the desired color
  */
+ 
+void setup(int S0, int S1, int S2, int S3, int out, int LED);
+{
+    this->S0 = S0;
+    this->S1 = S1;
+    this->S2 = S2;
+    this->S3 = S3;
+    this->taosOutPin = out;
+    this->LED = LED;
+}
+
 int ColorSensor::colorRead(int color)    {
 
     //set the S2 and S3 pins to select the color to be sensed
