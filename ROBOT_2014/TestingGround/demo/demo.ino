@@ -86,8 +86,7 @@ void loop() {
                 j_s = FOLLOW_STRAIGHT_LINE; break;
             }
          case TURN_LEFT:
-             //motors.motorsTurnLeft();
-             //delay(500);
+
              do {
              	 motors.motorsDrive(FORWARD);
              	 delay(500);
