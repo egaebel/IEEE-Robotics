@@ -14,4 +14,12 @@
 #define Load 22 // Controls ShiftRegister's Shift/Load pin(1)
 #define sensor 24 // Controls LineFollower's Enable pin
 
+//Color Sensor pins
+#define CS_S0 25
+#define CS_S1 26
+#define CS_S2 30
+#define CS_S3 34
+#define CS_OUT 38
+#define CS_LED 42
+
 #endif
