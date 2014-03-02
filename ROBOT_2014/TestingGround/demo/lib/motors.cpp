@@ -53,22 +53,20 @@ void Motors::motorsTurn(short leftPWM, short rightPWM, Turn motorsTurn) {
 
     delay(2);
 
-    bool pinInput1, pinInput2;
+    bool pinInput;
 
     if (motorsTurn == RIGHT) {
-        pinInput1 = LOW;
+        pinInput = LOW;
     }
     else if (motorsTurn == LEFT) {
-        pinInput1 = HIGH;
+        pinInput = HIGH;
     }
     else {
         Serial.println("WTF....");
-        pinInput1 = HIGH;
-        pinInput2 = LOW;
     }
 
-    digitalWrite(PIN_DIRECTION_LEFT, pinInput1);
-    digitalWrite(PIN_DIRECTION_RIGHT, pinInput2);
+    digitalWrite(PIN_DIRECTION_LEFT, pinInput);
+    digitalWrite(PIN_DIRECTION_RIGHT, pinInput);
     analogWrite(PIN_PWM_LEFT, leftPWM);
     analogWrite(PIN_PWM_RIGHT, rightPWM);
 
