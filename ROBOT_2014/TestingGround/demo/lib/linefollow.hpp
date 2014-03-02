@@ -82,8 +82,8 @@ private:
 	void Halt();
 	#endif
 public:
-	LineFollower(unsigned short loadPin, 
-					unsigned short sensorPin);
+	void setup(unsigned short loadPin, 
+				unsigned short sensorPin);
 	bool isCentered(byte& L_bits, byte& R_bits);
 	bool intersection(byte& L_bits, byte& R_bits);
 	void Get_Line_Data(byte& L_bits, byte& R_bits);
