@@ -42,8 +42,12 @@
 class LineFollower
 {
 private:
-	short Load = 22; // Controls ShiftRegister's Shift/Load pin(1)
-	short sensor = 24; // Controls LineFollower's Enable pin
+	unsigned short Load; // Controls ShiftRegister's Shift/Load pin(1)
+	unsigned short sensor; // Controls LineFollower's Enable pin
+
+	byte L_bits;
+	byte R_bits;
+	byte Line_Data;
 
 	#ifdef DEBUG_STANDALONE
 	static const short L_side_pin = 10; // PWM pin for left trek
@@ -51,13 +55,7 @@ private:
 	static const short Dir_Right_Side  =  30; // Controls direction of the right track(LOW - forward, HIGH - Reverse)
 	static const short Dir_Left_Side  =   31; // Controls direction of the left track (LOW - forward, HIGH - Reverse)
 	static const byte max_speed = 100;   // PWM value 0-255
-	#endif
-	
-	byte L_bits;
-	byte R_bits;
-	byte Line_Data;
-	
-	#ifdef DEBUG_STANDALONE
+
 	short L_PWM;
 	short R_PWM;
 	short Gate_flag;
@@ -84,7 +82,8 @@ private:
 	void Halt();
 	#endif
 public:
-	LineFollower(unsigned short loadPin, unsigned short sensorPin);
+	LineFollower(unsigned short loadPin, 
+					unsigned short sensorPin);
 	bool isCentered(byte& L_bits, byte& R_bits);
 	bool intersection(byte& L_bits, byte& R_bits);
 	void Get_Line_Data(byte& L_bits, byte& R_bits);

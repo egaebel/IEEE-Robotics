@@ -25,34 +25,28 @@ static int lineCount;
 void setup() {
 
 	Serial.begin(9600);
-	//delay(4000);
-	//Serial.print("BEGINNING\n");
-	//init all hardware
-	motors.setup(255);
-	motors.motorsStop();
+
 	//LineFollower variables setup
 	SPI.begin();
 	SPI.setClockDivider(SPI_CLOCK_DIV2);
 	SPI.setDataMode(SPI_MODE3);
 	SPI.setBitOrder(MSBFIRST);
 
-	pinMode(Load, OUTPUT);
-	digitalWrite(Load, HIGH);
-	pinMode(sensor, OUTPUT);
-	digitalWrite(sensor, HIGH); //activates LineFollower Kit
+	pinMode(PIN_LOAD, OUTPUT);
+	digitalWrite(PIN_LOAD, HIGH);
+	pinMode(PIN_SENSOR, OUTPUT);
+	digitalWrite(PIN_SENSOR, HIGH); //activates LineFollower Kit
 
+	/*
 	pinMode(L_side_pin, OUTPUT);
 	pinMode(R_side_pin, OUTPUT);
 	pinMode(Dir_Right_Side, OUTPUT);
 	pinMode(Dir_Left_Side, OUTPUT);
+	*/
 
 	//Variables setup
 	//state = MAIN_LINE;
 	lineCount = 0;
-	//Serial.print("Delaying....\n");
-	//Serial.print("STOPP....\n");
-	motors.motorsStop();
-	//delay(5000);
 }
 
 //Loop

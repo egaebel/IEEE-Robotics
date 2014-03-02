@@ -1,8 +1,9 @@
-#include "C:\Users\ethan\Documents\ACTUAL My Documents\Robotics Team\IEEE-Robotics\ROBOT_2014\TestingGround\demo\linefollow.hpp"
+#include "linefollow.hpp"
 
 //#define DEBUG
 
-LineFollower::LineFollower(unsigned short loadPin, unsigned short sensorPin)
+LineFollower::LineFollower(unsigned short loadPin, 
+                            unsigned short sensorPin)
 {
   #ifdef DEBUG_STANDALONE
   Gate_flag = 0;
@@ -11,7 +12,7 @@ LineFollower::LineFollower(unsigned short loadPin, unsigned short sensorPin)
   Hor_Line_pass = 1;
   #endif
   Line_Data = 0;
-  load = loadPin;
+  Load = loadPin;
   sensor = sensorPin;
 }
 

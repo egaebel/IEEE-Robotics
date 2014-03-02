@@ -6,12 +6,12 @@
 //Define the Pins----------
 //Motor Pair 1 (ON THE LEFT SIDE)
 /*
-#define PIN_DIRECTION_LEFT 26 //Direction
-#define PIN_PWM_LEFT 3 //Speed
+#define DIRECTION_LEFT 26 //Direction
+#define PWM_LEFT 3 //Speed
 
 //Motor Pair 2 (ON THE RIGHT SIDE)
-#define PIN_DIRECTION_RIGHT 28 //Direction
-#define PIN_PWM_RIGHT 4 //Speed
+#define DIRECTION_RIGHT 28 //Direction
+#define PWM_RIGHT 4 //Speed
 */
 
 //Enum for specifying direction to move in
@@ -29,10 +29,10 @@ class Motors
 	/*
 		Connections:
 		- Pin 3 ---> PWM for left motors
-		- Pin 8 ---> PIN_DIRECTION_LEFT
+		- Pin 8 ---> DIRECTION_LEFT
 
 		- Pin 4 ---> PWM for right motors
-		- Pin 9 ---> PIN_DIRECTION_RIGHT
+		- Pin 9 ---> DIRECTION_RIGHT
 	*/
 	//==================================================
 
@@ -53,5 +53,10 @@ class Motors
 		bool flipDirection;
 	private:
 		void motorsTurn(short leftPWM, short rightPWM, Turn motorsTurn);
+
+		unsigned short PWM_LEFT;
+		unsigned short PWM_RIGHT;
+		unsigned short DIRECTION_LEFT;
+		unsigned short DIRECTION_RIGHT;
 };
 #endif
