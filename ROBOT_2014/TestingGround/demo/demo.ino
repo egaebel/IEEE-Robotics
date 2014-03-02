@@ -1,7 +1,7 @@
+#include <pins.h>
 #include <motors.h>
 #include <linefollow.hpp>
 #include <colorSensor.h>
-#include <pins.h>
 
 //enum State { MAIN_LINE = 1, STRAIGHT_LINE_START, FIRE, STRAIGHT_LINE_END, CURVED_LINE_START, CURVED_LINE_END };
 
@@ -12,8 +12,8 @@ typedef enum
 } j_state;
 
 //Hardware interfaces
-static Motors motors;
-static LineFollower lineFollower;
+static Motors motors(PIN_PWM_LEFT, PIN_DIRECTION_LEFT, PIN_PWM_RIGHT, PIN_DIRECTION_RIGHT, DEFAULT_SPEED);
+static LineFollower lineFollower(PIN_LOAD, PIN_SENSOR);
 static ColorSensor cs(CS_S0, CS_S1, CS_S2, CS_S3, CS_OUT, CS_LED);
 
 static j_state j_s = FOLLOW_STRAIGHT_LINE;

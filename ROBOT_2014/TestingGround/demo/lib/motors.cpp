@@ -1,7 +1,25 @@
 #include "motors.h"
 
 //Sets up the pin modes and the default speed.
-void Motors::setup(int defaultSpeed) {
+Motors::Motors(unsigned short pwmPinLeft, unsigned short directionPinLeft, 
+                unsigned short pwmPinRight, unsigned short directionPinRight, 
+                unsigned int defaultSpeed) {
+
+    delay(2);
+
+    PIN_PWM_LEFT = pwmPinLeft;
+    PIN_DIRECTION_LEFT = directionPinLeft;
+    PIN_PWM_RIGHT = pwmPinRight;
+    PIN_DIRECTION_RIGHT = directionPinRight;
+
+    speed = defaultSpeed;
+    flipDirection = false;
+
+    delay(2);
+}
+
+//Sets up the pin modes and the default speed.
+/*void Motors::setup(int defaultSpeed) {
 
     delay(2);
 
@@ -16,7 +34,7 @@ void Motors::setup(int defaultSpeed) {
 
     //Delay 2 milliseconds so we don't explode....
     delay(2);
-}
+}*/
 
 /*
  * Drives the motors in the direction passed in. The Enum Direction has FORWARD, and BACKWARD as values.
@@ -63,10 +81,12 @@ void Motors::motorsTurn(short leftPWM, short rightPWM, Turn motorsTurn) {
     }
     else {
         Serial.println("WTF....");
+        pinInput1 = HIGH;
+        pinInput2 = LOW;
     }
 
-    digitalWrite(PIN_DIRECTION_LEFT, pinInput);
-    digitalWrite(PIN_DIRECTION_RIGHT, pinInput);
+    digitalWrite(PIN_DIRECTION_LEFT, pinInput1);
+    digitalWrite(PIN_DIRECTION_RIGHT, pinInput2);
     analogWrite(PIN_PWM_LEFT, leftPWM);
     analogWrite(PIN_PWM_RIGHT, rightPWM);
 

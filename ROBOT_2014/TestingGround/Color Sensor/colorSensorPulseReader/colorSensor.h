@@ -10,12 +10,12 @@ class ColorSensor
         int getColor();
     private:
         void TCS3200setup();
-        int S0;//pinB //22 on other //digital
-        int S1;//pinA //26 on other //digital
-        int S2;//pinE //30 on other //digital
-        int S3;//pinF //34 on other //digital
-        int taosOutPin;//pinC //38 on other
-        int LED;//pinD //42 on other
+        int S0;//pinB //31 on other //digital
+        int S1;//pinA //33 on other //digital
+        int S2;//pinE //37 on other //digital
+        int S3;//pinF //39 on other //digital
+        int taosOutPin;//pinC //41 on other
+        int LED;//pinD //43 on other
         bool LEDstate; //LED is turned on
         
 };
