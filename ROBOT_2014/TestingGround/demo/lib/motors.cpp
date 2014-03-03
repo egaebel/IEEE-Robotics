@@ -7,40 +7,22 @@ void Motors::setup(unsigned short pwmPinLeft, unsigned short directionPinLeft,
 
     delay(2);
 
+    PWM_LEFT = pwmPinLeft;
+    DIRECTION_LEFT = directionPinLeft;
+    PWM_RIGHT = pwmPinRight;
+    DIRECTION_RIGHT = directionPinRight;
+
     pinMode(PWM_LEFT, OUTPUT);
     pinMode(DIRECTION_LEFT, OUTPUT);
 
     pinMode(PWM_RIGHT, OUTPUT);
     pinMode(DIRECTION_RIGHT, OUTPUT);
-
-    PWM_LEFT = pwmPinLeft;
-    DIRECTION_LEFT = directionPinLeft;
-    PWM_RIGHT = pwmPinRight;
-    DIRECTION_RIGHT = directionPinRight;
 
     speed = defaultSpeed;
     flipDirection = false;
 
     delay(2);
 }
-
-//Sets up the pin modes and the default speed.
-/*void Motors::setup(int defaultSpeed) {
-
-    delay(2);
-
-    //Set the PIN Modes
-    pinMode(PWM_LEFT, OUTPUT);
-    pinMode(DIRECTION_LEFT, OUTPUT);
-
-    pinMode(PWM_RIGHT, OUTPUT);
-    pinMode(DIRECTION_RIGHT, OUTPUT);
-
-    speed = defaultSpeed;
-
-    //Delay 2 milliseconds so we don't explode....
-    delay(2);
-}*/
 
 /*
  * Drives the motors in the direction passed in. The Enum Direction has FORWARD, and BACKWARD as values.
