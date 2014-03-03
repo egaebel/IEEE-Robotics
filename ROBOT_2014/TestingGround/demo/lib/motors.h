@@ -47,13 +47,12 @@ class Motors
 		void motorsTurnLeft();
 		void motorsTurnRight();
 		void motorsTurn(Turn motorsTurn);
-		void motorsTurn(short leftPWM, short rightPWM);
+		//void motorsTurn(short leftPWM, short rightPWM);
 		void motorsUTurn();
 		int speed;
 		bool flipDirection;
 	private:
-		void motorsTurn(short leftPWM, short rightPWM, Turn motorsTurn);
-
+		//void motorsTurn(short leftPWM, short rightPWM, Turn motorsTurn);
 		unsigned short PWM_LEFT;
 		unsigned short PWM_RIGHT;
 		unsigned short DIRECTION_LEFT;

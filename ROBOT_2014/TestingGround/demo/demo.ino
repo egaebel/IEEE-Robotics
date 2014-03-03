@@ -29,6 +29,7 @@ void setup() {
 	//Initialize Hardware--------------------------------
 	//Motor variables setup
 	motors.setup(PIN_PWM_LEFT, PIN_DIRECTION_LEFT, PIN_PWM_RIGHT, PIN_DIRECTION_RIGHT, DEFAULT_SPEED);
+	motors.motorsStop();
 	//LineFollower variables setup
 	lineFollower.setup(PIN_LOAD, PIN_SENSOR);
 	SPI.begin();
@@ -44,9 +45,11 @@ void setup() {
 	//Variables setup
 	//state = MAIN_LINE;
 	lineCount = 0;
+    cs.setup(CS_S0, CS_S1, CS_S2, CS_S3, CS_OUT, CS_LED);
 
-        cs.setup(CS_S0, CS_S1, CS_S2, CS_S3, CS_OUT, CS_LED);
-
+    //Loop until start
+    while(!(digitalRead(PIN_START) == LOW))
+    Serial.println("GO!");
 }
 
 //Loop
@@ -55,7 +58,7 @@ void loop() {
 	switch (j_s)
 	{
         case FOLLOW_STRAIGHT_LINE:
-        	Serial.println("Follow straight line");
+        	
             if (lineFollower.intersection(leftLineFollowBits, rightLineFollowBits))
             {
                 j_s = TURN_LEFT; break; 
@@ -66,14 +69,18 @@ void loop() {
             }
             else
             {
-                if (!lineFollower.isCentered(leftLineFollowBits, rightLineFollowBits) && (leftLineFollowBits > rightLineFollowBits))
+                if (!lineFollower.isCentered(leftLineFollowBits, rightLineFollowBits) && (leftLineFollowBits > rightLineFollowBits)) {
+                	//Serial.println("NOT CENTERED, leftLineFollowBits > rightLineFollowBits");
                     motors.motorsTurnLeft();
-                if (!lineFollower.isCentered(leftLineFollowBits, rightLineFollowBits) && (leftLineFollowBits < rightLineFollowBits))
+                }
+                else if (!lineFollower.isCentered(leftLineFollowBits, rightLineFollowBits) && (leftLineFollowBits < rightLineFollowBits)) {
+                	//Serial.println("NOT CENTERED, rightLineFollowBits > leftLineFollowBits");
                     motors.motorsTurnRight(); 
+                }
                 j_s = FOLLOW_STRAIGHT_LINE; break;
             }
          case TURN_LEFT:
-         	Serial.println("Turn Left");
+         	//Serial.println("Turn Left");
              do {
              	 motors.motorsDrive(FORWARD);
              	 delay(500);
@@ -85,8 +92,13 @@ void loop() {
              do {
                  motors.motorsTurnLeft();
                  lineFollower.Get_Line_Data(leftLineFollowBits, rightLineFollowBits);
+             } while (leftLineFollowBits || rightLineFollowBits);
+
+             do {
+                 motors.motorsTurnLeft();
+                 lineFollower.Get_Line_Data(leftLineFollowBits, rightLineFollowBits);
              } while (!leftLineFollowBits && !rightLineFollowBits);
-             
+             //Serial.println("Back to the straight line state");
              j_s = FOLLOW_STRAIGHT_LINE;
              break;
 }
@@ -170,6 +182,7 @@ void loop() {
 */
 }
 
+/*
 void followTheLine(byte leftBits, byte rightBits)
 {
 	short leftPWM = 0;
@@ -199,3 +212,4 @@ void followTheLine(byte leftBits, byte rightBits)
 
 	return;
 }
+*/

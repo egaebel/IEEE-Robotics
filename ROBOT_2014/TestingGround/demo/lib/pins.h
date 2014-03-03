@@ -22,4 +22,7 @@ static const unsigned short CS_S3 = 39;
 static const unsigned short CS_OUT = 41;
 static const unsigned short CS_LED = 43;
 
+//Start Button
+static const unsigned short PIN_START = 42;
+
 #endif

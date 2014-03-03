@@ -7,6 +7,12 @@ void Motors::setup(unsigned short pwmPinLeft, unsigned short directionPinLeft,
 
     delay(2);
 
+    pinMode(PWM_LEFT, OUTPUT);
+    pinMode(DIRECTION_LEFT, OUTPUT);
+
+    pinMode(PWM_RIGHT, OUTPUT);
+    pinMode(DIRECTION_RIGHT, OUTPUT);
+
     PWM_LEFT = pwmPinLeft;
     DIRECTION_LEFT = directionPinLeft;
     PWM_RIGHT = pwmPinRight;
@@ -49,11 +55,9 @@ void Motors::motorsDrive(Direction motorsDirection) {
  
     if (motorsDirection == FORWARD) {
         pinInput = HIGH;
-        Serial.print("pinInput is HIGH!\n");
     }
     else {
         pinInput = LOW;
-        Serial.print("pinInput is LOW!\n");
     }
 
     digitalWrite(DIRECTION_LEFT, pinInput);
@@ -67,7 +71,7 @@ void Motors::motorsDrive(Direction motorsDirection) {
 }
 
 //Adjust the speed of each motor manually by passing a PWM 
-void Motors::motorsTurn(short leftPWM, short rightPWM, Turn motorsTurn) {
+/*void Motors::motorsTurn(short leftPWM, short rightPWM, Turn motorsTurn) {
 
     delay(2);
 
@@ -86,7 +90,7 @@ void Motors::motorsTurn(short leftPWM, short rightPWM, Turn motorsTurn) {
     analogWrite(PWM_RIGHT, rightPWM);
 
     delay(2);
-}
+}*/
 
 //
 void Motors::motorsUTurn() {
@@ -126,16 +130,19 @@ void Motors::motorsTurnRight() {
 
 //Turns the motors in the specified direction (used to make the above methods work, not to be interfaced with)
 void Motors::motorsTurn(Turn motorsTurn){
-
     //Delay 2 milliseconds so we don't explode....
     delay(2);
 
     bool pinInput;
 
-    if (motorsTurn == RIGHT) 
+    if (motorsTurn == RIGHT) {
         pinInput = LOW;
-    else
+        //Serial.println("motorsTurnLeft");
+    }
+    else {
         pinInput = HIGH;
+        //Serial.println("motorsTurnRight");
+    }
 
     digitalWrite(DIRECTION_LEFT, pinInput);
     analogWrite(PWM_LEFT, speed);   

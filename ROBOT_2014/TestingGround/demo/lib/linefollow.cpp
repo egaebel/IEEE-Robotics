@@ -5,8 +5,6 @@
 void LineFollower::setup(unsigned short loadPin, 
                             unsigned short sensorPin)
 {
-  Serial.begin(9600);
-  Serial.println("Linefollower constructor begin");
   #ifdef DEBUG_STANDALONE
   Gate_flag = 0;
   U_Turn_flag = 0;
@@ -26,7 +24,7 @@ bool LineFollower::isCentered(byte& L_bits, byte& R_bits) // Has to be changed a
    L_bits = this->L_bits;
    R_bits = this->R_bits;
 
-   return (L_bits == R_bits) && (L_bits == 1); //L_bits == R_bits is ambiguous as it also happens when rover is over black part of the course (L_bits==R_bits == 0)
+   return (L_bits == R_bits);// && (L_bits == 1); //L_bits == R_bits is ambiguous as it also happens when rover is over black part of the course (L_bits==R_bits == 0)
 }
 
 //**************  Evaluate whether the robot is on an intersecting line *******
@@ -36,6 +34,7 @@ bool LineFollower::intersection(byte& L_bits, byte& R_bits)
   Get_Line_Data();
   L_bits = this->L_bits;
   R_bits = this->R_bits;
+
   return ( Line_Data == 0xFF );
 }
 
