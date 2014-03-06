@@ -3,15 +3,7 @@
 #include <linefollow.hpp>
 #include <colorSensor.h>
 
-enum State { MAIN_LINE = 1, TURN_LEFT_ONTO_SIDE, SIDE_LINE_START, FIRE, SIDE_LINE_END, TURN_LEFT_ONTO_MAIN_LINE };
-
-/*
-typedef enum
-{
-  FOLLOW_STRAIGHT_LINE,
-  TURN_LEFT  
-} j_state;
-*/
+enum State { MAIN_LINE = 1, TURN_LEFT_ONTO_SIDE, SIDE_LINE_START, FIRE, SIDE_LINE_END, TURN_LEFT_ONTO_MAIN_LINE, RESET };
 
 //Hardware interfaces
 static Motors motors;
@@ -48,11 +40,12 @@ void setup() {
     lineFollower.setup(PIN_LOAD, PIN_SENSOR);
 
     //Color Sensor Setup
-    cs.setup(CS_S0, CS_S1, CS_S2, CS_S3, CS_OUT, CS_LED);
-
+    //cs.setup(CS_S0, CS_S1, CS_S2, CS_S3, CS_OUT, CS_LED);
+    delay(3000);
     Serial.println("waiting to go.....");
     //Loop until start
     while((digitalRead(PIN_START) != HIGH));
+    delay(500);
     Serial.println("GO!");
 }
 
@@ -61,38 +54,44 @@ void loop() {
 
     //If we get a button press, stop
     if(digitalRead(PIN_START) == HIGH) {
-        return;
+        Serial.println("Stopped, state machine reset!");
+        motors.motorsStop();
+        state = RESET;
     }
 
-    switch (state)
-    {
+    switch (state) {
+
         case MAIN_LINE:
             Serial.println("straight line");
             
-            if (lineFollower.intersection(leftLineFollowBits, rightLineFollowBits))
-            {
+            if (lineFollower.intersection(leftLineFollowBits, rightLineFollowBits)) {
                 state = TURN_LEFT_ONTO_SIDE;
                 break; 
             }
-            else if (lineFollower.isCentered(leftLineFollowBits, rightLineFollowBits))
-            {
+            else if (lineFollower.isCentered(leftLineFollowBits, rightLineFollowBits)) {
+                Serial.println("forward");
                 motors.motorsDrive(FORWARD);
                 break;
             }
-            else
-            {
+            else {
+
+                Serial.println("isCentered?");
+                Serial.print("Left bits == ");
+                Serial.println(leftLineFollowBits);
+                Serial.print("right bits == ");
+                Serial.println(rightLineFollowBits);
                 if (!lineFollower.isCentered(leftLineFollowBits, rightLineFollowBits) && (leftLineFollowBits > rightLineFollowBits)) {
-                    //Serial.println("NOT CENTERED, leftLineFollowBits > rightLineFollowBits");
                     motors.motorsTurnLeft();
                 }
+
                 if (!lineFollower.isCentered(leftLineFollowBits, rightLineFollowBits) && (leftLineFollowBits < rightLineFollowBits)) {
-                    //Serial.println("NOT CENTERED, rightLineFollowBits > leftLineFollowBits");
                     motors.motorsTurnRight(); 
                 }
                 break;
             }
 
          case TURN_LEFT_ONTO_SIDE:
+
             do {
                 motors.motorsDrive(FORWARD);
                 delay(500);
@@ -113,26 +112,25 @@ void loop() {
     
             //Backup to account for overturning
             motors.motorsDrive(BACKWARD);
-            delay(750);
+            delay(250);
 
             state = SIDE_LINE_START;
             break;
 
         case SIDE_LINE_START:
-            Serial.println("side line starter");
-            
-            if (lineFollower.intersection(leftLineFollowBits, rightLineFollowBits))
-            {
-                state = FIRE;
-                break; 
-            }
-            else if (lineFollower.isCentered(leftLineFollowBits, rightLineFollowBits))
-            {
+            Serial.println("side line starter"); 
+                        
+            if (lineFollower.isCentered(leftLineFollowBits, rightLineFollowBits)) {
                 motors.motorsDrive(FORWARD);
+                //FOR DEMO ONLY--REMOVE WHEN COLOR SENSOR WORKS
+                delay(2000);
+                state = FIRE;
+                ///////////////////////////////////////////////
+
                 break;
             }
-            else
-            {
+            else {
+
                 if (!lineFollower.isCentered(leftLineFollowBits, rightLineFollowBits) && (leftLineFollowBits > rightLineFollowBits)) {
                     motors.motorsTurnLeft();
                 }
@@ -161,30 +159,28 @@ void loop() {
         case SIDE_LINE_END:
             Serial.println("side line end state");
             
-            if (lineFollower.intersection(leftLineFollowBits, rightLineFollowBits))
-            {
+            if (lineFollower.intersection(leftLineFollowBits, rightLineFollowBits)) {
                 state = TURN_LEFT_ONTO_MAIN_LINE; 
                 break; 
             }
-            else if (lineFollower.isCentered(leftLineFollowBits, rightLineFollowBits))
-            {
+            else if (lineFollower.isCentered(leftLineFollowBits, rightLineFollowBits)) {
                 motors.motorsDrive(FORWARD); 
                 break;
             }
-            else
-            {
+            else {
+
                 if (!lineFollower.isCentered(leftLineFollowBits, rightLineFollowBits) && (leftLineFollowBits > rightLineFollowBits)) {
-                    //Serial.println("NOT CENTERED, leftLineFollowBits > rightLineFollowBits");
                     motors.motorsTurnLeft();
                 }
+
                 if (!lineFollower.isCentered(leftLineFollowBits, rightLineFollowBits) && (leftLineFollowBits < rightLineFollowBits)) {
-                    //Serial.println("NOT CENTERED, rightLineFollowBits > leftLineFollowBits");
                     motors.motorsTurnRight(); 
                 }
                 break;
             }
 
         case TURN_LEFT_ONTO_MAIN_LINE:
+            
             do {
                 motors.motorsDrive(FORWARD);
                 delay(500);
@@ -205,85 +201,19 @@ void loop() {
 
             state = MAIN_LINE;
             break;
-    }
 
+        case RESET:
 
-/*  switch(state) {
-        case MAIN_LINE:
-            Serial.println("MAIN LINE");
-            motors.motorsDrive(FORWARD);
-            if (lineFollower.intersection(leftLineFollowBits, rightLineFollowBits)) {
-                Serial.println("INTERSECTION!");
+            delay(2000);
 
-                //followTheLine(leftLineFollowBits, rightLineFollowBits, true);
-                followTheLine(leftLineFollowBits, rightLineFollowBits);
-
-                Serial.println("Entering isCentered Loop..");
-                //Follow the line along the turn until we're done
-                while (!lineFollower.isCentered(leftLineFollowBits, rightLineFollowBits)) {
-                    Serial.println("Looping in isCentered...");
-                    //followTheLine(leftLineFollowBits, rightLineFollowBits, true);
-                                        followTheLine(leftLineFollowBits, rightLineFollowBits);
-                }
-                Serial.println("Left bits == " + leftLineFollowBits);   
-                Serial.println("Right bits == " + rightLineFollowBits);
-                
-                //Switch states depending on which line we've discovered
-                if (lineCount == 0 || lineCount == 2) {
-                    Serial.println("On  one of the straight lines");
-                    state = STRAIGHT_LINE_START;
-                    lineCount++;
-                }
-                else if (lineCount == 1) {
-                    //state = CURVED_LINE;
-                    lineCount++;
-                }
-            }
-            //followTheLine(leftLineFollowBits, rightLineFollowBits);
-            break;
-        case STRAIGHT_LINE_START:
-            Serial.println("ON A SIDE STRAIGHT LINE");
-            //Remove later in favor of navigation to Blue firing block
-            motors.motorsDrive(FORWARD);
-            //lineFollower.Get_Line_Data(leftLineFollowBits, rightLineFollowBits);
-            //followTheLine(leftLineFollowBits, rightLineFollowBits);
+            while(digitalRead(PIN_START) != HIGH);
             motors.motorsStop();
-            state = FIRE;
-            break;
-        case FIRE:
-            delay(4000);
-            Serial.println("IN 'FIRE' STATE! Making uTURN!");
-            motors.motorsStop();
-            motors.motorsUTurn();
-            motors.motorsStop();
-            state = STRAIGHT_LINE_END;
-            break;
-        case STRAIGHT_LINE_END:
-            Serial.println("IN THE STRAIGHT_LINE_END STATE");
-            motors.motorsDrive(FORWARD);
-            if (lineFollower.intersection(leftLineFollowBits, rightLineFollowBits)) {
-                
-                Serial.println("INTERSECTION with the MAIN LINE...turning!\n");
-                //followTheLine(leftLineFollowBits, rightLineFollowBits, true);
-                                followTheLine(leftLineFollowBits, rightLineFollowBits);
+            state = MAIN_LINE;
 
-                Serial.println("Entering isCentered Loop..");
-                //Follow the line along the turn until we're done
-                while (!lineFollower.isCentered(leftLineFollowBits, rightLineFollowBits)) {
-                    Serial.println("Looping in isCentered...");
-                    //followTheLine(leftLineFollowBits, rightLineFollowBits, true);
-                                          followTheLine(leftLineFollowBits, rightLineFollowBits);
-                }
-                state = MAIN_LINE;
-            }
-            //followTheLine(leftLineFollowBits, rightLineFollowBits);
-            break;
-        case CURVED_LINE_START:
-            break;
-        case CURVED_LINE_END:
+            delay(2000);
             break;
     }
-*/
+    //*/
 }
 
 /*
