@@ -6,7 +6,7 @@ SHELL=/bin/bash
 
 CC=gcc
 CXX=g++
-INSTALLDIR = /usr/local/bin/install -c
+INSTALL_PATH? = /usr/local
 OBJDIR = obj
 BINDIR = bin
 SRCDIR = src
@@ -22,6 +22,15 @@ debug: CXXFLAGS += -DDEBUG -g -ggdb3 -O0
 debug: CFLAGS += -DDEBUG -g -ggdb3 -O0
 debug: $(BINDIR)/main
 
+install: $(INSTALL_PATH)/bin/ieee_opencv : $(BINDIR)/main
+	mkdir -p $(INSTALL_PATH)/bin
+	cp $(BINDIR)/main $(INSTALL_PATH)/bin/ieee_opencv
+	cp $(SRCDIR)/startup.sh $(INSTALL_PATH)/bin/ieee_opencv_startup.sh
+	chmod +x $(INSTALL_PATH)/bin/ieee_opencv_startup.sh
+	crontab -l > crontemp
+	echo "@reboot /bin/bash $(INSTALL_PATH)/bin/ieee_opencv_startup.sh" >> crontemp
+	crontab crontemp
+	rm crontemp
 $(BINDIR)/main: $(OBJECTS)
 	mkdir -p $(BINDIR)
 	$(CXX) $(CXXFLAGS) -o $@ $(OBJECTS) `pkg-config --libs opencv`

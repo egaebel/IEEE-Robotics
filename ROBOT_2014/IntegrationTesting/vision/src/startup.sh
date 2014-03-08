@@ -20,5 +20,4 @@ echo bone_pwm_P9_14 > /sys/devices/bone_capemgr.9/slots
 echo bone_pwm_P9_21 > /sys/devices/bone_capemgr.9/slots
 
 #execute our program
-/home/ubuntu/IEEE-Robotics/ROBOT_2014/Release/bin/main
-
+/usr/local/bin/main
