@@ -9,7 +9,7 @@ CXX=g++
 INSTALL = /usr/local/bin/install -c
 CXXFLAGS += -march=armv7-a -mtune=cortex-a8 -ffast-math -O3 -mfpu=neon -mfloat-abi=hard -Wall -W `pkg-config --cflags opencv`
 CFLAGS += -std=c99  -march=armv7-a -mtune=cortex-a8 -ffast-math -O3 -mfpu=neon -mfloat-abi=hard -Wall -W `pkg-config --cflags opencv`
-OBJECTS = main.o target.o servo.o gpio.o
+OBJECTS = main.o target.o servo.o gpio.o hardware.o
 
 # Make targets
 
