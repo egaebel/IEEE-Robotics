@@ -16,11 +16,11 @@ OBJECTS = $(OBJDIR)/main.o $(OBJDIR)/target.o $(OBJDIR)/servo.o $(OBJDIR)/gpio.o
 
 # Make targets
 
-all: main
+all: $(BINDIR)/main
 
 debug: CXXFLAGS += -DDEBUG -g -ggdb3 -O0
 debug: CFLAGS += -DDEBUG -g -ggdb3 -O0
-debug: main
+debug: $(BINDIR)/main
 
 $(BINDIR)/main: $(OBJECTS)
 	$(CXX) $(CXXFLAGS) -o $@ $(OBJECTS) `pkg-config --libs opencv`
