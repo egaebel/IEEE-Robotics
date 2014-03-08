@@ -23,16 +23,22 @@ debug: CFLAGS += -DDEBUG -g -ggdb3 -O0
 debug: $(BINDIR)/main
 
 $(BINDIR)/main: $(OBJECTS)
+	mkdir -p $(BINDIR)
 	$(CXX) $(CXXFLAGS) -o $@ $(OBJECTS) `pkg-config --libs opencv`
 $(OBJDIR)/main.o: $(SRCDIR)/main.cpp $(SRCDIR)/target.h $(SRCDIR)/servo.h $(SRCDIR)/gpio.h $(SRCDIR)/config.h
+	mkdir -p $(OBJDIR)
 	$(CXX) $(CXXFLAGS) -o $@ -c $(SRCDIR)/main.cpp `pkg-config --libs opencv`
 $(OBJDIR)/target.o: $(SRCDIR)/target.cpp $(SRCDIR)/target.h $(SRCDIR)/config.h
+	mkdir -p $(OBJDIR)
 	$(CXX) $(CXXFLAGS) -o $@ -c $(SRCDIR)/target.cpp `pkg-config --libs opencv`
 $(OBJDIR)/servo.o: $(SRCDIR)/servo.cpp $(SRCDIR)/servo.h $(SRCDIR)/config.h $(SRCDIR)/hardware.h
+	mkdir -p $(OBJDIR)
 	$(CXX) $(CXXFLAGS) -o $@ -c $(SRCDIR)/servo.cpp `pkg-config --libs opencv`
 $(OBJDIR)/gpio.o: $(SRCDIR)/gpio.cpp $(SRCDIR)/gpio.h $(SRCDIR)/config.h $(SRCDIR)/hardware.h
+	mkdir -p $(OBJDIR)
 	$(CXX) $(CXXFLAGS) -o $@ -c $(SRCDIR)/gpio.cpp `pkg-config --libs opencv`
 $(OBJDIR)/hardware.o: $(SRCDIR)/hardware.cpp $(SRCDIR)/hardware.h
+	mkdir -p $(OBJDIR)
 	$(CXX) $(CXXFLAGS) -o $@ -c $(SRCDIR)/hardware.cpp `pkg-config --libs opencv`
 clean:
 	rm -rf $(OBJDIR) $(BINDIR) *.stackdump
