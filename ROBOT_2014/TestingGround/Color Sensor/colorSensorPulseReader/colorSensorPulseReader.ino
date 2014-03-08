@@ -3,25 +3,28 @@
 ColorSensor colorSensor;
 
 void setup() {
-    colorSensor = ColorSensor();
+    Serial.begin(9600);
+    colorSensor.setup(22, 26, 30, 34, 38, 42);
 }
 
 void loop()	{
-    Serial.begin(115200);
+    
     Serial.print("\n\n\n\n\n");
 
-   int colorResult = colorSensor.getColor();
+    if (colorSensor.colorRead(WHITE)) {
+        Serial.println("WHITE");
+    }
+    else if (colorSensor.colorRead(GREEN)) {
+        Serial.println("GREeEn");
+    }
+    else if (colorSensor.colorRead(BLUE)) {
 
-      /*  --- For Testing --- */
-   if(colorResult == 0) {
-      Serial.print("\n WHITE \n");
-   } else if(colorResult == 1) {
-      Serial.print("\n BLACK \n");
-   } else if(colorResult == 2) {
-      Serial.print("\n BLUE \n");
-   } else {
-      Serial.print("\n UN SURE \n");
-   }
-
-    delay(2000);
+        Serial.println("BLUE!");
+    }
+    else if (colorSensor.colorRead(RED)) {
+        Serial.println("RED");
+    }
+    else {
+        Serial.println("NOT BLUE!");
+    }
 }
