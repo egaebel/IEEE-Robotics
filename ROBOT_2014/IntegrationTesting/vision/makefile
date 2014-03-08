@@ -25,7 +25,7 @@ debug: $(BINDIR)/main
 $(BINDIR)/main: $(OBJECTS)
 	$(CXX) $(CXXFLAGS) -o $@ $(OBJECTS) `pkg-config --libs opencv`
 $(OBJDIR)/main.o: $(SRCDIR)/main.cpp $(SRCDIR)/target.h $(SRCDIR)/servo.h $(SRCDIR)/gpio.h $(SRCDIR)/config.h
-	$(CXX) $(CXXFLAGS) -o $@ -c main.cpp `pkg-config --libs opencv`
+	$(CXX) $(CXXFLAGS) -o $@ -c $(SRCDIR)/main.cpp `pkg-config --libs opencv`
 $(OBJDIR)/target.o: $(SRCDIR)/target.cpp $(SRCDIR)/target.h $(SRCDIR)/config.h
 	$(CXX) $(CXXFLAGS) -o $@ -c $(SRCDIR)/target.cpp `pkg-config --libs opencv`
 $(OBJDIR)/servo.o: $(SRCDIR)/servo.cpp $(SRCDIR)/servo.h $(SRCDIR)/config.h $(SRCDIR)/hardware.h
