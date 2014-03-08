@@ -6,7 +6,7 @@ SHELL=/bin/bash
 
 CC=gcc
 CXX=g++
-INSTALL_PATH? = /usr/local
+INSTALL_PATH = /usr/local
 OBJDIR = obj
 BINDIR = bin
 SRCDIR = src
