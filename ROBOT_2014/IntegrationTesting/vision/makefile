@@ -22,7 +22,7 @@ debug: CXXFLAGS += -DDEBUG -g -ggdb3 -O0
 debug: CFLAGS += -DDEBUG -g -ggdb3 -O0
 debug: $(BINDIR)/main
 
-install: $(INSTALL_PATH)/bin/ieee_opencv : $(BINDIR)/main
+install: $(BINDIR)/main
 	mkdir -p $(INSTALL_PATH)/bin
 	cp $(BINDIR)/main $(INSTALL_PATH)/bin/ieee_opencv
 	cp $(SRCDIR)/startup.sh $(INSTALL_PATH)/bin/ieee_opencv_startup.sh
