@@ -3,6 +3,26 @@ with Dynamixel AX-12A Servo Motor. All commands use Serial 3 to write
 to servo and Serial to write to pc for purpose of recieving status packets
 */
 
+// To use this code wire the AX-12A servo with power between 9V to 12V, a shared ground with arduino, and pins 14 and 15 connected to the same Tx line of the servo
+// Use the below function to set the desired location in a global variable
+
+// location is a value which corresponds to the set position of a servo
+// a value of 0 is 0 degrees while a value of 3ff is 300 degrees 
+// 300 to 360 is invalid angle
+
+int location = 0x3ff;
+
+void setLocation(int temp_location)
+{
+  if(temp_location > 0x3ff || temp_location < 0)
+    Serial.println("invalid angle");
+  else 
+    location = temp_location;
+}
+
+
+
+
 // instruction table for Dynamixel AX-12A
 //---------------------------------------
 #define ping_ins 1 // checked
@@ -26,11 +46,12 @@ to servo and Serial to write to pc for purpose of recieving status packets
 #define goal_position 30
 #define moving_speed 32
 #define current_position 36
+#define present_temp 43
 //---------------------------------------
 
 // Code Begins...
 
-int length,location,temp,checksum,N,L; // used for status packet & return packet
+int length,temp,checksum,N,L; // used for status packet & return packet
 int old_val = 0;
 
 
@@ -39,13 +60,9 @@ int present_val = 0;
 
 int id = 1;
 int analogPin = A0;  // 5 Potenimeters. each 1 controls 1 motor
+int first = 1;
 
 int value;
-
-boolean inPosition = true;
-int plength = 2;
-int positions [2] = {1023, 0};
-int counter = 0;
 
 void setup()
 {
@@ -56,49 +73,42 @@ void setup()
 
 void loop()
 {
-
-  location = goal_position;
-  //present_val = analogRead(analogPin); // read value of A0
-  transmit();
-  Serial3.flush();
-  send_read_bytes(1, current_position, 2);
-  recieve();
-  char message_bytes[8] = { };
-  Serial3.readBytes(message_bytes, 8);
-  int current_place = 0;
-  //BitShiftCombine(message_bytes[5], message_bytes[6]);
-  Serial.print("Message Bytes: ");
-  for(int idx = 0; idx < 8; idx++)
-  {
-    Serial.print(" ");
-    Serial.print((byte)message_bytes[idx]);
-  }
-  Serial.println(""); 
-  Serial.println("Current Place: " + String(current_place));
-  /*
-  if(current_place == positions[counter] )
-  {
-    Serial.println("Finished Move: " + counter);
-    counter = (counter + 1)% plength;
-  }
-  */
-  //if ((present_val != old_val)) // 
-  { 
-    old_val = present_val; // old_val to present_val
     transmit(); //enable trasmission
+   if(first)
+   { 
+     // set moving speed to maximum
+     reg_write_2_byte(1,moving_speed,0xff);
+     Action(0xFE);
+     first = 0;
+     recieve();
+     delay(1);
+     
+     first = 0;
+     
+     // commented out, set servo to desired initial location
+//     delay(1);
+//     transmit();
+//     delay(10);
+//     reg_write_2_byte(1,goal_position,0x1fd);// put location value into buffer
+//     Action(0x01); //execute buffer
+//     recieve(); //enable recieving
+   }
    
-   // Reg_Write Instructions
-  //------------------------------------
-   reg_write_2_byte(1,moving_speed,0x3ff);
-   Action(0xFE);
-   
-   reg_write_2_byte(1,location,positions[counter]);// put location value into buffer
+   delay(1);
+   transmit();
+   delay(1);
+   reg_write_2_byte(1,goal_position,location);// put location value into buffer
    Action(0xFE); //execute buffer
-
    recieve(); //enable recieving
-    //while(1);
-  }
-
+   delay(1);
+   
+//   transmit();
+//   Serial3.flush();
+//   send_read_bytes(1, current_position, 2);
+//   //Action(0x01);
+//   recieve();
+//   delay(10); 
+   
 }
 
 
@@ -121,10 +131,35 @@ void recieve()
 
 void serialEvent3()
 {
-  temp =Serial3.read();
-  //Serial.print(temp,HEX); // prints incoming return packet bit 
+  //temp =Serial3.read();
+  //Serial.print(temp,HEX); // prints incoming return packet bit
+  //Serial.print("\n");
+   char message_bytes[16] = { };
+   Serial3.readBytes(message_bytes, 16);
+   int current_place = 0;
+   Serial.print("Message Bytes: ");
+   for(int idx = 0; idx < 16; idx++)
+   {
+     Serial.print(" ");
+     Serial.print((byte)message_bytes[idx]);
+   }
+   Serial.println("");
 }
 
+
+void reg_write_1_byte(int id, int location, int val)
+{
+  length = 4;
+  checksum = ~((id + length + write_ins + location + (val&0xFF))%256); //Checksum Value
+  Serial3.write(0xFF); // Starts instruction packet
+  Serial3.write(0xFF);
+  Serial3.write(id);
+  Serial3.write(length);
+  Serial3.write(write_ins);
+  Serial3.write(location); 
+  Serial3.write(val&0xFF); // Lower Byte 
+  Serial3.write(checksum);
+}
 /*---------------------------------------
  Function to reg_write to a 2 byte register
  location = what register to write to
@@ -143,27 +178,41 @@ void reg_write_2_byte(int id, int location,int val)
   Serial3.write(val&0xFF); // Lower Byte 
   Serial3.write((val&0xFF00) >> 8); // Upper Byte 
   Serial3.write(checksum);
+  
+  Serial.println("Write Message:");
+  Serial.print((byte)0xFF); // Starts instruction packet
+  Serial.print(" ");
+  Serial.print((byte)0xFF);
+  Serial.print(" ");
+  Serial.print((byte)id);
+  Serial.print(" ");
+  Serial.print((byte)length);
+  Serial.print(" ");
+  Serial.print((byte)reg_write_ins);
+  Serial.print(" ");
+  Serial.print((byte)location);
+  Serial.print(" "); 
+  Serial.print((byte)val&0xFF); // Lower Byte
+  Serial.print(" "); 
+  Serial.print((byte)(val&0xFF00) >> 8); // Upper Byte
+  Serial.print(" "); 
+  Serial.print((byte)checksum);
+  Serial.println("");
+  
+  
 }
 
-/*---------------------------------------
- Function to send read signal for an array of byte registers
- location = what register to read at
- num_bytes = number of bytes to read
- ---------------------------------------*/
-void send_read_bytes(int id, int location, int read_bytes)
+void reset(int id)
 {
-  length = 3 + read_bytes; // length of 2-byte read instruction is 5
-  checksum = ~((id + length + read_ins + location + read_bytes)%256); //Checksum Value
+  length = 0x2; // length of 2-byte instruction is 5
+  checksum = ~((id + length + reset_ins)%256); //Checksum Value
   Serial3.write(0xFF); // Starts instruction packet
   Serial3.write(0xFF);
   Serial3.write(id);
   Serial3.write(length);
-  Serial3.write(read_ins);
-  Serial3.write(location);
-  Serial3.write(read_bytes); 
+  Serial3.write(reset_ins);
   Serial3.write(checksum);
 }
-
 /*---------------------------------------
  Action Function to perform Reg_Write Functions
  ---------------------------------------*/
@@ -179,11 +228,36 @@ void Action(int id)
   Serial3.write(checksum);
 }
 
-int BitShiftCombine( unsigned char x_high, unsigned char x_low)
+void send_read_bytes(int id, int location, int read_bytes)
 {
-  int combined;
-  combined = x_high;              //send x_high to rightmost 8 bits
-  combined = combined<<8;         //shift x_high over to leftmost 8 bits
-  combined |= x_low;                 //logical OR keeps x_high intact in combined and fills in rightmost 8 bits
-  return combined;
+  length = 4; // length of 2-byte read instruction is 5
+  checksum = ~((id + length + read_ins + location + read_bytes)%256); //Checksum Value
+  Serial3.write(0xFF); // Starts instruction packet
+  Serial3.write(0xFF);
+  Serial3.write(id);
+  Serial3.write(length);
+  Serial3.write(read_ins);
+  Serial3.write(location);
+  Serial3.write(read_bytes); 
+  Serial3.write(checksum);
+  
+  Serial.println("Read Message:");
+  Serial.print((byte)0xFF); // Starts instruction packet
+  Serial.print(" ");
+  Serial.print((byte)0xFF);
+  Serial.print(" ");
+  Serial.print((byte)id);
+  Serial.print(" ");
+  Serial.print((byte)length);
+  Serial.print(" ");
+  Serial.print((byte)read_ins);
+  Serial.print(" ");
+  Serial.print((byte)location);
+  Serial.print(" "); 
+  Serial.print((byte)read_bytes); // Lower Byte
+  Serial.print(" "); 
+  Serial.print((byte)checksum);
+  Serial.println("");
+  
+  
 }
