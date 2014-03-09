@@ -36,18 +36,14 @@ bool locateTarget( cv::Mat *scene, cv::Point *centroid, int num )
   // erode to remove small noise clusters
   erode( *scene, *scene, getStructuringElement( MORPH_ELLIPSE, Size ( ERODE_SIZE, ERODE_SIZE ) ) );
   #ifdef DEBUG
-    char buffer[10];
-    sprintf( buffer, "%d", num );
-    string filename = "./snapshot" + string(buffer) + "_stage2.png";
+    filename = "./snapshot" + string(buffer) + "_stage2.png";
     imwrite( filename, *scene );
   #endif
 
   // dilate to restore original feature size
   dilate( *scene, *scene, getStructuringElement( MORPH_ELLIPSE, Size ( DILATE_SIZE, DILATE_SIZE ) ) );
   #ifdef DEBUG
-    char buffer[10];
-    sprintf( buffer, "%d", num );
-    string filename = "./snapshot" + string(buffer) + "_stage3.png";
+    filename = "./snapshot" + string(buffer) + "_stage3.png";
     imwrite( filename, *scene );
   #endif
 
@@ -65,6 +61,7 @@ bool locateTarget( cv::Mat *scene, cv::Point *centroid, int num )
     {
       drawContours( scene_copy, contours, j, Scalar(((10*j) % 255), 255, 255), 1, 8, vector<Vec4i>(), 0, Point() );
     }
+    filename = "./snapshot" + string(buffer) + "_stage4.png";
     imwrite( filename, scene_copy );
   #endif
 
@@ -156,6 +153,7 @@ bool locateTarget( cv::Mat *scene, cv::Point *centroid, int num )
     {
       drawContours( scene_copy, hulls, j, Scalar(((10*j) % 255), 255, 255), 1, 8, vector<Vec4i>(), 0, Point() );
     }
+    filename = "./snapshot" + string(buffer) + "_stage5.png";
     imwrite( filename, scene_copy );
   #endif
 
@@ -169,6 +167,7 @@ bool locateTarget( cv::Mat *scene, cv::Point *centroid, int num )
       // draw the detected centroid on the scene and write it to a file
       scene_copy = *scene.clone();
       circle( scene_copy, centroid, 3, Scalar(255, 255, 255) );
+      filename = "./snapshot" + string(buffer) + "_stage6.png";
       imwrite( filename, scene_copy );
       num++;
     #endif
