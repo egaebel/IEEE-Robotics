@@ -51,7 +51,7 @@ int main()
   // initialize the GPIOs
   if( !GPIOExport( GPIO_P9_14 )
     || !setGPIODirection( GPIO_P9_14, GPIO_P9_14_DIR )
-    || !setGPIOValue( GPIO_P9_14, "0" )
+    || !setGPIOValue( GPIO_P9_14, "0" ) )
   {
     #ifdef DEBUG
       printf( "failed to open GPIO P9_14 as output\n" );
