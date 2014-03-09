@@ -122,7 +122,7 @@ int main()
         // point we are aiming at differs depending on which barrel we are firing
         int pan_difference = 0;
         int tilt_difference = 0;
-        switch( fired )
+        switch( num_fired )
         {
           case 0:
             pan_difference = FIRE_ONE_X - centroid.x;
