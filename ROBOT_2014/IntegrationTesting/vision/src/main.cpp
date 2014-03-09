@@ -26,157 +26,152 @@ int old_tilt_position;
  */
 int main()
 {
-	// initialize the servos
-	int pan_position = INL_PAN_POSITION;
-	old_pan_position = INL_PAN_POSITION;
-	if( !enable_servo( PAN_SERVO ) || !set_servo_position( PAN_SERVO, INL_PAN_POSITION ) )
-		return 1;
-	int tilt_position = INL_TILT_POSITION;
-	old_tilt_position = INL_TILT_POSITION;
-	if( !enable_servo( TILT_SERVO ) || !set_servo_position( TILT_SERVO, tilt_position ) )
-		return 1;
-	if( !enable_servo( FIRE_ONE_SERVO ) || !set_servo_position( FIRE_ONE_SERVO, REST_FIRE_ONE_POSITION ) )
-		return 1;
+  // initialize the servos
+  int pan_position = INL_PAN_POSITION;
+  old_pan_position = INL_PAN_POSITION;
+  if( !enable_servo( PAN_SERVO ) || !set_servo_position( PAN_SERVO, INL_PAN_POSITION ) )
+    return 1;
+  int tilt_position = INL_TILT_POSITION;
+  old_tilt_position = INL_TILT_POSITION;
+  if( !enable_servo( TILT_SERVO ) || !set_servo_position( TILT_SERVO, tilt_position ) )
+    return 1;
 
-	// open the camera
-	VideoCapture cap(0);
-	if( !cap.isOpened() )
-	{
-		printf( "failed to open camera\n" );
-		return -1;
-	}
+  // open the camera
+  VideoCapture cap(0);
+  while( !cap.isOpened() )
+  {
+    #ifdef DEBUG
+      printf( "failed to open camera\n" );
+    #endif
 
-	// try to set the camera properties
-	cap.set(CV_CAP_PROP_FRAME_WIDTH, 1920);
-	cap.set(CV_CAP_PROP_FRAME_HEIGHT, 1080);
-	cap.set(CV_CAP_PROP_FPS, 30);
+    cap.open(0);
+  }
 
-	// initialize the camera
-	cap.grab();
+  // try to set the camera properties
+  cap.set(CV_CAP_PROP_FRAME_WIDTH, 640);
+  cap.set(CV_CAP_PROP_FRAME_HEIGHT, 480);
+  cap.set(CV_CAP_PROP_FPS, 5);
 
-	int num = 0;
-	bool target_found = false, fired = false;
-	Mat scene;
-	while(!fired)
-	{
-		cap >> scene;
-		if( scene.data )
-		{
-			Mat scene_copy = scene.clone();
-			cv::Point centroid;
-			if( locateTarget( &scene, &centroid ) )
-			{
-				#ifdef DEBUG
-					// draw the detected centroid on the scene and write it to a file
-			        circle( scene_copy, centroid, 3, Scalar(255, 255, 255) );
-			        char buffer[10];
-			        sprintf( buffer, "%d", num );
-			        string filename = "./snapshot" + string(buffer) + ".png";
-			        imwrite( filename, scene_copy );
-					num++;
-		        #endif
+  // initialize the camera
+  cap.grab();
 
-				/*
-				// inertia/acceleration and PID control related servo attributes
+  int num = 0;
+  bool target_found = false;
+  int num_fired = 0;
+  Mat scene;
+  while(num_fired < 3)
+  {
+    cap >> scene;
+    if( scene.data )
+    {
+      // duplicate scene for later file output
+      #ifdef DEBUG
+        Mat scene_copy = scene.clone();
+      #endif
 
-				// camera is 75deg/320px at 320x240
-				double degrees_per_pixel = 75.0 / 320;
+      cv::Point centroid;
+      if( locateTarget( &scene, &centroid ) )
+      {
+        // draw the detected centroid on the scene and write it to a file
+        #ifdef DEBUG
+          circle( scene_copy, centroid, 3, Scalar(255, 255, 255) );
+          char buffer[10];
+          sprintf( buffer, "%d", num );
+          string filename = "./snapshot" + string(buffer) + ".png";
+          imwrite( filename, scene_copy );
+          num++;
+        #endif
 
-				// duty cycle should be about 10000 per degree but that is too high
-				double pan_cycles_per_degree = 6000;
-				double tilt_cycles_per_degree = 3000;
+        // point we are aiming at differs depending on which barrel we are firing
+        int pan_difference = 0;
+        int tilt_difference = 0;
+        switch( fired )
+        {
+          case 0:
+            pan_difference = FIRE_ONE_X - centroid.x;
+            tilt_difference = FIRE_ONE_Y - centroid.y;
+            break;
+          case 1:
+            pan_difference = FIRE_TWO_X - centroid.x;
+            tilt_difference = FIRE_TWO_Y - centroid.y;
+            break;
+          case 2:
+            pan_difference = FIRE_THREE_X - centroid.x;
+            tilt_difference = FIRE_THREE_Y - centroid.y;
+            break;
+          default:
+        }
 
-				// allow an error margin since detected centroid may shift slightly in multiple photos at the same position
-				int margin = 2;
+        // have we aimed close enough yet?
+        if( abs( pan_difference ) < PAN_THRESHOLD && abs( tilt_difference ) < TILT_THRESHOLD )
+        {
+          #ifdef DEBUG
+            printf( "FIRE!\n" );
+          #endif
 
-				// HS485HB is 0.23sec/60deg at 4.8V with no load, with load it should be higher
-				double sixty_speed = 0.60;
-				double seconds_per_degree = sixty_speed / 60;
-				double us_per_second = 1000000;
-				double us_per_pixel = degrees_per_pixel * seconds_per_degree * us_per_second;
-				double frame_rate = 30.0;
+          // TODO: toggle ready to fire pin to notify arduino
+          usleep( 1000000 );
+          // reset ready to fire pin
 
-				// more precisely, us per shot
-				double shot_time_us = us_per_second / frame_rate;
-				int pan_cycles_per_shot = (int)round( ( ( pan_cycles_per_degree / seconds_per_degree ) / us_per_second ) * shot_time_us );
+          fired++;
+        }
+        else
+        {
+          // update servo positions (with hard-coded proportional control for now)
+          pan_position += PAN_PROPORTIONAL_RATE * pan_difference * PAN_DIRECTION;
+          tilt_position += TILT_PROPORTIONAL_RATE * tilt_difference * TILT_DIRECTION;
 
-				// difference of pan and tilt from center in pixels
-				int pan_difference = ( scene.size().width / 2 ) - centroid.x;
-				int tilt_difference = ( scene.size().height / 2 ) - centroid.y;
+          // pan/tilt position limits
+          if( pan_position < MIN_PAN_POSITION )
+            pan_position = MIN_PAN_POSITION;
+          else if( pan_position > MAX_PAN_POSITION )
+            pan_position = MAX_PAN_POSITION;
+          if( tilt_position < MIN_TILT_POSITION )
+            tilt_position = MIN_TILT_POSITION;
+          else if( tilt_position > MAX_TILT_POSITION )
+            tilt_position = MAX_TILT_POSITION;
 
-				// total movement time should be about one clock pulse plus approximate microseconds needed for servo movement
-				double movement_time_us = 20000 + ( fmax( abs( pan_difference ), abs( tilt_difference ) ) * us_per_pixel );
-				int shots = (int)ceil( movement_time_us / shot_time_us );
 
-				// pan_remaining is in cycles
-				int pan_remaining = 0, pan_steps = 0;
-				int tilt_remaining = 0, tilt_steps = 0;
+          if( pan_position != old_pan_position )
+          {
+            #ifdef DEBUG
+              printf( "moving %s: %d to %d (%d)\n", PAN_SERVO, old_pan_position, pan_position, (int)abs( pan_position - old_pan_position ) );
+            #endif
 
-				int goal_x = scene.size().width / 2;
-				int goal_y = scene.size().height / 2;
-				*/
+            set_servo_position( PAN_SERVO, pan_position );
+            old_pan_position = pan_position;
+          }
+          if( tilt_position != old_tilt_position )
+          {
+            #ifdef DEBUG
+              printf( "moving %s: %d to %d (%d)\n", TILT_SERVO, old_tilt_position, tilt_position, (int)abs( tilt_position - old_tilt_position ) );
+            #endif
 
-				int pan_difference = FIRE_ONE_X - centroid.x;
-				// hard-coded proportional control for now
-				pan_position += PAN_PROPORTIONAL_RATE * pan_difference * PAN_DIRECTION;
-				if( pan_position < MIN_PAN_POSITION )
-					pan_position = MIN_PAN_POSITION;
-				else if( pan_position > MAX_PAN_POSITION )
-					pan_position = MAX_PAN_POSITION;
+            set_servo_position( TILT_SERVO, tilt_position );
+            old_tilt_position = tilt_position;
+          }
+        }
+      }
+      else
+      {
+        #ifdef DEBUG
+          if( target_found )
+          {
+            target_found = false;
+            printf("target not found\n");
+          }
+        #endif
+      }
+    }
+  }
 
-				int tilt_difference = FIRE_ONE_Y - centroid.y;
-				// hard-coded proportional control for now
-				tilt_position += TILT_PROPORTIONAL_RATE * tilt_difference * TILT_DIRECTION;
-				if( tilt_position < MIN_TILT_POSITION )
-					tilt_position = MIN_TILT_POSITION;
-				else if( tilt_position > MAX_TILT_POSITION )
-					tilt_position = MAX_TILT_POSITION;
+  // disable all servos
+  usleep( 500000 );
+  disable_servo( PAN_SERVO );
+  disable_servo( TILT_SERVO );
 
-				if( abs( pan_difference ) < PAN_THRESHOLD && abs( tilt_difference ) < TILT_THRESHOLD )
-				{
-					fired = true;
-					printf( "FIRE!\n" );
-					set_servo_position( FIRE_ONE_SERVO, FIRE_FIRE_ONE_POSITION );
-				}
-				else
-				{
-					// update servo positions
-					if( pan_position != old_pan_position )
-					{
-						printf( "moving %s: %d to %d (%d)\n", PAN_SERVO, old_pan_position, pan_position, (int)abs( pan_position - old_pan_position ) );
-						set_servo_position( PAN_SERVO, pan_position );
-						old_pan_position = pan_position;
-					}
-					if( tilt_position != old_tilt_position )
-					{
-						printf( "moving %s: %d to %d (%d)\n", TILT_SERVO, old_tilt_position, tilt_position, (int)abs( tilt_position - old_tilt_position ) );
-						set_servo_position( TILT_SERVO, tilt_position );
-						old_tilt_position = tilt_position;
-					}
-				}
-			}
-			else
-			{
-		        #ifdef DEBUG
-					if( target_found )
-					{
-						target_found = false;
-						printf("target not found\n");
-					}
-		        #endif
-			}
-		}
-	}
+  // disconnect the camera
+  cap.release();
 
-	// wait for firing servo to trigger, then back it off
-	usleep( 500000 );
-	set_servo_position( FIRE_ONE_SERVO, REST_FIRE_ONE_POSITION );
-
-	// disable all servos
-	usleep( 500000 );
-	disable_servo( PAN_SERVO );
-	disable_servo( TILT_SERVO );
-	disable_servo( FIRE_ONE_SERVO );
-
-	return 0;
+  return 0;
 }
