@@ -20,7 +20,7 @@ bool write_hardware_fs( const char* path, const char* value, const int length, c
   return true;
 }
 
-bool read_hardware_fs( const char* path, char* value, int length, const char* mode )
+bool read_hardware_fs( const char* path, char* value, unsigned int length, const char* mode )
 {
   FILE *myInputHandle = NULL;
   if( ( myInputHandle = fopen( path, mode ) ) == NULL ) {
