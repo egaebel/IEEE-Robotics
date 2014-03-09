@@ -106,18 +106,8 @@ int main()
       #endif
 
       cv::Point centroid;
-      if( locateTarget( &scene, &centroid ) )
+      if( locateTarget( &scene, &centroid, num ) )
       {
-        // draw the detected centroid on the scene and write it to a file
-        #ifdef DEBUG
-          circle( scene_copy, centroid, 3, Scalar(255, 255, 255) );
-          char buffer[10];
-          sprintf( buffer, "%d", num );
-          string filename = "./snapshot" + string(buffer) + ".png";
-          imwrite( filename, scene_copy );
-          num++;
-        #endif
-
         // reset the failure counter
         locate_failures = 0;
 
