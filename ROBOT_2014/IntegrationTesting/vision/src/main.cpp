@@ -87,8 +87,6 @@ int main()
   // initialize the camera
   cap.grab();
 
-  int num = 0;
-  bool target_found = false;
   int num_fired = 0;
   Mat scene;
   // number of frames with no target found since last good frame
