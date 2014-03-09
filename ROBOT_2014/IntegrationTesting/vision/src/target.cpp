@@ -167,7 +167,7 @@ bool locateTarget( cv::Mat *scene, cv::Point *centroid, int num )
     #ifdef DEBUG
       // draw the detected centroid on the scene and write it to a file
       scene_copy = (*scene).clone();
-      circle( scene_copy, centroid, 3, Scalar(255, 255, 255) );
+      circle( scene_copy, *centroid, 3, Scalar(255, 255, 255) );
       filename = "./snapshot" + string(buffer) + "_stage6.png";
       imwrite( filename, scene_copy );
       num++;
