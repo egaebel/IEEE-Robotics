@@ -137,6 +137,7 @@ int main()
             tilt_difference = FIRE_THREE_Y - centroid.y;
             break;
           default:
+            break;
         }
 
         // have we aimed close enough yet?
