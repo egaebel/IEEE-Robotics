@@ -1,4 +1,4 @@
-#include <pins.h>
+#include "pins.h"
 #include <motors.h>
 #include <linefollow.hpp>
 #include <colorSensor.h>
@@ -112,21 +112,28 @@ void loop() {
     
             //Backup to account for overturning
             motors.motorsDrive(BACKWARD);
-            delay(250);
+            delay(50);
 
             state = SIDE_LINE_START;
             break;
 
         case SIDE_LINE_START:
             Serial.println("side line starter"); 
-                        
-            if (lineFollower.isCentered(leftLineFollowBits, rightLineFollowBits)) {
-                motors.motorsDrive(FORWARD);
-                //FOR DEMO ONLY--REMOVE WHEN COLOR SENSOR WORKS
-                delay(2000);
-                state = FIRE;
-                ///////////////////////////////////////////////
+                 
+            lineFollower.Get_Line_Data(leftLineFollowBits, rightLineFollowBits);
+            if (leftLineFollowBits > 2 && rightLineFollowBits > 2) {
 
+                state = FIRE;
+                break;
+            }
+            else if (lineFollower.isCentered(leftLineFollowBits, rightLineFollowBits)) {
+                motors.motorsDrive(FORWARD);
+
+                //We see the blue block! FIRE! (and stop...)
+                if (colorSensor.getColor() == BLUE) {
+                    motors.motorsStop();
+                    state = FIRE;
+                }
                 break;
             }
             else {
@@ -142,6 +149,9 @@ void loop() {
         case FIRE:
             Serial.println("FIRE STATE");
 
+            //Fire!
+
+            //U-Turn code
             do {
                 motors.motorsTurnLeft();
                 lineFollower.Get_Line_Data(leftLineFollowBits, rightLineFollowBits);

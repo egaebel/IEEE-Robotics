@@ -2,7 +2,7 @@
 #define COLORSENSOR_H
 #include <Arduino.h>
 
-enum Color {BLUE = 1, RED, GREEN, WHITE};
+enum Color {BLUE = 1, RED, GREEN, WHITE, BLACK};
 
 class ColorSensor
 {

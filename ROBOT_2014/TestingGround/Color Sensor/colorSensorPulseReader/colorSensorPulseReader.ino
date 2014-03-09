@@ -27,6 +27,9 @@ void loop()	{
         case GREEN:
             Serial.println("GREEN");
             break;
+        case BLACK:
+            Serial.println("BLACK");
+            break;
     }
     Serial.println("LOOP COMPLETE---------------\n\n\n\n\n");
     delay(3000);

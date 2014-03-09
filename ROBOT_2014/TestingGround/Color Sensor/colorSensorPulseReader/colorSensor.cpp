@@ -61,6 +61,7 @@ Color ColorSensor::getColor(bool useLED) {
     Color minColor;
     //Set min to max
     unsigned int minPulse = 0xffff;
+    unsigned int maxPulse = 0;
     unsigned int biggestDifference = 0;
     for (unsigned short i = 0; i < 3; i++) {
         Serial.print("color pulse value ==");
@@ -86,6 +87,11 @@ Color ColorSensor::getColor(bool useLED) {
             }
         }
 
+        //Find the largest pulse value
+        if (colorPulseArray[i] > maxPulse) {
+            maxPulse = colorPulseArray[i];
+        }
+
         //If not the first iteration
         if (i != 0) {
 
@@ -95,12 +101,17 @@ Color ColorSensor::getColor(bool useLED) {
             }
         }
     }
-
+    Serial.print("biggestDifference == ");
+    Serial.println(biggestDifference);
+    Serial.print("maxPulse == ");
+    Serial.println(maxPulse);
     //if all values within 10
     //White
-    if (biggestDifference < 10) {
-
+    if (biggestDifference < 10 && maxPulse < 50) {
         return WHITE;
+    }
+    else if (biggestDifference < 200 && minPulse > 200) {
+        return BLACK;
     }
     //Take min color
     else {
