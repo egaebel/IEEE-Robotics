@@ -31,44 +31,127 @@ void ColorSensor::setup(int S0, int S1,
     pinMode(taosOutPin, INPUT);
 
     //Set sensitivity
+    //2% = LOW, HIGH
+    //100% = HIGH, HIGH
+    //20% = HIGH, LOW
     digitalWrite(S0, HIGH);
-    digitalWrite(S1, LOW);
+    digitalWrite(S1, HIGH);
     
-    digitalWrite(LED, HIGH);
+    //Turn LED on or off
+    digitalWrite(LED, LOW);
+}
+
+//Gets the color that the color sensor is currently over
+Color ColorSensor::getColor() {
+
+    unsigned int bluePulse = colorRead(BLUE);
+    unsigned int redPulse = colorRead(RED);
+    unsigned int greenPulse = colorRead(GREEN);
+    unsigned int whitePulse = colorRead(WHITE);
+    
+    //Put into array to loop
+    unsigned int colorPulseArray[4];
+    colorPulseArray[0] = bluePulse;
+    colorPulseArray[1] = redPulse;
+    colorPulseArray[2] = greenPulse;
+    colorPulseArray[3] = whitePulse;
+
+    //Loop over all pulses to discover if all pulses are within 10 of eachother
+        //or what the smallest pulse is (ignoring the whitePulse value)
+    Color minColor;
+    //Set min to max
+    unsigned int minPulse = 0xffff;
+    unsigned int biggestDifference = 0;
+    for (unsigned short i = 0; i < 3; i++) {
+        Serial.print("color pulse value ==");
+        Serial.println(colorPulseArray[i]);
+        //Find the smallest pulse value
+        if (i == 0 || colorPulseArray[i] < minPulse) {
+            minPulse = colorPulseArray[i];
+
+            //Which color are we on?
+            switch (i) {
+                case 0:
+                    minColor = BLUE;
+                    break;
+                case 1:
+                    minColor = RED;
+                    break;
+                case 2:
+                    minColor = GREEN;
+                    break;
+                case 3:
+                    minColor = WHITE;
+                    break;
+            }
+        }
+
+        //If not the first iteration
+        if (i != 0) {
+
+            //Compare this pulse value and the previous pulse value
+            if ((colorPulseArray[i] - colorPulseArray[i - 1]) > biggestDifference) {
+                biggestDifference = (colorPulseArray[i] - colorPulseArray[i - 1]);
+            }
+        }
+    }
+
+    //if all values within 10
+    //White
+    if (biggestDifference < 10) {
+
+        return WHITE;
+    }
+    //Take min color
+    else {
+        return minColor;
+    }
 }
 
 //Read the passed in color
-bool ColorSensor::colorRead(Color color)    {
+int ColorSensor::colorRead(Color color)    {
 
     //set the S2 and S3 pins to select the color to be sensed
     //White
-    if(color == 0){
+    if(color == WHITE){
         digitalWrite(S3, LOW); //S3
         digitalWrite(S2, HIGH); //S2
+        Serial.println("white");
     }
     //Red
-    else if(color == 1){
+    else if(color == RED){
         digitalWrite(S3, LOW); //S3
         digitalWrite(S2, LOW); //S2
+        Serial.println("Red");
     }
     //Blue
-    else if(color == 2){
+    else if(color == BLUE){
         digitalWrite(S3, HIGH); //S3
         digitalWrite(S2, LOW); //S2
+        Serial.println("Blue");
     }
     //Green
-    else if(color == 3){
+    else if(color == GREEN){
         digitalWrite(S3, HIGH); //S3
         digitalWrite(S2, HIGH); //S2
+        Serial.println("Green");
     }
 
-    bool readPulse; //where the pulse reading from sensor will go
+    int readPulse; //where the pulse reading from sensor will go
 
-    //delay(100); //Delay for 100ms for before reading
+    //Turn on LED
+    digitalWrite(LED, HIGH);
+
+    delay(100);
 
     // now take a measurement from the sensor, timing a low pulse on the sensor's "out" pin
     readPulse = pulseIn(taosOutPin, LOW, 80000);
 
-    // return the pulse value back to whatever called for it...
+    //Turn off LED
+    digitalWrite(LED, LOW);
+
+    Serial.print("Read Pulse == ");
+    Serial.println(readPulse);
+
     return readPulse;
 }
