@@ -42,7 +42,7 @@ void ColorSensor::setup(int S0, int S1,
 }
 
 //Gets the color that the color sensor is currently over
-Color ColorSensor::getColor() {
+Color ColorSensor::getColor(bool useLED) {
 
     unsigned int bluePulse = colorRead(BLUE);
     unsigned int redPulse = colorRead(RED);
@@ -109,7 +109,7 @@ Color ColorSensor::getColor() {
 }
 
 //Read the passed in color
-int ColorSensor::colorRead(Color color)    {
+int ColorSensor::colorRead(Color color, bool useLED)    {
 
     //set the S2 and S3 pins to select the color to be sensed
     //White
@@ -140,7 +140,9 @@ int ColorSensor::colorRead(Color color)    {
     int readPulse; //where the pulse reading from sensor will go
 
     //Turn on LED
-    digitalWrite(LED, HIGH);
+    if (useLED) {
+        digitalWrite(LED, HIGH);
+    }
 
     delay(100);
 
