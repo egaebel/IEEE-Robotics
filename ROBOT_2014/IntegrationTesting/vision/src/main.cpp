@@ -201,7 +201,6 @@ int main()
       {
         locate_failures++;
         #ifdef DEBUG
-          target_found = false;
           printf("target not found\n");
         #endif
 
