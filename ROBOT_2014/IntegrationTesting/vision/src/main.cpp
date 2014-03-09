@@ -86,11 +86,7 @@ int main()
 
   // initialize the camera
   cap.grab();
-
-  #ifdef DEBUG
-    int num = 0;
-  #endif
-
+  
   int num_fired = 0;
   Mat scene;
   // number of frames with no target found since last good frame
@@ -100,11 +96,6 @@ int main()
     cap >> scene;
     if( scene.data )
     {
-      // duplicate scene for later file output
-      #ifdef DEBUG
-        Mat scene_copy = scene.clone();
-      #endif
-
       cv::Point centroid;
       if( locateTarget( &scene, &centroid, num ) )
       {
