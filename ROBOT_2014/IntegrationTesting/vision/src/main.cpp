@@ -86,7 +86,8 @@ int main()
 
   // initialize the camera
   cap.grab();
-  
+
+  int num = 0;
   int num_fired = 0;
   Mat scene;
   // number of frames with no target found since last good frame
@@ -99,6 +100,7 @@ int main()
       cv::Point centroid;
       if( locateTarget( &scene, &centroid, num ) )
       {
+        num++;
         // reset the failure counter
         locate_failures = 0;
 
