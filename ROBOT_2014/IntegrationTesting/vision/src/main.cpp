@@ -147,8 +147,13 @@ int main()
           #endif
 
           setGPIOValue( GPIO_P9_14, "1" );
-          // TODO: instead of sleeping, loop until arduino has toggled GPIO_P9_12 then reset ready to fire pin
-          usleep( 1000000 );
+          char* value;
+          *value = "0";
+          // wait until arduino has toggled GPIO_P9_12 then reset ready to fire pin
+          while(getGPIOValue(GPIO_P9_12, value) && *value == "0")
+          {
+            usleep( 100000 );
+          }
           setGPIOValue( GPIO_P9_14, "0" );
 
           fired++;

@@ -3,4 +3,6 @@
 
 bool write_hardware_fs( const char* path, const char* value, const int length, const char* mode = "rb+" );
 
+bool read_hardware_fs( const char* path, char* value, int length, const char* mode );
+
 #endif
