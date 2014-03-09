@@ -30,11 +30,23 @@ int main()
   int pan_position = INL_PAN_POSITION;
   old_pan_position = INL_PAN_POSITION;
   if( !enable_servo( PAN_SERVO ) || !set_servo_position( PAN_SERVO, INL_PAN_POSITION ) )
+  {
+    #ifdef DEBUG
+      printf( "failed to open pan servo\n" );
+    #endif
+
     return 1;
+  }
   int tilt_position = INL_TILT_POSITION;
   old_tilt_position = INL_TILT_POSITION;
   if( !enable_servo( TILT_SERVO ) || !set_servo_position( TILT_SERVO, tilt_position ) )
+  {
+    #ifdef DEBUG
+      printf( "failed to open tilt servo\n" );
+    #endif
+
     return 1;
+  }
 
   // open the camera
   VideoCapture cap(0);
@@ -48,9 +60,9 @@ int main()
   }
 
   // try to set the camera properties
-  cap.set(CV_CAP_PROP_FRAME_WIDTH, 640);
-  cap.set(CV_CAP_PROP_FRAME_HEIGHT, 480);
-  cap.set(CV_CAP_PROP_FPS, 5);
+  cap.set(CV_CAP_PROP_FRAME_WIDTH, CAM_WIDTH);
+  cap.set(CV_CAP_PROP_FRAME_HEIGHT, CAM_HEIGHT);
+  cap.set(CV_CAP_PROP_FPS, CAM_FPS);
 
   // initialize the camera
   cap.grab();

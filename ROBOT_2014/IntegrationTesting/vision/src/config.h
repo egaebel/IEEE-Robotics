@@ -40,6 +40,11 @@
 #define CANNY_HIGH_THRESHOLD	200
 #define CANNY_KERNEL_SIZE	3
 
+// camera capture settings, note: if these are changed, they must also be changed in the startup script
+#define CAM_WIDTH		640
+#define CAM_HEIGHT		320
+#define CAM_FPS			5
+
 //********************
 // SERVO CONFIGURATION
 // HS-475HB range is approximately 550000 to 2550000
