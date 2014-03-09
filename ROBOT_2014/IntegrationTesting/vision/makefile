@@ -27,10 +27,6 @@ install: $(BINDIR)/main
 	cp $(BINDIR)/main $(INSTALL_PATH)/bin/ieee_opencv
 	cp $(SRCDIR)/startup.sh $(INSTALL_PATH)/bin/ieee_opencv_startup.sh
 	chmod +x $(INSTALL_PATH)/bin/ieee_opencv_startup.sh
-	crontab -l > crontemp
-	echo "@reboot /bin/bash $(INSTALL_PATH)/bin/ieee_opencv_startup.sh" >> crontemp
-	crontab crontemp
-	rm crontemp
 $(BINDIR)/main: $(OBJECTS)
 	mkdir -p $(BINDIR)
 	$(CXX) $(CXXFLAGS) `pkg-config --cflags opencv` -o $@ $(OBJECTS) `pkg-config --libs opencv`
