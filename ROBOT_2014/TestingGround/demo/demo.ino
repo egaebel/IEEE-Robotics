@@ -1,19 +1,40 @@
-#include <pins.h>
+#include "pins.h"
 #include <motors.h>
 #include <linefollow.hpp>
 #include <colorSensor.h>
+#include <Servo.h>
 
 enum State { MAIN_LINE = 1, TURN_LEFT_ONTO_SIDE, SIDE_LINE_START, FIRE, SIDE_LINE_END, TURN_LEFT_ONTO_MAIN_LINE, RESET };
 
 //Hardware interfaces
 static Motors motors;
 static LineFollower lineFollower;
-static ColorSensor cs;
+static ColorSensor colorSensor;
 
-//static j_state j_s = FOLLOW_STRAIGHT_LINE;
+//Firing variables--------------------
+//Different Servo Positions
+const int SERVO_FIRE_POSITION = 544;
+const int SERVO_REST_POSITION = 2400;
+//Servo Delays
+const int TRIGGER_DELAY = 1;
+const int NOTIFY_DELAY = 1;
+// The three firing barrel servos
+static Servo firing_servo_1, firing_servo_2, firing_servo_3;
+// Set by hardware interrupt, indicates whether or not the camera is aiming at the target and ready to fire
+volatile boolean fire = false;
+// Interrupt handler that triggers on change of the ready to fire notification pin
+void fire_handler() {
+  fire = ( digitalRead( READY_TO_FIRE_PIN ) == LOW );
+}
+//-----------------------------------
+
+//Current state 
 static State state = MAIN_LINE;
+
+//bytes received from line follower
 static byte leftLineFollowBits;
 static byte rightLineFollowBits;
+
 static int lineCount = 0;
 
 //Setup variables etc
@@ -22,12 +43,12 @@ void setup() {
     Serial.begin(9600);
     Serial.println("IN the beginning...");
     
-    //Initialize Hardware--------------------------------
-    //Motor variables setup
+    //Motor variables setup-----------
     motors.setup(PIN_PWM_LEFT, PIN_DIRECTION_LEFT, PIN_PWM_RIGHT, PIN_DIRECTION_RIGHT, DEFAULT_SPEED);
     motors.motorsStop();
+    //--------------------------------
 
-    //LineFollower variables setup
+    //LineFollower variables setup-------------------------
     SPI.begin();
     SPI.setClockDivider(SPI_CLOCK_DIV2);
     SPI.setDataMode(SPI_MODE3);
@@ -38,14 +59,38 @@ void setup() {
     pinMode(PIN_SENSOR, OUTPUT);
     digitalWrite(PIN_SENSOR, HIGH); //activates LineFollower Kit
     lineFollower.setup(PIN_LOAD, PIN_SENSOR);
+    //-----------------------------------------------------
 
-    //Color Sensor Setup
-    //cs.setup(CS_S0, CS_S1, CS_S2, CS_S3, CS_OUT, CS_LED);
+    //Color Sensor Setup--------------------
+    colorSensor.setup(PIN_CS_S0, PIN_CS_S1, PIN_CS_S2, PIN_CS_S3, PIN_CS_OUT, PIN_CS_LED);
+    //--------------------------------------
+
+    //Firing Control setup----------------------------------------------
+    firing_servo_1.attach( FIRING_SERVO_1_PIN );
+    firing_servo_1.writeMicroseconds( SERVO_REST_POSITION );
+    firing_servo_2.attach( FIRING_SERVO_2_PIN );
+    firing_servo_2.writeMicroseconds( SERVO_REST_POSITION );
+    firing_servo_3.attach( FIRING_SERVO_3_PIN );
+    firing_servo_3.writeMicroseconds( SERVO_REST_POSITION );
+    //----------------------------------------------------------
+  
+  pinMode( READY_TO_FIRE_PIN, INPUT_PULLUP );
+  // when this pin is pulled low, the servo will fire
+  attachInterrupt( READY_TO_FIRE_INTERRUPT, fire_handler, CHANGE );
+
+  pinMode( AIM_NEXT_BARREL_PIN, OUTPUT );
+
     delay(3000);
+
     Serial.println("waiting to go.....");
+
     //Loop until start
     while((digitalRead(PIN_START) != HIGH));
+    
+    //Delay so button push in loop below is not activated
+    //REMOVE THIS BEFORE COMPETITION
     delay(500);
+
     Serial.println("GO!");
 }
 
@@ -53,11 +98,13 @@ void setup() {
 void loop() {
 
     //If we get a button press, stop
+    //REMOVE THIS BEFORE COMPETITION
     if(digitalRead(PIN_START) == HIGH) {
         Serial.println("Stopped, state machine reset!");
         motors.motorsStop();
         state = RESET;
     }
+    //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
     switch (state) {
 
@@ -69,17 +116,11 @@ void loop() {
                 break; 
             }
             else if (lineFollower.isCentered(leftLineFollowBits, rightLineFollowBits)) {
-                Serial.println("forward");
                 motors.motorsDrive(FORWARD);
                 break;
             }
             else {
 
-                Serial.println("isCentered?");
-                Serial.print("Left bits == ");
-                Serial.println(leftLineFollowBits);
-                Serial.print("right bits == ");
-                Serial.println(rightLineFollowBits);
                 if (!lineFollower.isCentered(leftLineFollowBits, rightLineFollowBits) && (leftLineFollowBits > rightLineFollowBits)) {
                     motors.motorsTurnLeft();
                 }
@@ -112,21 +153,25 @@ void loop() {
     
             //Backup to account for overturning
             motors.motorsDrive(BACKWARD);
-            delay(250);
+            delay(50);
 
             state = SIDE_LINE_START;
             break;
 
         case SIDE_LINE_START:
             Serial.println("side line starter"); 
-                        
-            if (lineFollower.isCentered(leftLineFollowBits, rightLineFollowBits)) {
-                motors.motorsDrive(FORWARD);
-                //FOR DEMO ONLY--REMOVE WHEN COLOR SENSOR WORKS
-                delay(2000);
-                state = FIRE;
-                ///////////////////////////////////////////////
+                
+            //If we're centered, OR we've encountered the blue block 
+            if (lineFollower.isCentered(leftLineFollowBits, rightLineFollowBits) 
+                || (leftLineFollowBits > 2 && rightLineFollowBits > 2)) {
 
+                motors.motorsDrive(FORWARD);
+
+                //We see the blue block! FIRE! (and stop...)
+                if (colorSensor.getColor() == BLUE) {
+                    motors.motorsStop();
+                    state = FIRE;
+                }
                 break;
             }
             else {
@@ -141,7 +186,43 @@ void loop() {
             }
         case FIRE:
             Serial.println("FIRE STATE");
+            //FIRE!---------------------------------------------------------------------------
+            //Wait for beagle bone to aim
+            while (!fire);
 
+            //Determine which barrel to fire based on what line we're on
+                //lineCount is incremented everytime we COMPLETE a line
+                //That is, when we leave a line and go back to the main line, it is incremented
+            switch (lineCount) {
+
+                // fire barrel 1
+                case 0:
+                    firing_servo_1.writeMicroseconds( SERVO_FIRE_POSITION );
+                    delay( TRIGGER_DELAY );
+                    firing_servo_1.writeMicroseconds( SERVO_REST_POSITION );
+                    break;
+
+                // fire barrel 2
+                case 1:
+                    firing_servo_2.writeMicroseconds( SERVO_FIRE_POSITION );
+                    delay( TRIGGER_DELAY );
+                    firing_servo_2.writeMicroseconds( SERVO_REST_POSITION );
+                    break;
+
+                // fire barrel 3
+                case 2:
+                    firing_servo_3.writeMicroseconds( SERVO_FIRE_POSITION );
+                    delay( TRIGGER_DELAY );
+                    firing_servo_1.writeMicroseconds( SERVO_REST_POSITION );
+                    break;
+            }
+
+            // notify the BeagleBone to start aiming at the target for the next shot
+            digitalWrite( AIM_NEXT_BARREL_PIN, HIGH );
+            delay( NOTIFY_DELAY );
+            digitalWrite( AIM_NEXT_BARREL_PIN, LOW );
+
+            //U-Turn------------------------------------------------------------------
             do {
                 motors.motorsTurnLeft();
                 lineFollower.Get_Line_Data(leftLineFollowBits, rightLineFollowBits);
@@ -151,6 +232,8 @@ void loop() {
                 motors.motorsTurnLeft();
                 lineFollower.Get_Line_Data(leftLineFollowBits, rightLineFollowBits);
             } while (!leftLineFollowBits && !rightLineFollowBits);
+            //Hopefully remove before competition....we need our 2nd linefollower!
+            //-------------------------------------------------------------------------
 
             state = SIDE_LINE_END;
 
@@ -161,6 +244,7 @@ void loop() {
             
             if (lineFollower.intersection(leftLineFollowBits, rightLineFollowBits)) {
                 state = TURN_LEFT_ONTO_MAIN_LINE; 
+                lineCount++;
                 break; 
             }
             else if (lineFollower.isCentered(leftLineFollowBits, rightLineFollowBits)) {
@@ -202,14 +286,19 @@ void loop() {
             state = MAIN_LINE;
             break;
 
+        //State entered when button pushed while in loop
+            //Reset's state to beginning
         case RESET:
 
+            //delay so initial button push is not double read
             delay(2000);
 
+            //Wait for button push again
             while(digitalRead(PIN_START) != HIGH);
             motors.motorsStop();
             state = MAIN_LINE;
 
+            //delay so initial button push is not double read
             delay(2000);
             break;
     }

@@ -1,0 +1,8 @@
+#!/bin/bash
+
+INSTALL_PATH = /usr/local
+
+crontab -l > crontemp
+echo "@reboot /bin/bash $(INSTALL_PATH)/bin/ieee_opencv_startup.sh" >> crontemp
+crontab crontemp
+rm crontemp
