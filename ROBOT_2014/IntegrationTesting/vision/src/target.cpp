@@ -4,6 +4,7 @@
  * @author D. Butenhoff
  */
 
+#include <cstdio>
 #include <cmath>
 #include "opencv2/core/core.hpp"
 #include "opencv2/highgui/highgui.hpp"
@@ -56,7 +57,7 @@ bool locateTarget( cv::Mat *scene, cv::Point *centroid, int num )
   findContours( *scene, contours, hierarchy, CV_RETR_TREE, CV_CHAIN_APPROX_SIMPLE, Point(0, 0) );
   #ifdef DEBUG
     // draw the contours on the scene and write it to a file
-    Mat scene_copy = *scene.clone();
+    Mat scene_copy = (*scene).clone();
     for( unsigned int j = 0; j < contours.size(); j++ )
     {
       drawContours( scene_copy, contours, j, Scalar(((10*j) % 255), 255, 255), 1, 8, vector<Vec4i>(), 0, Point() );
@@ -148,7 +149,7 @@ bool locateTarget( cv::Mat *scene, cv::Point *centroid, int num )
   }
   #ifdef DEBUG
     // draw the remaining hulls on the scene and write it to a file
-    scene_copy = *scene.clone();
+    scene_copy = (*scene).clone();
     for( unsigned int j = 0; j < hulls.size(); j++ )
     {
       drawContours( scene_copy, hulls, j, Scalar(((10*j) % 255), 255, 255), 1, 8, vector<Vec4i>(), 0, Point() );
@@ -165,7 +166,7 @@ bool locateTarget( cv::Mat *scene, cv::Point *centroid, int num )
                       (cms[0].y + cms[1].y + cms[2].y + cms[3].y) / 4 );
     #ifdef DEBUG
       // draw the detected centroid on the scene and write it to a file
-      scene_copy = *scene.clone();
+      scene_copy = (*scene).clone();
       circle( scene_copy, centroid, 3, Scalar(255, 255, 255) );
       filename = "./snapshot" + string(buffer) + "_stage6.png";
       imwrite( filename, scene_copy );
