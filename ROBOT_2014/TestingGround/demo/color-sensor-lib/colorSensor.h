@@ -1,16 +1,18 @@
 #ifndef COLORSENSOR_H
 #define COLORSENSOR_H
 #include <Arduino.h>
+
+enum Color {BLUE = 1, RED, GREEN, WHITE};
+
 class ColorSensor
 {
    
     public:
         ColorSensor(); //Nescessary color sensor setup called in constructor
         void setup(int S0, int S1, int S2, int S3, int out, int LED);
-        int colorRead(int color);
-        int getColor();
+        int colorRead(Color color);
+        Color getColor();
     private:
-        void TCS3200setup();
         int S0;//pinB //22 on other //digital
         int S1;//pinA //26 on other //digital
         int S2;//pinE //30 on other //digital
