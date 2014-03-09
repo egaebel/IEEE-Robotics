@@ -27,7 +27,9 @@ bool read_hardware_fs( const char* path, char* value, int length, const char* mo
     printf( "Unable to open %s\n", path );
     return false;
   }
-  fread( value, sizeof(char), length, myInputHandle );
+  bool failed = false;
+  if ( fread( value, sizeof(char), length, myInputHandle ) != length )
+    failed = true;
   fclose( myInputHandle );
-  return true;
+  return !failed;
 }
