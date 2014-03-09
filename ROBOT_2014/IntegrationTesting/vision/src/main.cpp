@@ -157,7 +157,7 @@ int main()
           }
           setGPIOValue( GPIO_P9_14, "0" );
 
-          fired++;
+          num_fired++;
         }
         else
         {
