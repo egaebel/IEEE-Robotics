@@ -87,6 +87,10 @@ int main()
   // initialize the camera
   cap.grab();
 
+  #ifdef DEBUG
+    int num = 0;
+  #endif
+
   int num_fired = 0;
   Mat scene;
   // number of frames with no target found since last good frame
@@ -197,11 +201,8 @@ int main()
       {
         locate_failures++;
         #ifdef DEBUG
-          if( target_found )
-          {
-            target_found = false;
-            printf("target not found\n");
-          }
+          target_found = false;
+          printf("target not found\n");
         #endif
 
         // we seem to have completely lost the target and ended up in a bad position so return to initial position
