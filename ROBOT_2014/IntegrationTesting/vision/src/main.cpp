@@ -39,7 +39,7 @@ int main()
   }
   int tilt_position = INL_TILT_POSITION;
   old_tilt_position = INL_TILT_POSITION;
-  if( !enable_servo( TILT_SERVO ) || !set_servo_position( TILT_SERVO, tilt_position ) )
+  if( !enable_servo( TILT_SERVO ) || !set_servo_position( TILT_SERVO, INL_TILT_POSITION ) )
   {
     #ifdef DEBUG
       printf( "failed to open tilt servo\n" );
@@ -71,6 +71,8 @@ int main()
   bool target_found = false;
   int num_fired = 0;
   Mat scene;
+  // number of frames with no target found since last good frame
+  int locate_failures = 0;
   while(num_fired < 3)
   {
     cap >> scene;
@@ -93,6 +95,9 @@ int main()
           imwrite( filename, scene_copy );
           num++;
         #endif
+
+        // reset the failure counter
+        locate_failures = 0;
 
         // point we are aiming at differs depending on which barrel we are firing
         int pan_difference = 0;
@@ -166,6 +171,7 @@ int main()
       }
       else
       {
+        locate_failures++;
         #ifdef DEBUG
           if( target_found )
           {
@@ -173,7 +179,21 @@ int main()
             printf("target not found\n");
           }
         #endif
+
+        // we seem to have completely lost the target and ended up in a bad position so return to initial position
+        if( locate_failures > LOCATE_FAIL_THRESHOLD )
+        {
+          set_servo_position( PAN_SERVO, INL_PAN_POSITION );
+          set_servo_position( TILT_SERVO, INL_TILT_POSITION );
+          locate_failures = 0;
+        }
       }
+    }
+    else
+    {
+      #ifdef DEBUG
+        printf( "failed to capture image\n");
+      #endif
     }
   }
 
