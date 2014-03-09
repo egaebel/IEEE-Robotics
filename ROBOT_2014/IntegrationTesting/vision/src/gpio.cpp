@@ -30,3 +30,10 @@ bool setGPIOValue( int gpio_pin, const char *setValue )
   sprintf( value_handle, "/sys/class/gpio/gpio%d/value", gpio_pin );
   return write_hardware_fs( value_handle, setValue, 1 );
 }
+
+bool GPIOUnexport( int gpio_pin )
+{
+  char pin_hardware[4];
+  int length = sprintf( pin_hardware, "%d", gpio_pin );
+  return write_hardware_fs( "/sys/class/gpio/unexport", pin_hardware, length, "ab" );
+}

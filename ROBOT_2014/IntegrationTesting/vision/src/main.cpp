@@ -48,6 +48,26 @@ int main()
     return 1;
   }
 
+  // initialize the GPIOs
+  if( !GPIOExport( GPIO_P9_14 )
+    || !setGPIODirection( GPIO_P9_14, GPIO_P9_14_DIR )
+    || !setGPIOValue( GPIO_P9_14, "0" )
+  {
+    #ifdef DEBUG
+      printf( "failed to open GPIO P9_14 as output\n" );
+    #endif
+
+    return 1;
+  }
+  if( !GPIOExport( GPIO_P9_12 ) || !setGPIODirection( GPIO_P9_12, GPIO_P9_12_DIR ) )
+  {
+    #ifdef DEBUG
+      printf( "failed to open GPIO P9_12 as input\n" );
+    #endif
+
+    return 1;
+  }
+
   // open the camera
   VideoCapture cap(0);
   while( !cap.isOpened() )
@@ -126,9 +146,10 @@ int main()
             printf( "FIRE!\n" );
           #endif
 
-          // TODO: toggle ready to fire pin to notify arduino
+          setGPIOValue( GPIO_P9_14, "1" );
+          // TODO: instead of sleeping, loop until arduino has toggled GPIO_P9_12 then reset ready to fire pin
           usleep( 1000000 );
-          // reset ready to fire pin
+          setGPIOValue( GPIO_P9_14, "0" );
 
           fired++;
         }
@@ -201,6 +222,10 @@ int main()
   usleep( 500000 );
   disable_servo( PAN_SERVO );
   disable_servo( TILT_SERVO );
+
+  // disconnect the GPIOs
+  GPIOUnexport( GPIO_P9_14 );
+  GPIOUnexport( GPIO_P9_12 );
 
   // disconnect the camera
   cap.release();

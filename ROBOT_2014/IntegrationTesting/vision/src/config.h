@@ -22,7 +22,6 @@
 #define LOWER_VAL		60
 #define UPPER_VAL		190
 
-
 // hull size filter range
 // one corner of the target at furthest distance and 320x240 is about 180 square pixels
 #define MIN_SIZE		100
@@ -44,6 +43,14 @@
 #define CAM_WIDTH		640
 #define CAM_HEIGHT		320
 #define CAM_FPS			5
+
+// GPIO pin 50: GPIO1_18 or pin 14 on the P9 header
+#define GPIO_P9_14		50
+#define GPIO_P9_14_DIR	"out"
+
+// GPIO pin 60: GPIO1_28 or pin 12 on the P9 header
+#define GPIO_P9_12		60
+#define GPIO_P9_12_DIR	"in"
 
 //********************
 // SERVO CONFIGURATION
