@@ -7,7 +7,7 @@ bool setGPIODirection( int gpio_pin, const char *setValue );
 
 bool setGPIOValue( int gpio_pin, const char *setValue );
 
-char getGPIOValue( int gpio_pin );
+char getGPIOValue( int gpio_pin, char *getValue );
 
 bool GPIOUnexport( int gpio_pin );
 
