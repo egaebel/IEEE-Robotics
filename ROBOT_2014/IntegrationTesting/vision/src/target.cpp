@@ -4,6 +4,7 @@
  * @author D. Butenhoff
  */
 
+#include <cstdio>
 #include <cmath>
 #include "opencv2/core/core.hpp"
 #include "opencv2/highgui/highgui.hpp"
@@ -16,7 +17,7 @@ using namespace cv;
 /*
  * returns true if a centroid was found, false otherwise
  */
-bool locateTarget( cv::Mat *scene, cv::Point *centroid )
+bool locateTarget( cv::Mat *scene, cv::Point *centroid, int num )
 {
   // convert the scene to HSV
   cvtColor( *scene, *scene, CV_BGR2HSV );
@@ -26,18 +27,44 @@ bool locateTarget( cv::Mat *scene, cv::Point *centroid )
   inRange( *scene, Scalar( UPPER_HUE, LOWER_SAT, LOWER_VAL ), Scalar( MAX_HUE, UPPER_SAT, UPPER_VAL ), upr_scene );
   inRange( *scene, Scalar( MIN_HUE, LOWER_SAT, LOWER_VAL ), Scalar( LOWER_HUE, UPPER_SAT, UPPER_VAL ), lwr_scene );
   add( upr_scene, lwr_scene, *scene );
+  #ifdef DEBUG
+    char buffer[10];
+    sprintf( buffer, "%d", num );
+    string filename = "./snapshot" + string(buffer) + "_stage1.png";
+    imwrite( filename, *scene );
+  #endif
 
-  // erode/dilate to remove small noise clusters
+  // erode to remove small noise clusters
   erode( *scene, *scene, getStructuringElement( MORPH_ELLIPSE, Size ( ERODE_SIZE, ERODE_SIZE ) ) );
+  #ifdef DEBUG
+    filename = "./snapshot" + string(buffer) + "_stage2.png";
+    imwrite( filename, *scene );
+  #endif
+
+  // dilate to restore original feature size
   dilate( *scene, *scene, getStructuringElement( MORPH_ELLIPSE, Size ( DILATE_SIZE, DILATE_SIZE ) ) );
+  #ifdef DEBUG
+    filename = "./snapshot" + string(buffer) + "_stage3.png";
+    imwrite( filename, *scene );
+  #endif
 
   // detect the edges of the remaining blobs using Canny
-  Canny( *scene, *scene, 100, 200, 3 );
+  Canny( *scene, *scene, CANNY_LOW_THRESHOLD, CANNY_HIGH_THRESHOLD, CANNY_KERNEL_SIZE );
 
   // get contours from edges
   vector< vector<Point> > contours;
   vector<Vec4i> hierarchy;
   findContours( *scene, contours, hierarchy, CV_RETR_TREE, CV_CHAIN_APPROX_SIMPLE, Point(0, 0) );
+  #ifdef DEBUG
+    // draw the contours on the scene and write it to a file
+    Mat scene_copy = (*scene).clone();
+    for( unsigned int j = 0; j < contours.size(); j++ )
+    {
+      drawContours( scene_copy, contours, j, Scalar(((10*j) % 255), 255, 255), 1, 8, vector<Vec4i>(), 0, Point() );
+    }
+    filename = "./snapshot" + string(buffer) + "_stage4.png";
+    imwrite( filename, scene_copy );
+  #endif
 
   // normalize contours into convex hulls
   vector< vector<Point> > hulls( contours.size() );
@@ -120,6 +147,16 @@ bool locateTarget( cv::Mat *scene, cv::Point *centroid )
       }
     }
   }
+  #ifdef DEBUG
+    // draw the remaining hulls on the scene and write it to a file
+    scene_copy = (*scene).clone();
+    for( unsigned int j = 0; j < hulls.size(); j++ )
+    {
+      drawContours( scene_copy, hulls, j, Scalar(((10*j) % 255), 255, 255), 1, 8, vector<Vec4i>(), 0, Point() );
+    }
+    filename = "./snapshot" + string(buffer) + "_stage5.png";
+    imwrite( filename, scene_copy );
+  #endif
 
   // calculate vertex centroid of top four centers of mass
   // REVISIT: how can we select these more intelligently?
@@ -127,6 +164,15 @@ bool locateTarget( cv::Mat *scene, cv::Point *centroid )
   {
     *centroid = Point( (cms[0].x + cms[1].x + cms[2].x + cms[3].x) / 4,
                       (cms[0].y + cms[1].y + cms[2].y + cms[3].y) / 4 );
+    #ifdef DEBUG
+      // draw the detected centroid on the scene and write it to a file
+      scene_copy = (*scene).clone();
+      circle( scene_copy, *centroid, 3, Scalar(255, 255, 255) );
+      filename = "./snapshot" + string(buffer) + "_stage6.png";
+      imwrite( filename, scene_copy );
+      num++;
+    #endif
+
     return true;
   }
 

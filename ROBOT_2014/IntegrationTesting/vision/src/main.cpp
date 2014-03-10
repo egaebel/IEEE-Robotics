@@ -87,6 +87,7 @@ int main()
   // initialize the camera
   cap.grab();
 
+  int num = 0;
   int num_fired = 0;
   Mat scene;
   // number of frames with no target found since last good frame
@@ -96,24 +97,10 @@ int main()
     cap >> scene;
     if( scene.data )
     {
-      // duplicate scene for later file output
-      #ifdef DEBUG
-        Mat scene_copy = scene.clone();
-      #endif
-
       cv::Point centroid;
-      if( locateTarget( &scene, &centroid ) )
+      if( locateTarget( &scene, &centroid, num ) )
       {
-        // draw the detected centroid on the scene and write it to a file
-        #ifdef DEBUG
-          circle( scene_copy, centroid, 3, Scalar(255, 255, 255) );
-          char buffer[10];
-          sprintf( buffer, "%d", num );
-          string filename = "./snapshot" + string(buffer) + ".png";
-          imwrite( filename, scene_copy );
-          num++;
-        #endif
-
+        num++;
         // reset the failure counter
         locate_failures = 0;
 
@@ -197,11 +184,7 @@ int main()
       {
         locate_failures++;
         #ifdef DEBUG
-          if( target_found )
-          {
-            target_found = false;
-            printf("target not found\n");
-          }
+          printf("target not found\n");
         #endif
 
         // we seem to have completely lost the target and ended up in a bad position so return to initial position

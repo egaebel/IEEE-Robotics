@@ -12,25 +12,25 @@
 
 // FYI: hue ranges from 0 to 179 in OpenCV
 #define MIN_HUE			0
-#define LOWER_HUE		10
-#define UPPER_HUE		160
+#define LOWER_HUE		0
+#define UPPER_HUE		10
 #define MAX_HUE			179
 // FYI: saturation ranges from 0 to 255 in OpenCV
-#define LOWER_SAT		160
-#define UPPER_SAT		255
+#define LOWER_SAT		60
+#define UPPER_SAT		90
 // FYI: value ranges from 0 to 255 in OpenCV
-#define LOWER_VAL		60
-#define UPPER_VAL		190
+#define LOWER_VAL		40
+#define UPPER_VAL		55
 
 // hull size filter range
 // one corner of the target at furthest distance and 320x240 is about 180 square pixels
 #define MIN_SIZE		100
 // one corner of the target at closest distance and 320x240 is about 650 square pixels
-#define MAX_SIZE		1000
+#define MAX_SIZE		10000
 
 // hull proximity distance filter limit
 // diagonal corners of the target at closest distance and 320x240 is about 60 pixels
-#define PROXIMITY_LIMIT		70
+#define PROXIMITY_LIMIT		300
 
 // edge tuning
 #define ERODE_SIZE		3
@@ -41,7 +41,7 @@
 
 // camera capture settings, note: if these are changed, they must also be changed in the startup script
 #define CAM_WIDTH		640
-#define CAM_HEIGHT		320
+#define CAM_HEIGHT		480
 #define CAM_FPS			5
 
 // GPIO pin 50: GPIO1_18 or pin 14 on the P9 header
