@@ -6,7 +6,7 @@
  * This file contains a working test for the HUBeeBMDwheel class.
  */
 
-#include "Hubee.h"
+#include <Hubee.h>
 #include <Arduino.h>
 //****************Pin Assignments*****************
 // HuBee wheel reference: http://www.creative-robotics.com/bmdsresources
