@@ -26,8 +26,29 @@ void setup() {
 
 
 void loop() {
-	//Serial.println("looping...\n\n");
-	
+	Serial.println("looping...\n\n");
+    
+    switch (cmuCam.getColorWrapper(10)) {
+
+        case WHITE:
+            Serial.println("WHITE");
+            break;
+        case RED:
+            Serial.println("RED");
+            break;
+        case BLUE:
+            Serial.println("BLUE");
+            break;
+        case BLACK:
+            Serial.println("BLACK");
+            break;
+        case EVERYTHING:
+            Serial.println("EVERYTHING");
+            break;
+        default:
+            Serial.println("WAT>>>");
+            break;
+    }
     //cmuCam.setTrackingWindow(0, 0, 50000, 50000);
 	//cmuCam.getTrackingData(RED);
 }

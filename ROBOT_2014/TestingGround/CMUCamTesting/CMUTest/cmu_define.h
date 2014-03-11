@@ -7,11 +7,11 @@
 #define WHITE_B_MIN 195
 #define WHITE_B_MAX 255
 
-#define BLUE_R_MIN 0
-#define BLUE_R_MAX 100
-#define BLUE_G_MIN 180
-#define BLUE_G_MAX 255
-#define BLUE_B_MIN 25
+#define BLUE_R_MIN 30
+#define BLUE_R_MAX 110
+#define BLUE_G_MIN 80
+#define BLUE_G_MAX 160
+#define BLUE_B_MIN 180
 #define BLUE_B_MAX 255
 
 #define RED_R_MIN 80
@@ -24,4 +24,4 @@
 //******************other constants
 
 #define CAM_BRIGHTNESS  0
-#define CAM_CONTRAST    25
+#define CAM_CONTRAST    0

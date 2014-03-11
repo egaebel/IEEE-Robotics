@@ -35,14 +35,13 @@ class Cam{
 		void getTrackingData(CmuColor color);
 		void getTrackingData();
 		void setTrackingWindow(int trackX1, int trackY1, int trackX2, int trackY2);
-		
+		CmuColor getColor(int pixels, int pixelConf);
+		CmuColor getColorWrapper(int pixels);
 	private:
 		int trackX1;
 		int trackX2;
 		int trackY1;
 		int trackY2;
-		CmuColor getColor(int pixels, int pixelConf);
-		CmuColor getColorWrapper(int pixels);
 		CmuColor curColor;
 		void trackColor(CmuColor color);
 

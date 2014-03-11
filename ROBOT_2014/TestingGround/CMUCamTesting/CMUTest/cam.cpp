@@ -10,9 +10,9 @@ void Cam::init(){
 
     cmuCam->begin();/*
     //Serial.println("monitorOn called in init");*/
-    cmuCam->autoGainControl(false);
+    cmuCam->autoGainControl(true);
     //Serial.println("autoGainControl called in init");
-    cmuCam->autoWhiteBalance(false);
+    cmuCam->autoWhiteBalance(true);
     //Serial.println("autoWhiteBalance called in init");
 
     cmuCam->cameraBrightness(CAM_BRIGHTNESS);
@@ -74,7 +74,7 @@ CmuColor Cam::getColor(int pixelDense, int pixelConf){
   int highestIndex = -1;
   int temp;
   //loop through all the colors
-  for(i = ((int) WHITE) + 1;i < (int)BLACK; i++){
+  for(i = ((int) WHITE) + 1; i < (int)BLACK; i++){
 
     getTrackingData((CmuColor) i);
     temp = tData.pixels;
