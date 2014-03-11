@@ -10,8 +10,10 @@ to servo and Serial to write to pc for purpose of recieving status packets
 // a value of 0 is 0 degrees while a value of 3ff is 300 degrees 
 // 300 to 360 is invalid angle
 
-int location = 0x3ff;
+int location1 = 0x3ff;
+int location2 = 0;
 
+/*
 void setLocation(int temp_location)
 {
   if(temp_location > 0x3ff || temp_location < 0)
@@ -19,6 +21,7 @@ void setLocation(int temp_location)
   else 
     location = temp_location;
 }
+*/
 
 
 
@@ -53,61 +56,85 @@ void setLocation(int temp_location)
 
 int length,temp,checksum,N,L; // used for status packet & return packet
 int old_val = 0;
-
-
 int present_val = 0;
-
-
-int id = 1;
+int id = 0xFE;
 int analogPin = A0;  // 5 Potenimeters. each 1 controls 1 motor
 int first = 1;
-
 int value;
+static int count = 0;
 
 void setup()
 {
-  Serial3.begin(1000000); // Servo Communication Speed
-  Serial.begin(9600); // Communication speed Arduino/PC
+    Serial3.begin(1000000); // Servo Communication Speed
+    Serial.begin(9600); // Communication speed Arduino/PC
 }
 //------------------------------------
 
 void loop()
 {
-    transmit(); //enable trasmission
-   if(first)
-   { 
-     // set moving speed to maximum
-     reg_write_2_byte(1,moving_speed,0xff);
-     Action(0xFE);
-     first = 0;
-     recieve();
-     delay(1);
-     
-     first = 0;
-     
-     // commented out, set servo to desired initial location
-//     delay(1);
-//     transmit();
-//     delay(10);
-//     reg_write_2_byte(1,goal_position,0x1fd);// put location value into buffer
-//     Action(0x01); //execute buffer
-//     recieve(); //enable recieving
-   }
-   
-   delay(1);
-   transmit();
-   delay(1);
-   reg_write_2_byte(1,goal_position,location);// put location value into buffer
-   Action(0xFE); //execute buffer
-   recieve(); //enable recieving
-   delay(1);
-   
-//   transmit();
-//   Serial3.flush();
-//   send_read_bytes(1, current_position, 2);
-//   //Action(0x01);
-//   recieve();
-//   delay(10); 
+    Serial.println("Looping");
+    //enable trasmission
+    transmit(); 
+
+    //Set moving speed
+    if(first) { 
+        // set moving speed to maximum
+        reg_write_2_byte(1, moving_speed, 0xff);
+        Action(id);
+        first = 0;
+        recieve();
+        delay(1);
+
+        first = 0;
+
+        // commented out, set servo to desired initial location
+        //     delay(1);
+        //     transmit();
+        //     delay(10);
+        //     reg_write_2_byte(1,goal_position,0x1fd);// put location value into buffer
+        //     Action(0x01); //execute buffer
+        //     recieve(); //enable recieving
+    }
+
+    if (count > 4) {
+
+        Serial.println("do nothing...");
+        //do nothing
+    }
+    else if (count % 2 == 0) {
+        //Write position
+        delay(1);
+        transmit();
+        delay(1);
+        reg_write_2_byte(1,goal_position,location1);// put location value into buffer
+        Action(id); //execute buffer
+        recieve(); //enable recieving
+        delay(1);
+        Serial.println("turn clockwise");
+        delay(3000);
+    }
+    else {
+        //Write position
+        delay(1);
+        transmit();
+        delay(1);
+        reg_write_2_byte(1,goal_position,location2);// put location value into buffer
+        Action(id); //execute buffer
+        recieve(); //enable recieving
+        delay(1);
+        Serial.println("turn counter-clockwise");
+        delay(3000);
+    }
+
+    count++;
+
+
+    //   transmit();
+    //   Serial3.flush();
+    //   send_read_bytes(1, current_position, 2);
+    //   //Action(0x01);
+    //   recieve();
+    //   delay(10); 
    
 }
 

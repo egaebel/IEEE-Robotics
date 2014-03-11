@@ -58,7 +58,6 @@ void loop()
 
   cam.LEDOn(CMUCAM4_LED_ON);
   Serial.println("pictureueuresuccesss");
-
 }
 
 /***************************************************************************//**

@@ -4,7 +4,7 @@
 #include <colorSensor.h>
 #include <Servo.h>
 
-enum State { MAIN_LINE = 1, TURN_LEFT_ONTO_SIDE, SIDE_LINE_START, FIRE, SIDE_LINE_END, TURN_LEFT_ONTO_MAIN_LINE, RESET };
+enum State { START = 1, MAIN_LINE, TURN_LEFT_ONTO_SIDE, SIDE_LINE_START, FIRE, SIDE_LINE_END, TURN_LEFT_ONTO_MAIN_LINE, RESET };
 
 //Hardware interfaces
 static Motors motors;
@@ -29,7 +29,7 @@ void fire_handler() {
 //-----------------------------------
 
 //Current state 
-static State state = MAIN_LINE;
+static State state = START;
 
 //bytes received from line follower
 static byte leftLineFollowBits;
@@ -66,20 +66,20 @@ void setup() {
     //--------------------------------------
 
     //Firing Control setup----------------------------------------------
+    /*
     firing_servo_1.attach( FIRING_SERVO_1_PIN );
     firing_servo_1.writeMicroseconds( SERVO_REST_POSITION );
     firing_servo_2.attach( FIRING_SERVO_2_PIN );
     firing_servo_2.writeMicroseconds( SERVO_REST_POSITION );
     firing_servo_3.attach( FIRING_SERVO_3_PIN );
     firing_servo_3.writeMicroseconds( SERVO_REST_POSITION );
-    //----------------------------------------------------------
+
+    pinMode( READY_TO_FIRE_PIN, INPUT_PULLUP );
+    // when this pin is pulled low, the servo will fire
+    attachInterrupt( READY_TO_FIRE_INTERRUPT, fire_handler, CHANGE );
+    pinMode( AIM_NEXT_BARREL_PIN, OUTPUT );
+    //*///----------------------------------------------------------
   
-  pinMode( READY_TO_FIRE_PIN, INPUT_PULLUP );
-  // when this pin is pulled low, the servo will fire
-  attachInterrupt( READY_TO_FIRE_INTERRUPT, fire_handler, CHANGE );
-
-  pinMode( AIM_NEXT_BARREL_PIN, OUTPUT );
-
     delay(3000);
 
     Serial.println("waiting to go.....");
@@ -108,6 +108,16 @@ void loop() {
 
     switch (state) {
 
+        case START:
+            Serial.println("START");
+
+            if (colorSensor.getColor() == GREEN) {
+                motors.motorsDrive(FORWARD);
+                delay(1500);
+                state = MAIN_LINE;
+            }
+            break;
+
         case MAIN_LINE:
             Serial.println("straight line");
             
@@ -121,11 +131,15 @@ void loop() {
             }
             else {
 
-                if (!lineFollower.isCentered(leftLineFollowBits, rightLineFollowBits) && (leftLineFollowBits > rightLineFollowBits)) {
+                if (!lineFollower.isCentered(leftLineFollowBits, rightLineFollowBits) 
+                    && (leftLineFollowBits > rightLineFollowBits)) {
+                    
                     motors.motorsTurnLeft();
                 }
 
-                if (!lineFollower.isCentered(leftLineFollowBits, rightLineFollowBits) && (leftLineFollowBits < rightLineFollowBits)) {
+                if (!lineFollower.isCentered(leftLineFollowBits, rightLineFollowBits) 
+                    && (leftLineFollowBits < rightLineFollowBits)) {
+
                     motors.motorsTurnRight(); 
                 }
                 break;
@@ -163,7 +177,7 @@ void loop() {
                 
             //If we're centered, OR we've encountered the blue block 
             if (lineFollower.isCentered(leftLineFollowBits, rightLineFollowBits) 
-                || (leftLineFollowBits > 2 && rightLineFollowBits > 2)) {
+                || (leftLineFollowBits >= 2 && rightLineFollowBits >= 2)) {
 
                 motors.motorsDrive(FORWARD);
 
@@ -188,6 +202,7 @@ void loop() {
             Serial.println("FIRE STATE");
             //FIRE!---------------------------------------------------------------------------
             //Wait for beagle bone to aim
+            /*
             while (!fire);
 
             //Determine which barrel to fire based on what line we're on
@@ -221,10 +236,15 @@ void loop() {
             digitalWrite( AIM_NEXT_BARREL_PIN, HIGH );
             delay( NOTIFY_DELAY );
             digitalWrite( AIM_NEXT_BARREL_PIN, LOW );
-
+            //*///--------------------------------------------------------------------------------
+            motors.motorsStop();
+            delay(2000);
             //U-Turn------------------------------------------------------------------
             do {
                 motors.motorsTurnLeft();
+                delay(500);
+                motors.motorsDrive(BACKWARD);
+                delay(200);
                 lineFollower.Get_Line_Data(leftLineFollowBits, rightLineFollowBits);
             } while (leftLineFollowBits || rightLineFollowBits);
 
@@ -296,7 +316,7 @@ void loop() {
             //Wait for button push again
             while(digitalRead(PIN_START) != HIGH);
             motors.motorsStop();
-            state = MAIN_LINE;
+            state = START;
 
             //delay so initial button push is not double read
             delay(2000);

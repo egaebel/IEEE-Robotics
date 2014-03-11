@@ -33,9 +33,9 @@ const int AIM_NEXT_BARREL_PIN = 0;
 const int READY_TO_FIRE_INTERRUPT = 0;
 const int READY_TO_FIRE_PIN = 2;
 
-// Servo Pins
-const int FIRING_SERVO_1_PIN = 9;
-const int FIRING_SERVO_2_PIN = 9;
-const int FIRING_SERVO_3_PIN = 9;
+// Firing Servo Pins
+const int FIRING_SERVO_1_PIN = 49;
+const int FIRING_SERVO_2_PIN = 51;
+const int FIRING_SERVO_3_PIN = 53;
 
 #endif
