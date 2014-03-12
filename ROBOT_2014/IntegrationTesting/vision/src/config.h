@@ -13,13 +13,13 @@
 // FYI: hue ranges from 0 to 179 in OpenCV
 #define MIN_HUE			0
 #define LOWER_HUE		0
-#define UPPER_HUE		3
+#define UPPER_HUE		5
 #define MAX_HUE			179
 // FYI: saturation ranges from 0 to 255 in OpenCV
 #define LOWER_SAT		224
 #define UPPER_SAT		249
 // FYI: value ranges from 0 to 255 in OpenCV
-#define LOWER_VAL		147
+#define LOWER_VAL		140
 #define UPPER_VAL		191
 
 // hull size filter range
