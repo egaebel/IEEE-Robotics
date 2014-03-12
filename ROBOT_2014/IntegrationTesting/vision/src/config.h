@@ -16,11 +16,11 @@
 #define UPPER_HUE		1
 #define MAX_HUE			179
 // FYI: saturation ranges from 0 to 255 in OpenCV
-#define LOWER_SAT		229
-#define UPPER_SAT		255
+#define LOWER_SAT		224
+#define UPPER_SAT		244
 // FYI: value ranges from 0 to 255 in OpenCV
 #define LOWER_VAL		102
-#define UPPER_VAL		178
+#define UPPER_VAL		153
 
 // hull size filter range
 // one corner of the target at furthest distance and 320x240 is about 180 square pixels
