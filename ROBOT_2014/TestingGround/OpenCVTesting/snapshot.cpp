@@ -35,14 +35,6 @@ int main(int argc, char * argv[])
     printf("%4.1f\n", cap.get(CV_CAP_PROP_FRAME_WIDTH));
     printf("%4.1f\n", cap.get(CV_CAP_PROP_FRAME_HEIGHT));
 
-    // initialize the camera
-    cap.grab();
-
-    printf( "grabbed\n" );
-
-    // read (grab and retrieve) a frame from the camera
-    Mat scene;
-
     int snapshotCount = 1;
     if (argc > 1) {
         snapshotCount = atoi(argv[1]);
@@ -52,6 +44,17 @@ int main(int argc, char * argv[])
     //Take multiple snapshots
     for (int i = 0; i < snapshotCount; i++) {
 
+        printf("\n\nPreparing to take picture...you have 4 seconds\n");
+        sleep(4);
+
+        // initialize the camera
+        cap.grab();
+
+        printf( "grabbed\n" );
+
+        // read (grab and retrieve) a frame from the camera
+        Mat scene;
+
         cap >> scene;
 
         printf( "retrieved\n" );
@@ -60,7 +63,7 @@ int main(int argc, char * argv[])
         {
             char filename[20];
             snprintf( filename, 20, "./snapshot_%d.png", i+1); 
-	    printf("writing %s\n", filename);
+	        printf("writing %s\n", filename);
             imwrite( filename, scene );
             printf( "written\n" );
         }
@@ -69,7 +72,6 @@ int main(int argc, char * argv[])
             printf( "failed to take snapshot\n" );
             return -1;
         }
-        sleep(4);
     }
 
     return 0;
