@@ -3,7 +3,7 @@
  * @brief simple snapshot taker for test dataset generation
  * @author D. Butenhoff
  */
-#include <cunistd>
+#include <unistd.h>
 #include <cstdlib>
 #include <cstdio>
 #include "opencv2/core/core.hpp"
@@ -58,8 +58,9 @@ int main(int argc, char * argv[])
 
         if( scene.data )
         {
-            char filename[17];
-            snprintf( filename, "./snapshot_%s.png", argv[1] );
+            char filename[20];
+            snprintf( filename, 20, "./snapshot_%d.png", i+1); 
+	    printf("writing %s\n", filename);
             imwrite( filename, scene );
             printf( "written\n" );
         }
