@@ -69,7 +69,7 @@ int main(int argc, char * argv[])
             printf( "failed to take snapshot\n" );
             return -1;
         }
-        sleep(2);
+        sleep(4);
     }
 
     return 0;
