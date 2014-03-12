@@ -20,7 +20,7 @@
 #define UPPER_SAT		247
 // FYI: value ranges from 0 to 255 in OpenCV
 #define LOWER_VAL		127
-#define UPPER_VAL		173
+#define UPPER_VAL		153
 
 // hull size filter range
 // one corner of the target at furthest distance and 320x240 is about 180 square pixels
