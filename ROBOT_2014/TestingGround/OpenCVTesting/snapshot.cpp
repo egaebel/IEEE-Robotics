@@ -3,6 +3,7 @@
  * @brief simple snapshot taker for test dataset generation
  * @author D. Butenhoff
  */
+#include <cunistd>
 #include <cstdlib>
 #include <cstdio>
 #include "opencv2/core/core.hpp"
@@ -46,6 +47,7 @@ int main(int argc, char * argv[])
     if (argc > 1) {
         snapshotCount = atoi(argv[1]);
     }
+    printf( "Taking %d snapshots\n", snapshotCount );
 
     //Take multiple snapshots
     for (int i = 0; i < snapshotCount; i++) {
@@ -66,6 +68,8 @@ int main(int argc, char * argv[])
             printf( "failed to take snapshot\n" );
             return -1;
         }
+        sleep(2);
+    }
 
     return 0;
 }
