@@ -125,6 +125,7 @@ int main()
             break;
         }
 
+        printf("pan difference == %d\n tilt_difference == %d\n", abs( pan_difference ), abs( tilt_difference ));
         // have we aimed close enough yet?
         if( abs( pan_difference ) < PAN_THRESHOLD && abs( tilt_difference ) < TILT_THRESHOLD )
         {
