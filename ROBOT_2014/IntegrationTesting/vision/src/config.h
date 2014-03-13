@@ -59,9 +59,9 @@
 
 // pan configuration
 #define PAN_SERVO		"P8_13.15"
-#define MIN_PAN_POSITION	800000
-#define INL_PAN_POSITION	1400000
-#define MAX_PAN_POSITION	2000000
+#define MIN_PAN_POSITION	1500000
+#define INL_PAN_POSITION	1200000
+#define MAX_PAN_POSITION	830000
 #define PAN_DIRECTION		-1
 
 // pan movement tuning
@@ -70,9 +70,9 @@
 
 // tilt configuration
 #define TILT_SERVO		"P9_14.16"
-#define MIN_TILT_POSITION	1650000
-#define INL_TILT_POSITION	916500//1750000
-#define MAX_TILT_POSITION	2150000
+#define MIN_TILT_POSITION	1800000
+#define INL_TILT_POSITION	1500000//1750000
+#define MAX_TILT_POSITION	1200000
 #define TILT_DIRECTION		-1
 
 // tilt movement tuning
