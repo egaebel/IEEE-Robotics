@@ -7,17 +7,17 @@
 
 // HuBee wheel reference: http://www.creative-robotics.com/bmdsresources
 // 
-// Pin IN1 on hubee wheel. Digital pin 22
-static const unsigned int HUBEE_PIN_IN1 = 22;
+// Pin IN1 on hubee wheel. Digital pin 48
+static const unsigned int HUBEE_PIN_IN1 = 48;
 //
-// Pin IN2 on hubee wheel. Digital pin 24
-static const unsigned int HUBEE_PIN_IN2 = 24;
+// Pin IN2 on hubee wheel. Digital pin 50
+static const unsigned int HUBEE_PIN_IN2 = 50;
 //
 // PWM pin on hubee wheel. PWM pin 9
 static const unsigned int HUBEE_PIN_PWM = 9;
 
-//Standby pin on hubee
-static const unsigned int HUBEE_PIN_STANDBY = 26;
+//Standby pin on hubee. Digital pin 52
+static const unsigned int HUBEE_PIN_STANDBY = 52;
 
 //***************Wire assignments ***************
 //
