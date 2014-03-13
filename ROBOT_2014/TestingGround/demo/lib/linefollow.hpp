@@ -34,13 +34,14 @@
 #ifndef LINE_FOLLOW_H
 #define LINE_FOLLOW_H
 
-#include "SPI.h"
+#include <SPI.h>
 
 class LineFollower
 {
 private:
 	unsigned short Load; // Controls ShiftRegister's Shift/Load pin(1)
 	unsigned short sensor; // Controls LineFollower's Enable pin
+
 	byte L_bits;
 	byte R_bits;
 	byte Line_Data;
@@ -50,7 +51,7 @@ public:
 				unsigned short sensorPin);
 	bool isCentered(byte& L_bits, byte& R_bits);
 	bool intersection(byte& L_bits, byte& R_bits);
-	void Get_Line_Data(byte& L_bits, byte& R_bits);		
+	void Get_Line_Data(byte& L_bits, byte& R_bits);
 };
 
 #endif

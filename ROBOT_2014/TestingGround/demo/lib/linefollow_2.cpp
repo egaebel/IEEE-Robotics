@@ -2,17 +2,10 @@
 
 void ParallelLineFollower::setup(unsigned short sensorPin,
 								unsigned short PIN_LF_S0, unsigned short PIN_LF_S1, 
-                                unsigned short PIN_LF_S2, unsigned short PIN_LF_S3,
+                                                                unsigned short PIN_LF_S2, unsigned short PIN_LF_S3,
 								unsigned short PIN_LF_S4, unsigned short PIN_LF_S5, 
-                                unsigned short PIN_LF_S6, unsigned short PIN_LF_S7)
+                                                                unsigned short PIN_LF_S6, unsigned short PIN_LF_S7)
 {
-    #ifdef DEBUG_STANDALONE
-    Gate_flag = 0;
-    U_Turn_flag = 0;
-    Num_LT = 0;
-    Hor_Line_pass = 1;
-    #endif
-    
     Line_Data = 0;
     sensor = sensorPin;
     this->PIN_LF_S0 = PIN_LF_S0;
@@ -23,15 +16,8 @@ void ParallelLineFollower::setup(unsigned short sensorPin,
     this->PIN_LF_S5 = PIN_LF_S5;
     this->PIN_LF_S6 = PIN_LF_S6;
     this->PIN_LF_S7 = PIN_LF_S7;
-    pinMode(PIN_LF_S0, INPUT);
-    pinMode(PIN_LF_S1, INPUT);
-    pinMode(PIN_LF_S2, INPUT);
-    pinMode(PIN_LF_S3, INPUT);
-    pinMode(PIN_LF_S4, INPUT);
-    pinMode(PIN_LF_S5, INPUT);
-    pinMode(PIN_LF_S6, INPUT);
-    pinMode(PIN_LF_S7, INPUT);
-    pinMode(sensor, OUTPUT);
+    pinMode(sensorPin, OUTPUT);
+    digitalWrite(sensorPin, HIGH);
 }
 
 //**************    Evaluate whether the robot is centered on the line **********
