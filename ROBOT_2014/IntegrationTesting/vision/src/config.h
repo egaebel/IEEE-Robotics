@@ -17,7 +17,7 @@
 #define MAX_HUE			179
 // FYI: saturation ranges from 0 to 255 in OpenCV
 #define LOWER_SAT		100
-#define UPPER_SAT		188//178
+#define UPPER_SAT		180//178
 // FYI: value ranges from 0 to 255 in OpenCV
 #define LOWER_VAL		100
 #define UPPER_VAL		140
@@ -95,7 +95,7 @@
 #define FIRE_THREE_Y		120
 
 // how many frames we should wait after not finding the target at all before returning to initial position
-#define LOCATE_FAIL_THRESHOLD	20
+#define LOCATE_FAIL_THRESHOLD	10
 
 //********************
 // inertia/acceleration and PID control related servo attributes
