@@ -35,19 +35,15 @@
 #ifndef LINE_FOLLOW_2_H
 #define LINE_FOLLOW_2_H
 
-#include "SPI.h" // Not needed for parallel data input
-
-//#define DEBUG_STANDALONE
-
+#include <SPI.h> // Not needed for parallel data input; FALSE, byte TYPE IS DEFINED WITHIN! 
 class ParallelLineFollower
 {
 private:
-//	unsigned short Load; // Controls ShiftRegister's Shift/Load pin(1) // Not needed for parallel input data
-	unsigned short sensor; // Controls LineFollower's Enable pin
+	unsigned short sensor; // ENABLE PIN, SINGLE
 	byte L_bits;
 	byte R_bits;
 	byte Line_Data;
-
+	void Get_Line_Data();
 	unsigned short PIN_LF_S0;
     unsigned short PIN_LF_S1;
     unsigned short PIN_LF_S2;
@@ -56,21 +52,16 @@ private:
     unsigned short PIN_LF_S5;
     unsigned short PIN_LF_S6;
     unsigned short PIN_LF_S7;
-	void Get_Line_Data();
 
 public:
 	void setup(unsigned short sensorPin,
-			   unsigned short PIN_LF_S0, 
-			   unsigned short PIN_LF_S1, 
-			   unsigned short PIN_LF_S2, 
-			   unsigned short PIN_LF_S3,
-			   unsigned short PIN_LF_S4, 
-			   unsigned short PIN_LF_S5, 
-			   unsigned short PIN_LF_S6, 
-			   unsigned short PIN_LF_S7);
+			   unsigned short PIN_LF_S0, unsigned short PIN_LF_S1, 
+			   unsigned short PIN_LF_S2, unsigned short PIN_LF_S3,
+			   unsigned short PIN_LF_S4, unsigned short PIN_LF_S5, 
+			   unsigned short PIN_LF_S6, unsigned short PIN_LF_S7);
 	bool isCentered(byte& L_bits, byte& R_bits);
 	bool intersection(byte& L_bits, byte& R_bits);
-	void Get_Line_Data(byte& L_bits, byte& R_bits);	
+	void Get_Line_Data(byte& L_bits, byte& R_bits);
 };
 
 #endif

@@ -17,9 +17,9 @@
 #define MAX_HUE			179
 // FYI: saturation ranges from 0 to 255 in OpenCV
 #define LOWER_SAT		100
-#define UPPER_SAT		178
+#define UPPER_SAT		208//178
 // FYI: value ranges from 0 to 255 in OpenCV
-#define LOWER_VAL		100
+#define LOWER_VAL		90
 #define UPPER_VAL		140
 
 // hull size filter range
@@ -59,25 +59,25 @@
 
 // pan configuration
 #define PAN_SERVO		"P8_13.15"
-#define MIN_PAN_POSITION	800000
-#define INL_PAN_POSITION	1400000
-#define MAX_PAN_POSITION	2000000
+#define MIN_PAN_POSITION	830000
+#define INL_PAN_POSITION	1200000
+#define MAX_PAN_POSITION	1500000
 #define PAN_DIRECTION		-1
 
 // pan movement tuning
-#define PAN_PROPORTIONAL_RATE	100
-#define PAN_THRESHOLD		4
+#define PAN_PROPORTIONAL_RATE	90
+#define PAN_THRESHOLD		20//4
 
 // tilt configuration
 #define TILT_SERVO		"P9_14.16"
-#define MIN_TILT_POSITION	1650000
-#define INL_TILT_POSITION	916500//1750000
-#define MAX_TILT_POSITION	2150000
-#define TILT_DIRECTION		-1
+#define MIN_TILT_POSITION	1200000
+#define INL_TILT_POSITION	1520000//1750000
+#define MAX_TILT_POSITION	1800000
+#define TILT_DIRECTION		1
 
 // tilt movement tuning
-#define TILT_PROPORTIONAL_RATE	100
-#define TILT_THRESHOLD		4
+#define TILT_PROPORTIONAL_RATE	90//100
+#define TILT_THRESHOLD		20//4
 
 // config for direct control of firing servo
 #define FIRE_ONE_SERVO		"P9_21.17"
@@ -95,7 +95,7 @@
 #define FIRE_THREE_Y		120
 
 // how many frames we should wait after not finding the target at all before returning to initial position
-#define LOCATE_FAIL_THRESHOLD	20
+#define LOCATE_FAIL_THRESHOLD	10
 
 //********************
 // inertia/acceleration and PID control related servo attributes
