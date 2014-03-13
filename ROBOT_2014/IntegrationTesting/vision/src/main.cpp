@@ -125,7 +125,7 @@ int main()
             break;
         }
 
-        printf("pan difference == %d\n tilt_difference == %d\n", abs( pan_difference ), abs( tilt_difference ));
+        printf("pan difference == %d\ntilt_difference == %d\n", abs( pan_difference ), abs( tilt_difference ));
         // have we aimed close enough yet?
         if( abs( pan_difference ) < PAN_THRESHOLD && abs( tilt_difference ) < TILT_THRESHOLD )
         {
@@ -152,9 +152,13 @@ int main()
         }
         else
         {
-          // update servo positions (with hard-coded proportional control for now)
-          pan_position += PAN_PROPORTIONAL_RATE * pan_difference * PAN_DIRECTION;
-          tilt_position += TILT_PROPORTIONAL_RATE * tilt_difference * TILT_DIRECTION;
+          if ( abs( pan_difference ) > PAN_THRESHOLD ) {
+            // update servo positions (with hard-coded proportional control for now)
+            pan_position += PAN_PROPORTIONAL_RATE * pan_difference * PAN_DIRECTION;
+          }
+          if ( abs ( tilt_difference ) > TILT_THRESHOLD ) {
+            tilt_position += TILT_PROPORTIONAL_RATE * tilt_difference * TILT_DIRECTION;
+          }
 
           // pan/tilt position limits
           if( pan_position < MIN_PAN_POSITION ) {
