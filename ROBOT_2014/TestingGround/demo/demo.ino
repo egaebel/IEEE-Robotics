@@ -90,13 +90,16 @@ void setup() {
     //Delay so button push in loop below is not activated
     //REMOVE THIS BEFORE COMPETITION
     delay(500);
-
-    Serial.println("GO!");
 }
 
 //Loop
 void loop() {
-
+    lineFollower.Get_Line_Data(leftLineFollowBits, rightLineFollowBits);
+    Serial.print("leftLineFollowBits == ");
+    Serial.println(leftLineFollowBits);
+    Serial.print("rightLineFollowBits == ");
+    Serial.println(rightLineFollowBits);
+/*
     //If we get a button press, stop
     //REMOVE THIS BEFORE COMPETITION
     if(digitalRead(PIN_START) == HIGH) {
@@ -111,9 +114,9 @@ void loop() {
         case START:
             Serial.println("START");
 
-            if (colorSensor.getColor() == GREEN) {
+            if (colorSensor.getColor() == GREEN || digitalRead(PIN_START) == HIGH) {
                 motors.motorsDrive(FORWARD);
-                delay(1500);
+                delay(3500);
                 state = MAIN_LINE;
             }
             break;
@@ -121,11 +124,18 @@ void loop() {
         case MAIN_LINE:
             Serial.println("straight line");
             
+            lineFollower.Get_Line_Data(leftLineFollowBits, rightLine)
             if (lineFollower.intersection(leftLineFollowBits, rightLineFollowBits)) {
+                Serial.println("INTERSECTION, FUCK YOU!");
+                Serial.print("leftLineFollowBits == ");
+                Serial.println(leftLineFollowBits);
+                Serial.print("rightLineFollowBits == ");
+                Serial.println(rightLineFollowBits);
                 state = TURN_LEFT_ONTO_SIDE;
                 break; 
             }
             else if (lineFollower.isCentered(leftLineFollowBits, rightLineFollowBits)) {
+                Serial.println("FORWARD!");
                 motors.motorsDrive(FORWARD);
                 break;
             }
@@ -237,23 +247,9 @@ void loop() {
             delay( NOTIFY_DELAY );
             digitalWrite( AIM_NEXT_BARREL_PIN, LOW );
             //*///--------------------------------------------------------------------------------
+/*
             motors.motorsStop();
             delay(2000);
-            //U-Turn------------------------------------------------------------------
-            do {
-                motors.motorsTurnLeft();
-                delay(500);
-                motors.motorsDrive(BACKWARD);
-                delay(200);
-                lineFollower.Get_Line_Data(leftLineFollowBits, rightLineFollowBits);
-            } while (leftLineFollowBits || rightLineFollowBits);
-
-            do {
-                motors.motorsTurnLeft();
-                lineFollower.Get_Line_Data(leftLineFollowBits, rightLineFollowBits);
-            } while (!leftLineFollowBits && !rightLineFollowBits);
-            //Hopefully remove before competition....we need our 2nd linefollower!
-            //-------------------------------------------------------------------------
 
             state = SIDE_LINE_END;
 
