@@ -152,8 +152,8 @@ int main()
           // update servo positions (with hard-coded proportional control for now)
           pan_position += PAN_PROPORTIONAL_RATE * pan_difference * PAN_DIRECTION;
           tilt_position += TILT_PROPORTIONAL_RATE * tilt_difference * TILT_DIRECTION;
-          printf("pan position\n");
-          printf("tilt position\n");
+          printf("pan position %d\n", pan_position);
+          printf("tilt position %d\n", tilt_position);
 
           // pan/tilt position limits
           if( pan_position < MIN_PAN_POSITION )
