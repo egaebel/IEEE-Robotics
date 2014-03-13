@@ -145,6 +145,8 @@ int main()
         }
         else
         {
+          printf("pan position change == %d\n", PAN_PROPORTIONAL_RATE * pan_difference * PAN_DIRECTION);
+          printf("TILT position change == %d\n", TILT_PROPORTIONAL_RATE * pan_difference * TILT_DIRECTION);
           // update servo positions (with hard-coded proportional control for now)
           pan_position += PAN_PROPORTIONAL_RATE * pan_difference * PAN_DIRECTION;
           tilt_position += TILT_PROPORTIONAL_RATE * tilt_difference * TILT_DIRECTION;
