@@ -17,7 +17,7 @@
 #define MAX_HUE			179
 // FYI: saturation ranges from 0 to 255 in OpenCV
 #define LOWER_SAT		100
-#define UPPER_SAT		200//178
+#define UPPER_SAT		188//178
 // FYI: value ranges from 0 to 255 in OpenCV
 #define LOWER_VAL		100
 #define UPPER_VAL		140
