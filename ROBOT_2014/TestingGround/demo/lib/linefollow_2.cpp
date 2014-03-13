@@ -1,6 +1,6 @@
 #include "linefollow_2.hpp"
 
-void ParallelLineFollower::setup(unsigned short sensorPin,
+void ParallelLineFollower::setup(unsigned short sensorPinFront, unsigned short sensorPinBack,
 								unsigned short PIN_LF_S0, unsigned short PIN_LF_S1, 
                                 unsigned short PIN_LF_S2, unsigned short PIN_LF_S3,
 								unsigned short PIN_LF_S4, unsigned short PIN_LF_S5, 
@@ -14,7 +14,8 @@ void ParallelLineFollower::setup(unsigned short sensorPin,
     #endif
     
     Line_Data = 0;
-    sensor = sensorPin;
+    sensorFront = sensorPinFront;
+	sensorBack = sensorPinBack;
     this->PIN_LF_S0 = PIN_LF_S0;
     this->PIN_LF_S1 = PIN_LF_S1;
     this->PIN_LF_S2 = PIN_LF_S2;
@@ -31,7 +32,8 @@ void ParallelLineFollower::setup(unsigned short sensorPin,
     pinMode(PIN_LF_S5, INPUT);
     pinMode(PIN_LF_S6, INPUT);
     pinMode(PIN_LF_S7, INPUT);
-    pinMode(sensor, OUTPUT);
+    pinMode(sensorFront, OUTPUT);
+	pinMode(sensorBack, OUTPUT);
 }
 
 //**************    Evaluate whether the robot is centered on the line **********

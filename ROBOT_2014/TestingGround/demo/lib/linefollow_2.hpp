@@ -35,7 +35,7 @@
 #ifndef LINE_FOLLOW_2_H
 #define LINE_FOLLOW_2_H
 
-#include "SPI.h" // Not needed for parallel data input
+//#include "SPI.h" // Not needed for parallel data input
 
 //#define DEBUG_STANDALONE
 
@@ -43,7 +43,8 @@ class ParallelLineFollower
 {
 private:
 //	unsigned short Load; // Controls ShiftRegister's Shift/Load pin(1) // Not needed for parallel input data
-	unsigned short sensor; // Controls LineFollower's Enable pin
+	unsigned short sensorFront; // Controls Front LineFollower's Enable pin
+	unsigned short sensorBack; // Controls Back LineFollower's Enable pin
 	byte L_bits;
 	byte R_bits;
 	byte Line_Data;
@@ -59,7 +60,7 @@ private:
 	void Get_Line_Data();
 
 public:
-	void setup(unsigned short sensorPin,
+	void setup(unsigned short sensorPinFront, unsigned short sensorPinBack,
 			   unsigned short PIN_LF_S0, 
 			   unsigned short PIN_LF_S1, 
 			   unsigned short PIN_LF_S2, 
