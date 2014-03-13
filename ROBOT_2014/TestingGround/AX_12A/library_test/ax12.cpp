@@ -20,7 +20,7 @@ void Ax12::setup()
     reg_write_2_byte(broadcast_id, moving_speed, 0xff);
     Action(broadcast_id);
     // set initial position to zero
-    reg_write_2_byte(broadcast_id, goal_position, 660);
+    reg_write_2_byte(broadcast_id, goal_position, DEAD_AHEAD);
     Action(broadcast_id);
     recieve();
     delay(3000);

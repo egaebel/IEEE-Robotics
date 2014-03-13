@@ -13,7 +13,7 @@ void setup()
 
 void loop()
 {
-  
+/*
   switch (state) {
     case 0:
       Serial.write("CASE 0\n");
@@ -55,5 +55,5 @@ void loop()
       state = 0;
       break;
   }
-  
+ */ 
 }
