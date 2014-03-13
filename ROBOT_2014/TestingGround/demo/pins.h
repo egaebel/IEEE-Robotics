@@ -44,8 +44,8 @@ const int READY_TO_FIRE_INTERRUPT = 0;
 const int READY_TO_FIRE_PIN = 2;
 
 // Firing Servo Pins
-const int FIRING_SERVO_1_PIN = 49; //PIN NUMBER is in conflict with ParallelLineFollower's Pin S2
-const int FIRING_SERVO_2_PIN = 51; //PIN NUMBER is in conflict with ParallelLineFollower's Pin S3
-const int FIRING_SERVO_3_PIN = 53;
+const int FIRING_SERVO_1_PIN = 13; //PIN NUMBER is in conflict with ParallelLineFollower's Pin S2
+const int FIRING_SERVO_2_PIN = 14; //PIN NUMBER is in conflict with ParallelLineFollower's Pin S3
+const int FIRING_SERVO_3_PIN = 15;
 
 #endif
