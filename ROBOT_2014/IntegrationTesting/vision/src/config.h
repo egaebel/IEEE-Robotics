@@ -65,7 +65,7 @@
 #define PAN_DIRECTION		-1
 
 // pan movement tuning
-#define PAN_PROPORTIONAL_RATE	100
+#define PAN_PROPORTIONAL_RATE	50
 #define PAN_THRESHOLD		4
 
 // tilt configuration
@@ -76,7 +76,7 @@
 #define TILT_DIRECTION		-1
 
 // tilt movement tuning
-#define TILT_PROPORTIONAL_RATE	100
+#define TILT_PROPORTIONAL_RATE	50
 #define TILT_THRESHOLD		4
 
 // config for direct control of firing servo
