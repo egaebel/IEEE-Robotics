@@ -36,21 +36,64 @@
 
 #include "SPI.h"
 
+//#define DEBUG_STANDALONE
+
 class LineFollower
 {
 private:
 	unsigned short Load; // Controls ShiftRegister's Shift/Load pin(1)
 	unsigned short sensor; // Controls LineFollower's Enable pin
+
 	byte L_bits;
 	byte R_bits;
 	byte Line_Data;
+
+	#ifdef DEBUG_STANDALONE
+	static const short L_side_pin = 10; // PWM pin for left trek
+	static const short R_side_pin = 9;  // PWM pin for right trek
+	static const short Dir_Right_Side  =  30; // Controls direction of the right track(LOW - forward, HIGH - Reverse)
+	static const short Dir_Left_Side  =   31; // Controls direction of the left track (LOW - forward, HIGH - Reverse)
+	static const byte max_speed = 100;   // PWM value 0-255
+
+	short L_PWM;
+	short R_PWM;
+	short Gate_flag;
+	short U_Turn_flag;
+	short Num_LT;
+	short Hor_Line_pass;
+	#endif
+	
 	void Get_Line_Data();
+	
+	/* NOTE: these methods are part of the demo code.
+	 *
+	 * Follow_the_line(), Move_Control(), Left_Turn(), U_Turn(), Demo_Run(), Halt()
+	 *
+	 * In production, Motor control should be handled outside this class 
+	 */
+	
+	#ifdef DEBUG_STANDALONE
+	void Move_Control(short L_PWM, short R_PWM);
+	void Follow_the_line();
+	void Left_Turn();
+	void U_Turn();
+	void Demo_Run();
+	void Halt();
+	#endif
 public:
 	void setup(unsigned short loadPin, 
 				unsigned short sensorPin);
 	bool isCentered(byte& L_bits, byte& R_bits);
 	bool intersection(byte& L_bits, byte& R_bits);
-	void Get_Line_Data(byte& L_bits, byte& R_bits);		
+	void Get_Line_Data(byte& L_bits, byte& R_bits);
+	
+	//these methods allow this to be compiled as a standalone Arduino sketch.
+	#ifdef DEBUG_STANDALONE
+	void loop();
+	void setup();
+	#endif
+
+		
 };
 
 #endif
