@@ -1,6 +1,6 @@
 #include "pins.h"
 #include <motors.h>
-#include <linefollow.hpp>
+//#include <linefollow.hpp>
 #include <linefollow_2.hpp>
 #include <colorSensor.h>
 #include <Servo.h>
@@ -10,7 +10,6 @@ enum State { START = 1, MAIN_LINE, TURN_LEFT_ONTO_SIDE, SIDE_LINE_START, FIRE,
 
 //Hardware interfaces
 static Motors motors;
-static LineFollower lineFollower;
 static ParallelLineFollower parallelLineFollower;
 static ColorSensor colorSensor;
 
@@ -52,7 +51,7 @@ void setup() {
     motors.motorsStop();
     //--------------------------------
 
-    //Serial Line Follower Setup-------------------------------------------------   
+ /*   //Front Line Follower Setup-------------------------------------------------   
     SPI.begin();
     SPI.setClockDivider(SPI_CLOCK_DIV2);
     SPI.setDataMode(SPI_MODE3);
@@ -60,14 +59,13 @@ void setup() {
     pinMode(PIN_LOAD, OUTPUT); 
     //activates shift register IC
     digitalWrite(PIN_LOAD, HIGH);
-    pinMode(PIN_SENSOR_SERIAL, OUTPUT);
-    digitalWrite(PIN_SENSOR_SERIAL, HIGH); //activates Serial LineFollower Kit
-    lineFollower.setup(PIN_LOAD, PIN_SENSOR_SERIAL);
-
-    //Parallel Line Follower Setup-------------------------------------------------	
-	pinMode(PIN_SENSOR_PARALLEL, OUTPUT);
-    digitalWrite(PIN_SENSOR_PARALLEL, HIGH); //activates parallel LineFollower Kit
-	parallelLineFollower.setup(PIN_SENSOR_PARALLEL, 
+*/
+    pinMode(PIN_SENSOR_FRONT, OUTPUT);
+    digitalWrite(PIN_SENSOR_FRONT, HIGH); //activates Front LineFollower Kit
+    //Back Line Follower Setup-------------------------------------------------	
+	pinMode(PIN_SENSOR_BACK, OUTPUT);
+    digitalWrite(PIN_SENSOR_BACK, LOW); //de-activates Back LineFollower Kit
+	parallelLineFollower.setup(PIN_SENSOR_BACK, PIN_SENSOR_FRONT,
                                 PIN_LF_S0, PIN_LF_S1, 
                                 PIN_LF_S2, PIN_LF_S3, 
                                 PIN_LF_S4, PIN_LF_S5, 
@@ -108,27 +106,30 @@ void setup() {
 
 //Loop
 void loop() {
-    Serial.println("\n\nparallel line follower");
+/*    Serial.println("\n\nfront line follower");
+    parallelLineFollower.Get_Line_Data(leftLineFollowBits, rightLineFollowBits);
+    Serial.print("leftLineFollowBits == ");
+    Serial.println(leftLineFollowBits);
+    Serial.print("rightLineFollowBits == ");
+    Serial.println(rightLineFollowBits);
+	delay(1000);
+	
+	digitalWrite(PIN_SENSOR_FRONT, LOW);
+	digitalWrite(PIN_SENSOR_BACK, HIGH);
+    Serial.println("\n\nback line follower");
     parallelLineFollower.Get_Line_Data(leftLineFollowBits, rightLineFollowBits);
     Serial.print("leftLineFollowBits == ");
     Serial.println(leftLineFollowBits);
     Serial.print("rightLineFollowBits == ");
     Serial.println(rightLineFollowBits);
 
-    Serial.println("\n\nregular line follower");
-    lineFollower.Get_Line_Data(leftLineFollowBits, rightLineFollowBits);
-    Serial.print("leftLineFollowBits == ");
-    Serial.println(leftLineFollowBits);
-    Serial.print("rightLineFollowBits == ");
-    Serial.println(rightLineFollowBits);
-
     Serial.println("****************************");
     Serial.println("****************************");
     Serial.println("****************************");
     Serial.println("****************************");
     Serial.println("****************************");
     Serial.println("****************************");
-/*
+*/
     //If we get a button press, stop
     //REMOVE THIS BEFORE COMPETITION
     if(digitalRead(PIN_START) == HIGH) {
@@ -153,25 +154,25 @@ void loop() {
         case MAIN_LINE:
             Serial.println("straight line");
             
-            if (lineFollower.intersection(leftLineFollowBits, rightLineFollowBits)) {
+            if (parallelLineFollower.intersection(leftLineFollowBits, rightLineFollowBits)) {
 
                 state = TURN_LEFT_ONTO_SIDE;
                 break; 
             }
-            else if (lineFollower.isCentered(leftLineFollowBits, rightLineFollowBits)) {
+            else if (parallelLineFollower.isCentered(leftLineFollowBits, rightLineFollowBits)) {
                 Serial.println("FORWARD!");
                 motors.motorsDrive(FORWARD);
                 break;
             }
             else {
 
-                if (!lineFollower.isCentered(leftLineFollowBits, rightLineFollowBits) 
+                if (!parallelLineFollower.isCentered(leftLineFollowBits, rightLineFollowBits) 
                     && (leftLineFollowBits > rightLineFollowBits)) {
                     
                     motors.motorsTurnLeft();
                 }
 
-                if (!lineFollower.isCentered(leftLineFollowBits, rightLineFollowBits) 
+                if (!parallelLineFollower.isCentered(leftLineFollowBits, rightLineFollowBits) 
                     && (leftLineFollowBits < rightLineFollowBits)) {
 
                     motors.motorsTurnRight(); 
@@ -186,17 +187,17 @@ void loop() {
                 delay(500);
                 motors.motorsTurnLeft();
                 delay(500);
-                lineFollower.Get_Line_Data(leftLineFollowBits, rightLineFollowBits);
+                parallelLineFollower.Get_Line_Data(leftLineFollowBits, rightLineFollowBits);
             } while (leftLineFollowBits || rightLineFollowBits);
              
             do {
                 motors.motorsTurnLeft();
-                lineFollower.Get_Line_Data(leftLineFollowBits, rightLineFollowBits);
+                parallelLineFollower.Get_Line_Data(leftLineFollowBits, rightLineFollowBits);
             } while (leftLineFollowBits || rightLineFollowBits);
              
             do {
                 motors.motorsTurnLeft();
-                lineFollower.Get_Line_Data(leftLineFollowBits, rightLineFollowBits);
+                parallelLineFollower.Get_Line_Data(leftLineFollowBits, rightLineFollowBits);
             } while (!leftLineFollowBits && !rightLineFollowBits);
     
             //Backup to account for overturning
@@ -210,7 +211,7 @@ void loop() {
             Serial.println("side line starter"); 
                 
             //If we're centered, OR we've encountered the blue block 
-            if (lineFollower.isCentered(leftLineFollowBits, rightLineFollowBits) 
+            if (parallelLineFollower.isCentered(leftLineFollowBits, rightLineFollowBits) 
                 || (leftLineFollowBits >= 2 && rightLineFollowBits >= 2)) {
 
                 motors.motorsDrive(FORWARD);
@@ -224,10 +225,10 @@ void loop() {
             }
             else {
 
-                if (!lineFollower.isCentered(leftLineFollowBits, rightLineFollowBits) && (leftLineFollowBits > rightLineFollowBits)) {
+                if (!parallelLineFollower.isCentered(leftLineFollowBits, rightLineFollowBits) && (leftLineFollowBits > rightLineFollowBits)) {
                     motors.motorsTurnLeft();
                 }
-                if (!lineFollower.isCentered(leftLineFollowBits, rightLineFollowBits) && (leftLineFollowBits < rightLineFollowBits)) {
+                if (!parallelLineFollower.isCentered(leftLineFollowBits, rightLineFollowBits) && (leftLineFollowBits < rightLineFollowBits)) {
                     motors.motorsTurnRight(); 
                 }
                 break;
@@ -236,7 +237,7 @@ void loop() {
             Serial.println("FIRE STATE");
             //FIRE!---------------------------------------------------------------------------
             //Wait for beagle bone to aim
-            /*
+ /*
             while (!fire);
 
             //Determine which barrel to fire based on what line we're on
@@ -270,8 +271,7 @@ void loop() {
             digitalWrite( AIM_NEXT_BARREL_PIN, HIGH );
             delay( NOTIFY_DELAY );
             digitalWrite( AIM_NEXT_BARREL_PIN, LOW );
-            //*///--------------------------------------------------------------------------------
-/*
+ *///--------------------------------------------------------------------------------
             motors.motorsStop();
             delay(2000);
 
@@ -282,6 +282,8 @@ void loop() {
 			
 		case GO_BACK:
 		
+			digitalWrite(PIN_SENSOR_FRONT, LOW);
+			digitalWrite(PIN_SENSOR_BACK, HIGH);
 			if(!parallelLineFollower.intersection(leftLineFollowBits, rightLineFollowBits))
 			{
 				if (parallelLineFollower.isCentered(leftLineFollowBits, rightLineFollowBits) )
@@ -311,18 +313,18 @@ void loop() {
             do {
                 motors.motorsDrive(BACKWARD);
                 delay(500);
-                motors.motorsTurnLeft();
+                motors.motorsTurnRight();
                 delay(500);
                 parallelLineFollower.Get_Line_Data(leftLineFollowBits, rightLineFollowBits);
             } while (leftLineFollowBits || rightLineFollowBits);
-             
+ //Do I need these do-while loops?!            
             do {
-                motors.motorsTurnLeft();
+                motors.motorsTurnRight();
                 parallelLineFollower.Get_Line_Data(leftLineFollowBits, rightLineFollowBits);
             } while (leftLineFollowBits || rightLineFollowBits);
              
             do {
-                motors.motorsTurnLeft();
+                motors.motorsTurnRight();
                 parallelLineFollower.Get_Line_Data(leftLineFollowBits, rightLineFollowBits);
             } while (!leftLineFollowBits && !rightLineFollowBits);
 
@@ -330,26 +332,28 @@ void loop() {
             break;
 
 		case IGNORE_SIDE_LINE:
-$
-			if (lineFollower.intersection(leftLineFollowBits, rightLineFollowBits)) {
+		
+			digitalWrite(PIN_SENSOR_FRONT, HIGH);
+			digitalWrite(PIN_SENSOR_BACK, LOW);
+			if (parallelLineFollower.intersection(leftLineFollowBits, rightLineFollowBits)) {
 
                 motors.motorsDrive(FORWARD);
                 delay(1000);
                 state = MAIN_LINE;
                 break;
             }
-            else if (lineFollower.isCentered(leftLineFollowBits, rightLineFollowBits)) {
+            else if (parallelLineFollower.isCentered(leftLineFollowBits, rightLineFollowBits)) {
                 motors.motorsDrive(FORWARD);
                 break;
             }
             else {
 
-                if (!lineFollower.isCentered(leftLineFollowBits, rightLineFollowBits) 
+                if (!parallelLineFollower.isCentered(leftLineFollowBits, rightLineFollowBits) 
                     && (leftLineFollowBits > rightLineFollowBits)) {
                     
                     motors.motorsTurnLeft();
                 }
-                if (!lineFollower.isCentered(leftLineFollowBits, rightLineFollowBits) 
+                if (!parallelLineFollower.isCentered(leftLineFollowBits, rightLineFollowBits) 
                     && (leftLineFollowBits < rightLineFollowBits)) {
 
                     motors.motorsTurnRight(); 
@@ -372,7 +376,6 @@ $
             delay(2000);
             break;
     }
-    //*/
 }
 
 /*
