@@ -316,7 +316,9 @@ void loop() {
             break;
 
 		case IGNORE_SIDE_LINE:
-			
+			if (ParallelLineFollower::intersection(byte& L_bits, byte& R_bits))
+			{
+				status = 
 			
         //State entered when button pushed while in loop
             //Reset's state to beginning
