@@ -1,9 +1,10 @@
-#include "linefollow.hpp"
+#include "linefollow_2.hpp"
 
 //#define DEBUG
 
-void LineFollower::setup(unsigned short loadPin, 
-                         unsigned short sensorPin)
+void ParallelLineFollower::setup(unsigned short sensorPin,
+								unsigned short PIN_LF_S0, unsigned short PIN_LF_S1, unsigned short PIN_LF_S2, unsigned short PIN_LF_S3,
+								unsigned short PIN_LF_S4, unsigned short PIN_LF_S5, unsigned short PIN_LF_S6, unsigned short PIN_LF_S7)
 {
   #ifdef DEBUG_STANDALONE
   Gate_flag = 0;
@@ -13,13 +14,20 @@ void LineFollower::setup(unsigned short loadPin,
   #endif
   
   Line_Data = 0;
-  Load = loadPin;
   sensor = sensorPin;
+  this->PIN_LF_S0 = PIN_LF_S0;
+  this->PIN_LF_S1 = PIN_LF_S1;
+  this->PIN_LF_S2 = PIN_LF_S2;
+  this->PIN_LF_S3 = PIN_LF_S3;
+  this->PIN_LF_S4 = PIN_LF_S4;
+  this->PIN_LF_S5 = PIN_LF_S5;
+  this->PIN_LF_S6 = PIN_LF_S6;
+  this->PIN_LF_S7 = PIN_LF_S7;
 }
 
 //**************  Evaluate whether the robot is centered on the line **********
 
-bool LineFollower::isCentered(byte& L_bits, byte& R_bits) // Has to be changed as the code doesn't explicitly checks whether it(rover) is centered or not.
+bool ParallelLineFollower::isCentered(byte& L_bits, byte& R_bits) // Has to be changed as the code doesn't explicitly checks whether it(rover) is centered or not.
 {
    Get_Line_Data();
    L_bits = this->L_bits;
@@ -30,7 +38,7 @@ bool LineFollower::isCentered(byte& L_bits, byte& R_bits) // Has to be changed a
 
 //**************  Evaluate whether the robot is on an intersecting line *******
 
-bool LineFollower::intersection(byte& L_bits, byte& R_bits)
+bool ParallelLineFollower::intersection(byte& L_bits, byte& R_bits)
 {
   Get_Line_Data();
   L_bits = this->L_bits;
@@ -40,18 +48,13 @@ bool LineFollower::intersection(byte& L_bits, byte& R_bits)
 }
 
 
-//*************** Get Data from 8-bit Shift Register***************************
+//*************** Get Data from 8 Arduino Digital Pins***************************
 
-void LineFollower::Get_Line_Data()
+void ParallelLineFollower::Get_Line_Data()
 {
-  digitalWrite(Load, LOW); //Let the data get into shift register IC
-  delayMicroseconds(10);
-  digitalWrite(Load, HIGH); //Loads data into the serial register for output
-  Line_Data = SPI.transfer(0x00); // Receives serially 8 bits into Line_Data variable
-  delay(10);
-  L_bits = Line_Data & 0xF0; //Get left most 4 bits
-  L_bits >>= 4;
-  R_bits = Line_Data & 0x0F;
+  R_bits = (PIN_LF_S0 << 3) + (PIN_LF_S1 << 2) + (PIN_LF_S2 << 1) + (PIN_LF_S3 << 0);
+  L_bits = (PIN_LF_S4 << 0) + (PIN_LF_S5 << 1) + (PIN_LF_S6 << 2) + (PIN_LF_S7 << 3);
+  Line_Data = (L_bits << 4) + (R_bits);
   
   #ifdef DEBUG					//Debugging creates unnecessary delays which should be avoided if rover runs on timings and not on encoders!
   Serial.println(Line_Data);
@@ -59,7 +62,7 @@ void LineFollower::Get_Line_Data()
   return;
 }
 
-void LineFollower::Get_Line_Data(byte& L_bits, byte& R_bits) {
+void ParallelLineFollower::Get_Line_Data(byte& L_bits, byte& R_bits) {
 
   this->Get_Line_Data();
   L_bits = this->L_bits;
@@ -67,14 +70,14 @@ void LineFollower::Get_Line_Data(byte& L_bits, byte& R_bits) {
 }
 
 
-// ****** Methods graveyard below ******
+// ****** Method graveyard below ******
 // ****** Methods below this point will need preprocessor symbol DEBUG to be defined *****
 
 // setup() and loop() functions for running as a standalone sketch
 
 #ifdef DEBUG_STANDALONE
 
-LineFollower lf;
+ParallelLineFollower lf;
 void setup() {lf.setup();};
 void loop() {lf.loop();};
 
@@ -88,7 +91,7 @@ void loop() {lf.loop();};
  
 #ifdef DEBUG_STANDALONE
 
-void LineFollower::setup()
+void ParallelLineFollower::setup()
 {
   delay(2000);
   
@@ -102,7 +105,7 @@ void LineFollower::setup()
   pinMode(Load, OUTPUT);
   digitalWrite(Load, HIGH);
   pinMode(sensor, OUTPUT);
-  digitalWrite(sensor, HIGH); //activates LineFollower Kit
+  digitalWrite(sensor, HIGH); //activates ParallelLineFollower Kit
   
   pinMode(L_side_pin, OUTPUT);
   pinMode(R_side_pin, OUTPUT);
@@ -119,7 +122,7 @@ do
 
 }
 
-void LineFollower::loop() 
+void ParallelLineFollower::loop() 
 {
  //Serial.println("looping");
  Get_Line_Data();
@@ -159,7 +162,7 @@ void LineFollower::loop()
 
 
 //***************Following the Line*******************************************
-void LineFollower::Follow_the_line()
+void ParallelLineFollower::Follow_the_line()
 {
   if (L_bits > R_bits)
    {
@@ -182,7 +185,7 @@ return;
 
 //***************Direction Control********************************************
 
-void LineFollower::Move_Control(short L_PWM, short R_PWM)
+void ParallelLineFollower::Move_Control(short L_PWM, short R_PWM)
 {
   //Serial.println(L_PWM);
   //Serial.println(R_PWM);
@@ -195,7 +198,7 @@ void LineFollower::Move_Control(short L_PWM, short R_PWM)
 }
 
 //***************Executing Left Turn*******************************************
-void LineFollower::Left_Turn()
+void ParallelLineFollower::Left_Turn()
 {
   Num_LT = Num_LT + 1;
 //  Serial.println(Num_LT);
@@ -228,7 +231,7 @@ return;
 
 //*****************180 degree turn************************************************
 
-void LineFollower::U_Turn()
+void ParallelLineFollower::U_Turn()
 {
   
   digitalWrite(Dir_Left_Side, HIGH);
@@ -247,7 +250,7 @@ return;
 }
 
 //*********************Demo Run********************************************************
-void LineFollower::Demo_Run()
+void ParallelLineFollower::Demo_Run()
 {
   if (U_Turn_flag == 1) //For DEMO run through the course
   {
@@ -263,7 +266,7 @@ return;
 }
 
 //**********************Complete Stop***************************************************
-void LineFollower::Halt()
+void ParallelLineFollower::Halt()
 {
   analogWrite(L_side_pin, 0);
   analogWrite(R_side_pin, 0);
