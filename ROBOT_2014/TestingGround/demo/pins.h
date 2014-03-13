@@ -10,9 +10,19 @@ static const unsigned short PIN_DIRECTION_RIGHT = 28; //Direction
 static const unsigned short PIN_PWM_RIGHT = 4; //Speed
 static const unsigned int DEFAULT_SPEED = 255;
 
-//Line Sensor Pins--------------------------------
+//Serial Line Sensor Pins---------------------------------------------------------------------------
 static const unsigned short PIN_LOAD = 22; // Controls ShiftRegister's Shift/Load pin(1)
-static const unsigned short PIN_SENSOR = 24; // Controls LineFollower's Enable pin
+static const unsigned short PIN_SENSOR_SERIAL = 24; // Controls SerialLineFollower's Enable pin
+//Parallel Line Sensor Pins-------------------------------------------------------------------------
+static const unsigned short PIN_SENSOR_PARALLEL = 25; // Controls ParallelLineFollower's Enable pin
+static const unsigned short PIN_LF_S0 = 45;
+static const unsigned short PIN_LF_S1 = 47;
+static const unsigned short PIN_LF_S2 = 49;
+static const unsigned short PIN_LF_S3 = 51;
+static const unsigned short PIN_LF_S4 = 30;
+static const unsigned short PIN_LF_S5 = 32;
+static const unsigned short PIN_LF_S6 = 34;
+static const unsigned short PIN_LF_S7 = 36;
 
 //Color Sensor Pins-------------------------------
 static const unsigned short PIN_CS_S0 = 31;
@@ -34,8 +44,8 @@ const int READY_TO_FIRE_INTERRUPT = 0;
 const int READY_TO_FIRE_PIN = 2;
 
 // Firing Servo Pins
-const int FIRING_SERVO_1_PIN = 49;
-const int FIRING_SERVO_2_PIN = 51;
-const int FIRING_SERVO_3_PIN = 53;
+const int FIRING_SERVO_1_PIN = 13; //PIN NUMBER is in conflict with ParallelLineFollower's Pin S2
+const int FIRING_SERVO_2_PIN = 14; //PIN NUMBER is in conflict with ParallelLineFollower's Pin S3
+const int FIRING_SERVO_3_PIN = 15;
 
 #endif

@@ -1,10 +1,11 @@
 //Sergey Sabirov
 //Electrical Engineering Junior, Class 2015
-/*-------------------------IMPORTANT-----------------------------------------
+//
+//**************************IMPORTANT************************************
 //                     For ARDUINO MEGA 2560:
 //
 // Connect ShiftRegister IC CLOCK pin(2) to digital PIN #52 (SCK)!!!
-// Coonect ShiftRegister IC inverted OUTPUT pin(7) to digital PIN #50(MISO)
+// Connect ShiftRegister IC inverted OUTPUT pin(7) to digital PIN #50(MISO)
 //                     For 74HC165 IC
 // Do not forget to connect PIN15 (Clock Inhibit) to the ground!
 // Bit Reversal is implemented in hardware. See below the wiring instruction.
@@ -29,28 +30,47 @@
 // -Symbol DEBUG_STANDALONE allows this to be compiled and uploaded as 
 //  a standalone Arduino sketch. The demo methods from core have been preserved.
 // -Symbols DEBUG prints the raw line data byte to the serial output
-*/
 
-#ifndef LINE_FOLLOW_H
-#define LINE_FOLLOW_H
 
-#include "SPI.h"
+#ifndef LINE_FOLLOW_2_H
+#define LINE_FOLLOW_2_H
 
-class LineFollower
+#include "SPI.h" // Not needed for parallel data input
+
+//#define DEBUG_STANDALONE
+
+class ParallelLineFollower
 {
 private:
-	unsigned short Load; // Controls ShiftRegister's Shift/Load pin(1)
+//	unsigned short Load; // Controls ShiftRegister's Shift/Load pin(1) // Not needed for parallel input data
 	unsigned short sensor; // Controls LineFollower's Enable pin
 	byte L_bits;
 	byte R_bits;
 	byte Line_Data;
+
+	unsigned short PIN_LF_S0;
+    unsigned short PIN_LF_S1;
+    unsigned short PIN_LF_S2;
+    unsigned short PIN_LF_S3;
+    unsigned short PIN_LF_S4;
+    unsigned short PIN_LF_S5;
+    unsigned short PIN_LF_S6;
+    unsigned short PIN_LF_S7;
 	void Get_Line_Data();
+
 public:
-	void setup(unsigned short loadPin, 
-				unsigned short sensorPin);
+	void setup(unsigned short sensorPin,
+			   unsigned short PIN_LF_S0, 
+			   unsigned short PIN_LF_S1, 
+			   unsigned short PIN_LF_S2, 
+			   unsigned short PIN_LF_S3,
+			   unsigned short PIN_LF_S4, 
+			   unsigned short PIN_LF_S5, 
+			   unsigned short PIN_LF_S6, 
+			   unsigned short PIN_LF_S7);
 	bool isCentered(byte& L_bits, byte& R_bits);
 	bool intersection(byte& L_bits, byte& R_bits);
-	void Get_Line_Data(byte& L_bits, byte& R_bits);		
+	void Get_Line_Data(byte& L_bits, byte& R_bits);	
 };
 
 #endif

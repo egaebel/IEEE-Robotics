@@ -1,14 +1,17 @@
 #include "pins.h"
 #include <motors.h>
 #include <linefollow.hpp>
+#include <linefollow_2.hpp>
 #include <colorSensor.h>
 #include <Servo.h>
 
-enum State { START = 1, MAIN_LINE, TURN_LEFT_ONTO_SIDE, SIDE_LINE_START, FIRE, SIDE_LINE_END, TURN_LEFT_ONTO_MAIN_LINE, RESET };
+enum State { START = 1, MAIN_LINE, TURN_LEFT_ONTO_SIDE, SIDE_LINE_START, FIRE, 
+            GO_BACK, IGNORE_SIDE_LINE, TURN_RIGHT_ONTO_MAIN_LINE, RESET };
 
 //Hardware interfaces
 static Motors motors;
 static LineFollower lineFollower;
+static ParallelLineFollower parallelLineFollower;
 static ColorSensor colorSensor;
 
 //Firing variables--------------------
@@ -42,23 +45,34 @@ void setup() {
 
     Serial.begin(9600);
     Serial.println("IN the beginning...");
+	Serial.println(HIGH);
     
     //Motor variables setup-----------
     motors.setup(PIN_PWM_LEFT, PIN_DIRECTION_LEFT, PIN_PWM_RIGHT, PIN_DIRECTION_RIGHT, DEFAULT_SPEED);
     motors.motorsStop();
     //--------------------------------
 
-    //LineFollower variables setup-------------------------
+    //Serial Line Follower Setup-------------------------------------------------   
     SPI.begin();
     SPI.setClockDivider(SPI_CLOCK_DIV2);
     SPI.setDataMode(SPI_MODE3);
     SPI.setBitOrder(MSBFIRST);
-
-    pinMode(PIN_LOAD, OUTPUT);
+    pinMode(PIN_LOAD, OUTPUT); 
+    //activates shift register IC
     digitalWrite(PIN_LOAD, HIGH);
-    pinMode(PIN_SENSOR, OUTPUT);
-    digitalWrite(PIN_SENSOR, HIGH); //activates LineFollower Kit
-    lineFollower.setup(PIN_LOAD, PIN_SENSOR);
+    pinMode(PIN_SENSOR_SERIAL, OUTPUT);
+    digitalWrite(PIN_SENSOR_SERIAL, HIGH); //activates Serial LineFollower Kit
+    lineFollower.setup(PIN_LOAD, PIN_SENSOR_SERIAL);
+
+    //Parallel Line Follower Setup-------------------------------------------------	
+	pinMode(PIN_SENSOR_PARALLEL, OUTPUT);
+    digitalWrite(PIN_SENSOR_PARALLEL, HIGH); //activates parallel LineFollower Kit
+	parallelLineFollower.setup(PIN_SENSOR_PARALLEL, 
+                                PIN_LF_S0, PIN_LF_S1, 
+                                PIN_LF_S2, PIN_LF_S3, 
+                                PIN_LF_S4, PIN_LF_S5, 
+                                PIN_LF_S6, PIN_LF_S7);
+	
     //-----------------------------------------------------
 
     //Color Sensor Setup--------------------
@@ -90,13 +104,31 @@ void setup() {
     //Delay so button push in loop below is not activated
     //REMOVE THIS BEFORE COMPETITION
     delay(500);
-
-    Serial.println("GO!");
 }
 
 //Loop
 void loop() {
+    Serial.println("\n\nparallel line follower");
+    parallelLineFollower.Get_Line_Data(leftLineFollowBits, rightLineFollowBits);
+    Serial.print("leftLineFollowBits == ");
+    Serial.println(leftLineFollowBits);
+    Serial.print("rightLineFollowBits == ");
+    Serial.println(rightLineFollowBits);
 
+    Serial.println("\n\nregular line follower");
+    lineFollower.Get_Line_Data(leftLineFollowBits, rightLineFollowBits);
+    Serial.print("leftLineFollowBits == ");
+    Serial.println(leftLineFollowBits);
+    Serial.print("rightLineFollowBits == ");
+    Serial.println(rightLineFollowBits);
+
+    Serial.println("****************************");
+    Serial.println("****************************");
+    Serial.println("****************************");
+    Serial.println("****************************");
+    Serial.println("****************************");
+    Serial.println("****************************");
+/*
     //If we get a button press, stop
     //REMOVE THIS BEFORE COMPETITION
     if(digitalRead(PIN_START) == HIGH) {
@@ -111,9 +143,9 @@ void loop() {
         case START:
             Serial.println("START");
 
-            if (colorSensor.getColor() == GREEN) {
+            if (colorSensor.getColor() == GREEN || digitalRead(PIN_START) == HIGH) {
                 motors.motorsDrive(FORWARD);
-                delay(1500);
+                delay(3500);
                 state = MAIN_LINE;
             }
             break;
@@ -122,10 +154,12 @@ void loop() {
             Serial.println("straight line");
             
             if (lineFollower.intersection(leftLineFollowBits, rightLineFollowBits)) {
+
                 state = TURN_LEFT_ONTO_SIDE;
                 break; 
             }
             else if (lineFollower.isCentered(leftLineFollowBits, rightLineFollowBits)) {
+                Serial.println("FORWARD!");
                 motors.motorsDrive(FORWARD);
                 break;
             }
@@ -237,75 +271,91 @@ void loop() {
             delay( NOTIFY_DELAY );
             digitalWrite( AIM_NEXT_BARREL_PIN, LOW );
             //*///--------------------------------------------------------------------------------
+/*
             motors.motorsStop();
             delay(2000);
-            //U-Turn------------------------------------------------------------------
-            do {
-                motors.motorsTurnLeft();
-                delay(500);
-                motors.motorsDrive(BACKWARD);
-                delay(200);
-                lineFollower.Get_Line_Data(leftLineFollowBits, rightLineFollowBits);
-            } while (leftLineFollowBits || rightLineFollowBits);
 
-            do {
-                motors.motorsTurnLeft();
-                lineFollower.Get_Line_Data(leftLineFollowBits, rightLineFollowBits);
-            } while (!leftLineFollowBits && !rightLineFollowBits);
-            //Hopefully remove before competition....we need our 2nd linefollower!
-            //-------------------------------------------------------------------------
+			state = GO_BACK;
+            break;
+            
+			//Go back to the Main line-----------------------------------------------
+			
+		case GO_BACK:
+		
+			if(!parallelLineFollower.intersection(leftLineFollowBits, rightLineFollowBits))
+			{
+				if (parallelLineFollower.isCentered(leftLineFollowBits, rightLineFollowBits) )
+				{
+					motors.motorsDrive(BACKWARD);
+					break;
+				}
+				else 
+				{
+					if (!parallelLineFollower.isCentered(leftLineFollowBits, rightLineFollowBits) && (leftLineFollowBits > rightLineFollowBits)) 
+					{
+						motors.motorsTurnLeft();
+					}
+					if (!parallelLineFollower.isCentered(leftLineFollowBits, rightLineFollowBits) && (leftLineFollowBits < rightLineFollowBits)) 
+					{
+						motors.motorsTurnRight(); 
+					}
+					break;
+				}	
+			}			
 
-            state = SIDE_LINE_END;
-
+            state = TURN_RIGHT_ONTO_MAIN_LINE;
             break;
 
-        case SIDE_LINE_END:
-            Serial.println("side line end state");
+        case TURN_RIGHT_ONTO_MAIN_LINE:
             
-            if (lineFollower.intersection(leftLineFollowBits, rightLineFollowBits)) {
-                state = TURN_LEFT_ONTO_MAIN_LINE; 
-                lineCount++;
-                break; 
+            do {
+                motors.motorsDrive(BACKWARD);
+                delay(500);
+                motors.motorsTurnLeft();
+                delay(500);
+                parallelLineFollower.Get_Line_Data(leftLineFollowBits, rightLineFollowBits);
+            } while (leftLineFollowBits || rightLineFollowBits);
+             
+            do {
+                motors.motorsTurnLeft();
+                parallelLineFollower.Get_Line_Data(leftLineFollowBits, rightLineFollowBits);
+            } while (leftLineFollowBits || rightLineFollowBits);
+             
+            do {
+                motors.motorsTurnLeft();
+                parallelLineFollower.Get_Line_Data(leftLineFollowBits, rightLineFollowBits);
+            } while (!leftLineFollowBits && !rightLineFollowBits);
+
+            state = IGNORE_SIDE_LINE;
+            break;
+
+		case IGNORE_SIDE_LINE:
+$
+			if (lineFollower.intersection(leftLineFollowBits, rightLineFollowBits)) {
+
+                motors.motorsDrive(FORWARD);
+                delay(1000);
+                state = MAIN_LINE;
+                break;
             }
             else if (lineFollower.isCentered(leftLineFollowBits, rightLineFollowBits)) {
-                motors.motorsDrive(FORWARD); 
+                motors.motorsDrive(FORWARD);
                 break;
             }
             else {
 
-                if (!lineFollower.isCentered(leftLineFollowBits, rightLineFollowBits) && (leftLineFollowBits > rightLineFollowBits)) {
+                if (!lineFollower.isCentered(leftLineFollowBits, rightLineFollowBits) 
+                    && (leftLineFollowBits > rightLineFollowBits)) {
+                    
                     motors.motorsTurnLeft();
                 }
+                if (!lineFollower.isCentered(leftLineFollowBits, rightLineFollowBits) 
+                    && (leftLineFollowBits < rightLineFollowBits)) {
 
-                if (!lineFollower.isCentered(leftLineFollowBits, rightLineFollowBits) && (leftLineFollowBits < rightLineFollowBits)) {
                     motors.motorsTurnRight(); 
                 }
                 break;
             }
-
-        case TURN_LEFT_ONTO_MAIN_LINE:
-            
-            do {
-                motors.motorsDrive(FORWARD);
-                delay(500);
-                motors.motorsTurnLeft();
-                delay(500);
-                lineFollower.Get_Line_Data(leftLineFollowBits, rightLineFollowBits);
-            } while (leftLineFollowBits || rightLineFollowBits);
-             
-            do {
-                motors.motorsTurnLeft();
-                lineFollower.Get_Line_Data(leftLineFollowBits, rightLineFollowBits);
-            } while (leftLineFollowBits || rightLineFollowBits);
-             
-            do {
-                motors.motorsTurnLeft();
-                lineFollower.Get_Line_Data(leftLineFollowBits, rightLineFollowBits);
-            } while (!leftLineFollowBits && !rightLineFollowBits);
-
-            state = MAIN_LINE;
-            break;
-
         //State entered when button pushed while in loop
             //Reset's state to beginning
         case RESET:

@@ -89,6 +89,17 @@ void Ax12::reg_write_2_byte(int id, int location,int val)
   Serial3.write(val&0xFF); // Lower Byte 
   Serial3.write((val&0xFF00) >> 8); // Upper Byte 
   Serial3.write(checksum);
+  
+  Serial.write((byte)0xFF); // Starts instruction packet
+  Serial.write((byte)0xFF);
+  Serial.write((byte)id);
+  Serial.write((byte)length);
+  Serial.write((byte)reg_write_ins);
+  Serial.write((byte)location); 
+  Serial.write((byte)val&0xFF); // Lower Byte 
+  Serial.write((byte)((val&0xFF00) >> 8)); // Upper Byte 
+  Serial.write((byte)checksum);
+  Serial.println("");
 }
 
 void Ax12::reset(int id)
