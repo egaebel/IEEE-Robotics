@@ -71,9 +71,9 @@
 // tilt configuration
 #define TILT_SERVO		"P9_14.16"
 #define MIN_TILT_POSITION	1800000
-#define INL_TILT_POSITION	1500000//1750000
+#define INL_TILT_POSITION	1200000//1750000
 #define MAX_TILT_POSITION	1200000
-#define TILT_DIRECTION		-1
+#define TILT_DIRECTION		1
 
 // tilt movement tuning
 #define TILT_PROPORTIONAL_RATE	100
