@@ -62,7 +62,7 @@
 #define MIN_PAN_POSITION	830000
 #define INL_PAN_POSITION	1200000
 #define MAX_PAN_POSITION	1500000
-#define PAN_DIRECTION		1
+#define PAN_DIRECTION		-1
 
 // pan movement tuning
 #define PAN_PROPORTIONAL_RATE	100
