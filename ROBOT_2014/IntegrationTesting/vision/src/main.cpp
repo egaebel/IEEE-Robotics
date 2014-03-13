@@ -156,14 +156,21 @@ int main()
           printf("tilt position %d\n", tilt_position);
 
           // pan/tilt position limits
-          if( pan_position < MIN_PAN_POSITION )
+          if( pan_position < MIN_PAN_POSITION ) {
             pan_position = MIN_PAN_POSITION;
-          else if( pan_position > MAX_PAN_POSITION )
+          }
+          else if( pan_position > MAX_PAN_POSITION ) {
             pan_position = MAX_PAN_POSITION;
-          if( tilt_position < MIN_TILT_POSITION )
+          }
+          if( tilt_position < MIN_TILT_POSITION ) {
             tilt_position = MIN_TILT_POSITION;
-          else if( tilt_position > MAX_TILT_POSITION )
+          }
+          else if( tilt_position > MAX_TILT_POSITION ) {
             tilt_position = MAX_TILT_POSITION;
+          }
+          else {
+            printf("no corrections...\n");
+          }
 
 
           if( pan_position != old_pan_position )
