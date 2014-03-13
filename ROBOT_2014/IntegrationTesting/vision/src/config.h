@@ -62,10 +62,10 @@
 #define MIN_PAN_POSITION	1500000
 #define INL_PAN_POSITION	1200000
 #define MAX_PAN_POSITION	830000
-#define PAN_DIRECTION		-1
+#define PAN_DIRECTION		1
 
 // pan movement tuning
-#define PAN_PROPORTIONAL_RATE	75
+#define PAN_PROPORTIONAL_RATE	80
 #define PAN_THRESHOLD		4
 
 // tilt configuration
@@ -76,7 +76,7 @@
 #define TILT_DIRECTION		1
 
 // tilt movement tuning
-#define TILT_PROPORTIONAL_RATE	75
+#define TILT_PROPORTIONAL_RATE	80
 #define TILT_THRESHOLD		4
 
 // config for direct control of firing servo
