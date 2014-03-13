@@ -32,6 +32,7 @@
 //Other necessary values for Dynamixel AX-12A
 //---------------------------------------
 #define broadcast_id 0xFE
+//Goal_position that points directly in front of the robot
 #define DEAD_AHEAD 660
 
 //---------------------------------------
