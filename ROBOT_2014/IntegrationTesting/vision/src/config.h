@@ -17,9 +17,9 @@
 #define MAX_HUE			179
 // FYI: saturation ranges from 0 to 255 in OpenCV
 #define LOWER_SAT		100
-#define UPPER_SAT		188//178
+#define UPPER_SAT		208//178
 // FYI: value ranges from 0 to 255 in OpenCV
-#define LOWER_VAL		100
+#define LOWER_VAL		90
 #define UPPER_VAL		140
 
 // hull size filter range
@@ -71,7 +71,7 @@
 // tilt configuration
 #define TILT_SERVO		"P9_14.16"
 #define MIN_TILT_POSITION	1200000
-#define INL_TILT_POSITION	1200000//1750000
+#define INL_TILT_POSITION	1520000//1750000
 #define MAX_TILT_POSITION	1800000
 #define TILT_DIRECTION		1
 
@@ -95,7 +95,7 @@
 #define FIRE_THREE_Y		120
 
 // how many frames we should wait after not finding the target at all before returning to initial position
-#define LOCATE_FAIL_THRESHOLD	20
+#define LOCATE_FAIL_THRESHOLD	10
 
 //********************
 // inertia/acceleration and PID control related servo attributes
