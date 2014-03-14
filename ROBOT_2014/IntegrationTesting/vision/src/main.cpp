@@ -127,7 +127,7 @@ int main()
                 if(notFoundCount > 20);
                 {
                   printf( "Look right you bitch\n");
-                  set_servo_position(PAN_SERVO + adjAmt);
+                  set_servo_position(PAN_SERVO, INL_PAN_POSITION + adjAmt);
                 }
         		}
       		}
