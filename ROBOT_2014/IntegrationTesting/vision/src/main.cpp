@@ -16,6 +16,7 @@ int main()
 	int pan_position = INL_PAN_POSITION;
 	int tilt_position = INL_TILT_POSITION;
 	int locate_failures = 0;	
+	int num = 0;
 	Mat scene;
 
 	//enum {init, fire1, fire2, fire3} mode;
@@ -74,8 +75,6 @@ int main()
 
   	// initialize the camera
   	cap.grab();
-
-  	mode = init;
 
   	while(1)
   	{
