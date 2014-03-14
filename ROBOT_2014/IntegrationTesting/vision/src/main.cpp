@@ -88,7 +88,7 @@ int main()
       		{
       			locate_failures = 0;
 
-      			/*if(centroid.x < 320) //left
+      			if(centroid.x < 320) //left
       				pan_position -= 20000;
       			if(centroid.x > 320) //right
       				pan_position += 20000;
@@ -99,7 +99,7 @@ int main()
 
       			set_servo_position( PAN_SERVO, pan_position );
       			set_servo_position( TILT_SERVO, tilt_position );
-      		*/
+      		
       		}
       		else
       		{
