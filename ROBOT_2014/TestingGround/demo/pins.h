@@ -10,27 +10,34 @@ static const unsigned short PIN_DIRECTION_RIGHT = 28; //Direction
 static const unsigned short PIN_PWM_RIGHT = 4; //Speed
 static const unsigned int DEFAULT_SPEED = 255;
 
-//FRONT Line Sensor Pins---------------------------------------------------------------------------
-//static const unsigned short PIN_LOAD = 22; // Controls ShiftRegister's Shift/Load pin(1)
-static const unsigned short PIN_SENSOR_FRONT = 24; // Controls SerialLineFollower's Enable pin
-//BACK Line Sensor Pins-------------------------------------------------------------------------
-static const unsigned short PIN_SENSOR_BACK = 25; // Controls ParallelLineFollower's Enable pin
-static const unsigned short PIN_LF_S0 = 45;
-static const unsigned short PIN_LF_S1 = 47;
-static const unsigned short PIN_LF_S2 = 49;
-static const unsigned short PIN_LF_S3 = 51;
-static const unsigned short PIN_LF_S4 = 30;
-static const unsigned short PIN_LF_S5 = 32;
-static const unsigned short PIN_LF_S6 = 34;
-static const unsigned short PIN_LF_S7 = 36;
+//FRONT Line Sensor Pins-------------------------------------------------------------------------
+static const unsigned short PIN_SENSOR_FRONT = 22; // Controls SerialLineFollower's Enable pin
+static const unsigned short PIN_LF_FRONT_S0 = 44; //44
+static const unsigned short PIN_LF_FRONT_S1 = 46; //46
+static const unsigned short PIN_LF_FRONT_S2 = 48; //48
+static const unsigned short PIN_LF_FRONT_S3 = 50; //50
+static const unsigned short PIN_LF_FRONT_S4 = 32; //32
+static const unsigned short PIN_LF_FRONT_S5 = 34; //34
+static const unsigned short PIN_LF_FRONT_S6 = 36; //36
+static const unsigned short PIN_LF_FRONT_S7 = 38; //38
+//BACK Line Sensor Pins---------------------------------------------------------------------------
+static const unsigned short PIN_SENSOR_BACK = 23; // Controls SerialLineFollower's Enable pin
+static const unsigned short PIN_LF_BACK_S0 = 45; //45
+static const unsigned short PIN_LF_BACK_S1 = 47; //47
+static const unsigned short PIN_LF_BACK_S2 = 49; //49
+static const unsigned short PIN_LF_BACK_S3 = 51; //51
+static const unsigned short PIN_LF_BACK_S4 = 33; //33
+static const unsigned short PIN_LF_BACK_S5 = 35; //35
+static const unsigned short PIN_LF_BACK_S6 = 37; //37
+static const unsigned short PIN_LF_BACK_S7 = 39; //39
 
 //Color Sensor Pins-------------------------------
-static const unsigned short PIN_CS_S0 = 31;
-static const unsigned short PIN_CS_S1 = 33;
-static const unsigned short PIN_CS_S2 = 37;
-static const unsigned short PIN_CS_S3 = 39;
-static const unsigned short PIN_CS_OUT = 41;
-static const unsigned short PIN_CS_LED = 43;
+static const unsigned short PIN_CS_S0 = 24; // 24
+static const unsigned short PIN_CS_S1 = 25; // 25
+static const unsigned short PIN_CS_S2 = 27; // 27
+static const unsigned short PIN_CS_S3 = 29; // 29
+static const unsigned short PIN_CS_OUT = 30; // 30
+static const unsigned short PIN_CS_LED = 31; // 31
 
 //Start Button Pin--------------------------------
 static const unsigned short PIN_START = 42;

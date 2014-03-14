@@ -19,7 +19,6 @@ void Motors::setup(unsigned short pwmPinLeft, unsigned short directionPinLeft,
     pinMode(DIRECTION_RIGHT, OUTPUT);
 
     speed = defaultSpeed;
-    flipDirection = false;
 
     delay(2);
 }

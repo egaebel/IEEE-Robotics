@@ -39,7 +39,8 @@
 class ParallelLineFollower
 {
 private:
-	unsigned short sensor; // ENABLE PIN, SINGLE
+	// ENABLE PIN, SINGLE
+	unsigned short sensor; 
 	byte L_bits;
 	byte R_bits;
 	byte Line_Data;
@@ -52,16 +53,21 @@ private:
     unsigned short PIN_LF_S5;
     unsigned short PIN_LF_S6;
     unsigned short PIN_LF_S7;
+    bool on;
 
 public:
 	void setup(unsigned short sensorPin,
 			   unsigned short PIN_LF_S0, unsigned short PIN_LF_S1, 
 			   unsigned short PIN_LF_S2, unsigned short PIN_LF_S3,
 			   unsigned short PIN_LF_S4, unsigned short PIN_LF_S5, 
-			   unsigned short PIN_LF_S6, unsigned short PIN_LF_S7);
+			   unsigned short PIN_LF_S6, unsigned short PIN_LF_S7, 
+			   bool turnOn);
 	bool isCentered(byte& L_bits, byte& R_bits);
 	bool intersection(byte& L_bits, byte& R_bits);
+	bool fuzzyIntersection(byte& L_bits, byte& R_bits);
 	void Get_Line_Data(byte& L_bits, byte& R_bits);
+	void turnOn();
+	void turnOff();
 };
 
 #endif

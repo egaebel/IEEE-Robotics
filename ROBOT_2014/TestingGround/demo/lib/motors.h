@@ -50,7 +50,6 @@ class Motors
 		//void motorsTurn(short leftPWM, short rightPWM);
 		void motorsUTurn();
 		int speed;
-		bool flipDirection;
 	private:
 		//void motorsTurn(short leftPWM, short rightPWM, Turn motorsTurn);
 		unsigned short PWM_LEFT;

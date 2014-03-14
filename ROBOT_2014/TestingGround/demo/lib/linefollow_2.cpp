@@ -4,10 +4,15 @@ void ParallelLineFollower::setup(unsigned short sensorPin,
 								unsigned short PIN_LF_S0, unsigned short PIN_LF_S1, 
                                 unsigned short PIN_LF_S2, unsigned short PIN_LF_S3,
 								unsigned short PIN_LF_S4, unsigned short PIN_LF_S5, 
+<<<<<<< HEAD
                                 unsigned short PIN_LF_S6, unsigned short PIN_LF_S7)
+=======
+                                unsigned short PIN_LF_S6, unsigned short PIN_LF_S7, 
+                                bool turnOn)
+>>>>>>> feff8271be404d5d7102f3e23318fbc70d1dd14e
 {
-    Line_Data = 0;
-    sensor = sensorPin;
+    this->Line_Data = 0;
+    this->sensor = sensorPin;
     this->PIN_LF_S0 = PIN_LF_S0;
     this->PIN_LF_S1 = PIN_LF_S1;
     this->PIN_LF_S2 = PIN_LF_S2;
@@ -17,22 +22,42 @@ void ParallelLineFollower::setup(unsigned short sensorPin,
     this->PIN_LF_S6 = PIN_LF_S6;
     this->PIN_LF_S7 = PIN_LF_S7;
     pinMode(sensorPin, OUTPUT);
-    digitalWrite(sensorPin, HIGH);
+    this->on = turnOn;
+    if (on) {
+        digitalWrite(sensorPin, HIGH);
+    }
+}
+
+void ParallelLineFollower::turnOn() {
+    this->on = true;
+    digitalWrite(sensor, on);
+}
+
+void ParallelLineFollower::turnOff() {
+    this->on = false;
+    digitalWrite(sensor, on);
 }
 
 //**************    Evaluate whether the robot is centered on the line **********
-
 bool ParallelLineFollower::isCentered(byte& L_bits, byte& R_bits) // Has to be changed as the code doesn't explicitly checks whether it(rover) is centered or not.
 {
      Get_Line_Data();
      L_bits = this->L_bits;
      R_bits = this->R_bits;
+     return ((L_bits == R_bits) || (L_bits + 2 == R_bits ) || (L_bits == R_bits + 2)) && (L_bits >= 1);
+     //return (L_bits == R_bits) && (L_bits >= 1); //L_bits == R_bits is ambiguous as it also happens when rover is over black part of the course (L_bits==R_bits == 0)
+}
 
-     return (L_bits == R_bits) && (L_bits == 1); //L_bits == R_bits is ambiguous as it also happens when rover is over black part of the course (L_bits==R_bits == 0)
+bool ParallelLineFollower::fuzzyIntersection(byte& L_bits, byte& R_bits) {
+
+    Get_Line_Data();
+    L_bits = this->L_bits;
+    R_bits = this->R_bits;
+
+    return ( L_bits >= 7 && R_bits >= 7 );
 }
 
 //**************    Evaluate whether the robot is on an intersecting line *******
-
 bool ParallelLineFollower::intersection(byte& L_bits, byte& R_bits)
 {
     Get_Line_Data();

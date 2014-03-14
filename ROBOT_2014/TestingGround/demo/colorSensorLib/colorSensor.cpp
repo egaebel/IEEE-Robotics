@@ -43,7 +43,7 @@ void ColorSensor::setup(int S0, int S1,
 
 //Gets the color that the color sensor is currently over
 Color ColorSensor::getColor(bool useLED) {
-
+    Serial.println("get color");
     unsigned int bluePulse = colorRead(BLUE);
     unsigned int redPulse = colorRead(RED);
     unsigned int greenPulse = colorRead(GREEN);
@@ -65,7 +65,8 @@ Color ColorSensor::getColor(bool useLED) {
     unsigned int biggestDifference = 0;
     for (unsigned short i = 0; i < 3; i++) {
         Serial.print("color pulse value ==");
-        Serial.println(colorPulseArray[i]);
+        Serial.print(colorPulseArray[i]);
+        Serial.print(" and that's ");
         //Find the smallest pulse value
         if (i == 0 || colorPulseArray[i] < minPulse) {
             minPulse = colorPulseArray[i];
@@ -73,16 +74,37 @@ Color ColorSensor::getColor(bool useLED) {
             //Which color are we on?
             switch (i) {
                 case 0:
+                    Serial.println("BLUE");
                     minColor = BLUE;
                     break;
                 case 1:
+                    Serial.println("Red");
                     minColor = RED;
                     break;
                 case 2:
+                    Serial.println("GREEN");
                     minColor = GREEN;
                     break;
                 case 3:
+                    Serial.println("white");
                     minColor = WHITE;
+                    break;
+            }
+        }
+        else {
+            //Which color are we on?
+            switch (i) {
+                case 0:
+                    Serial.println("BLUE");
+                    break;
+                case 1:
+                    Serial.println("Red");
+                    break;
+                case 2:
+                    Serial.println("GREEN");
+                    break;
+                case 3:
+                    Serial.println("white");
                     break;
             }
         }
@@ -101,10 +123,10 @@ Color ColorSensor::getColor(bool useLED) {
             }
         }
     }
-    Serial.print("biggestDifference == ");
-    Serial.println(biggestDifference);
-    Serial.print("maxPulse == ");
-    Serial.println(maxPulse);
+    //Serial.print("biggestDifference == ");
+    //Serial.println(biggestDifference);
+    //Serial.print("maxPulse == ");
+    //Serial.println(maxPulse);
     //if all values within 10
     //White
     if (biggestDifference < 10 && maxPulse < 50) {
@@ -127,25 +149,25 @@ int ColorSensor::colorRead(Color color, bool useLED)    {
     if(color == WHITE){
         digitalWrite(S3, LOW); //S3
         digitalWrite(S2, HIGH); //S2
-        Serial.println("white");
+        //Serial.println("white");
     }
     //Red
     else if(color == RED){
         digitalWrite(S3, LOW); //S3
         digitalWrite(S2, LOW); //S2
-        Serial.println("Red");
+        //Serial.println("Red");
     }
     //Blue
     else if(color == BLUE){
         digitalWrite(S3, HIGH); //S3
         digitalWrite(S2, LOW); //S2
-        Serial.println("Blue");
+        //Serial.println("Blue");
     }
     //Green
     else if(color == GREEN){
         digitalWrite(S3, HIGH); //S3
         digitalWrite(S2, HIGH); //S2
-        Serial.println("Green");
+        //Serial.println("Green");
     }
 
     int readPulse; //where the pulse reading from sensor will go
@@ -163,8 +185,8 @@ int ColorSensor::colorRead(Color color, bool useLED)    {
     //Turn off LED
     digitalWrite(LED, LOW);
 
-    Serial.print("Read Pulse == ");
-    Serial.println(readPulse);
+    //Serial.print("Read Pulse == ");
+    //Serial.println(readPulse);
 
     return readPulse;
 }
