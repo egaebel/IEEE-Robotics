@@ -95,7 +95,7 @@
 #define FIRE_THREE_Y		120
 
 // how many frames we should wait after not finding the target at all before returning to initial position
-#define LOCATE_FAIL_THRESHOLD	10
+#define LOCATE_FAIL_THRESHOLD	20
 
 //********************
 // inertia/acceleration and PID control related servo attributes

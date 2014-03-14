@@ -96,13 +96,13 @@ int main()
       			printf("x: %d y: %d\n", centroid.x, centroid.y);
             printf("pan: %d tilt: %d\n", pan_position, tilt_position);
 
-      			if(centroid.x < 320) //left
+      			if(centroid.x < 315) //left
       				pan_position -= movAmt;
-      			if(centroid.x > 320) //right
+      			if(centroid.x > 325) //right
       				pan_position += movAmt;
-      			if(centroid.y < 240) //up
+      			if(centroid.y < 235) //up
       				tilt_position -= movAmt;
-      			if(centroid.y > 240) //down
+      			if(centroid.y > 245) //down
       				tilt_position += movAmt;
 
       			set_servo_position( PAN_SERVO, pan_position );
