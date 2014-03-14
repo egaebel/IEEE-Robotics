@@ -87,7 +87,7 @@ int main()
     		if( locateTarget( &scene, &centroid, num ) )
       		{
       			locate_failures = 0;
-
+            printf("located that fucking target, preparing to fuck it...\n");
       			/*if(centroid.x < 320) //left
       				pan_position -= 20000;
       			if(centroid.x > 320) //right
@@ -100,7 +100,7 @@ int main()
       			set_servo_position( PAN_SERVO, pan_position );
       			set_servo_position( TILT_SERVO, tilt_position );
       		*/
-      		}
+      		} 
       		else
       		{
         		locate_failures++;
