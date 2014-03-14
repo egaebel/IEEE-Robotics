@@ -17,6 +17,7 @@ int main()
 	int tilt_position = INL_TILT_POSITION;
 	int locate_failures = 0;	
 	int num = 0;
+  int movAmt = 5000;
 	Mat scene;
 
 	//enum {init, fire1, fire2, fire3} mode;
@@ -92,16 +93,14 @@ int main()
       			printf("x: %d y: %d\n", centroid.x, centroid.y);
             printf("pan: %d tilt: %d\n", pan_position, tilt_position);
 
-            if(centroid.x < 320) //left
-      				pan_position -= 20000;
       			if(centroid.x < 320) //left
-      				pan_position -= 2000;
+      				pan_position -= movAmt;
       			if(centroid.x > 320) //right
-      				pan_position += 2000;
+      				pan_position += movAmt;
       			if(centroid.y < 240) //up
-      				tilt_position -= 2000;
+      				tilt_position -= movAmt;
       			if(centroid.y > 240) //down
-      				tilt_position += 2000;
+      				tilt_position += movAmt;
 
       			set_servo_position( PAN_SERVO, pan_position );
       			set_servo_position( TILT_SERVO, tilt_position );
