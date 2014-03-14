@@ -16,10 +16,9 @@ int main()
 	int pan_position = INL_PAN_POSITION;
 	int tilt_position = INL_TILT_POSITION;
 	int locate_failures = 0;	
-        int num = 0;
 	Mat scene;
 
-	enum {init, fire1, fire2, fire3} mode;
+	//enum {init, fire1, fire2, fire3} mode;
 
 	if( !enable_servo( PAN_SERVO ) || !set_servo_position( PAN_SERVO, INL_PAN_POSITION ) )
   	{
@@ -38,8 +37,7 @@ int main()
 
     	return 1;
     }
-/*
-    if( !GPIOExport( GPIO_P8_31 ) || 
+    /*if( !GPIOExport( GPIO_P8_31 ) || 
     	!setGPIODirection( GPIO_P8_31, GPIO_P8_31_DIR ) || 
     	!setGPIOValue( GPIO_P8_31, "0" ) )
   	{
@@ -49,7 +47,6 @@ int main()
 
     	return 1;
   	}
-
   	if( !GPIOExport( GPIO_P9_12 ) || !setGPIODirection( GPIO_P9_12, GPIO_P9_12_DIR ) )
   	{
    		#ifdef DEBUG
@@ -57,8 +54,8 @@ int main()
     	#endif
 
     	return 1;
-  	}
-*/
+  	}*/
+
   	// open the camera
   	VideoCapture cap(0);
   	while( !cap.isOpened() )
@@ -80,7 +77,7 @@ int main()
 
   	mode = init;
 
-  	while(mode <= fire3)
+  	while(1)
   	{
   		cap >> scene;
 
@@ -92,7 +89,7 @@ int main()
       		{
       			locate_failures = 0;
 
-      			if(centroid.x < 320) //left
+      			/*if(centroid.x < 320) //left
       				pan_position -= 20000;
       			if(centroid.x > 320) //right
       				pan_position += 20000;
@@ -103,6 +100,7 @@ int main()
 
       			set_servo_position( PAN_SERVO, pan_position );
       			set_servo_position( TILT_SERVO, tilt_position );
+      		*/
       		}
       		else
       		{
@@ -126,19 +124,19 @@ int main()
         		printf( "failed to capture image\n");
      		#endif
     	}
-
-    	// disable all servos
-  		usleep( 500000 );
- 		disable_servo( PAN_SERVO );
-		disable_servo( TILT_SERVO );
-
-	  	// disconnect the GPIOs
-  	//	GPIOUnexport( GPIO_P8_31 );
-  	//	GPIOUnexport( GPIO_P9_12 );
-
-  		// disconnect the camera
-  		cap.release();
-
-  		return 0;
   	}
+
+  	// disable all servos
+  	usleep( 500000 );
+ 	disable_servo( PAN_SERVO );
+	disable_servo( TILT_SERVO );
+
+	// disconnect the GPIOs
+  	//GPIOUnexport( GPIO_P8_31 );
+  	//GPIOUnexport( GPIO_P9_12 );
+
+  	// disconnect the camera
+  	cap.release();
+
+  	return 0;
 }
