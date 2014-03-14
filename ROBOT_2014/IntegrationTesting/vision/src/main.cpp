@@ -19,7 +19,7 @@ int main()
 	int num = 0;
   int movAmt = 5000;
   int notFoundCount = 0;
-  int adjAmt = 20000;
+  int adjAmt = 200000;
 	Mat scene;
 
 	//enum {init, fire1, fire2, fire3} mode;
@@ -126,6 +126,7 @@ int main()
 
                 if(notFoundCount > 20);
                 {
+                  printf( "Look right you bitch\n");
                   set_servo_position(PAN_SERVO + adjAmt);
                 }
         		}
