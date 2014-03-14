@@ -18,6 +18,8 @@ int main()
 	int locate_failures = 0;	
 	int num = 0;
   int movAmt = 5000;
+  int notFoundCount = 0;
+  int adjAmt = 20000;
 	Mat scene;
 
 	//enum {init, fire1, fire2, fire3} mode;
@@ -88,6 +90,7 @@ int main()
     		if( locateTarget( &scene, &centroid, num ) )
       		{
       			locate_failures = 0;
+            notFoundCount = 0;
 
             printf("located that fucking target, preparing to fuck it...\n");
       			printf("x: %d y: %d\n", centroid.x, centroid.y);
@@ -119,6 +122,12 @@ int main()
           			set_servo_position( PAN_SERVO, INL_PAN_POSITION );
           			set_servo_position( TILT_SERVO, INL_TILT_POSITION );
           			locate_failures = 0;
+                notFoundCount++;
+
+                if(notFoundCount > 20);
+                {
+                  set_servo_position(PAN_SERVO + adjAmt);
+                }
         		}
       		}
   		}
