@@ -22,13 +22,13 @@ int main()
 	//enum {init, fire1, fire2, fire3} mode;
 
 	if( !enable_servo( PAN_SERVO ) || !set_servo_position( PAN_SERVO, INL_PAN_POSITION ) )
-  	{
+	{
     	#ifdef DEBUG
       		printf( "failed to open pan servo\n" );
     	#endif
 
-    	return 1;
-  	}
+  	return 1;
+	}
   	
   	if( !enable_servo( TILT_SERVO ) || !set_servo_position( TILT_SERVO, INL_TILT_POSITION ) )
   	{
@@ -123,14 +123,16 @@ int main()
         		printf( "failed to capture image\n");
      		#endif
     	}
+
+      num++;
   	}
 
   	// disable all servos
   	usleep( 500000 );
- 	disable_servo( PAN_SERVO );
-	disable_servo( TILT_SERVO );
+ 	  disable_servo( PAN_SERVO );
+	  disable_servo( TILT_SERVO );
 
-	// disconnect the GPIOs
+	  // disconnect the GPIOs
   	//GPIOUnexport( GPIO_P8_31 );
   	//GPIOUnexport( GPIO_P9_12 );
 
