@@ -2,9 +2,9 @@
 
 void ParallelLineFollower::setup(unsigned short sensorPin,
 								unsigned short PIN_LF_S0, unsigned short PIN_LF_S1, 
-                                                                unsigned short PIN_LF_S2, unsigned short PIN_LF_S3,
+                                unsigned short PIN_LF_S2, unsigned short PIN_LF_S3,
 								unsigned short PIN_LF_S4, unsigned short PIN_LF_S5, 
-                                                                unsigned short PIN_LF_S6, unsigned short PIN_LF_S7)
+                                unsigned short PIN_LF_S6, unsigned short PIN_LF_S7)
 {
     Line_Data = 0;
     sensor = sensorPin;

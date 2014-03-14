@@ -107,7 +107,7 @@ void loop() {
     Serial.println("****************************");
     Serial.println("****************************");
     Serial.println("****************************");
-/*
+
     //If we get a button press, stop
     //REMOVE THIS BEFORE COMPETITION
     if(digitalRead(PIN_START) == HIGH) {
@@ -250,7 +250,7 @@ void loop() {
             delay( NOTIFY_DELAY );
             digitalWrite( AIM_NEXT_BARREL_PIN, LOW );
             //*///--------------------------------------------------------------------------------
-/*
+
             motors.motorsStop();
             delay(2000);
 
@@ -305,10 +305,10 @@ void loop() {
                 parallelLineFollower.Get_Line_Data(leftLineFollowBits, rightLineFollowBits);
             } while (!leftLineFollowBits && !rightLineFollowBits);
 
-            state = IGNORE_SIDE_LINE;
+//            state = IGNORE_SIDE_LINE;
             break;
 
-        case IGNORE_SIDE_LINE:
+/*        case IGNORE_SIDE_LINE:
             
             if (lineFollower.intersection(leftLineFollowBits, rightLineFollowBits)) {
 
@@ -335,6 +335,7 @@ void loop() {
                 }
                 break;
             }
+*/
         //State entered when button pushed while in loop
             //Reset's state to beginning
         case RESET:
