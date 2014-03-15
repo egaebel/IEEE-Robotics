@@ -23,7 +23,7 @@ int main()
   int up[3] = {SHOT1_U, SHOT2_U, SHOT3_U};
   int down[3] = {SHOT1_D, SHOT2_D, SHOT3_D};
   int i=0;
-  char value[3];
+  char value = '\0';
 	Mat scene;
 
 	//enum {init, fire1, fire2, fire3} mode;
@@ -85,8 +85,8 @@ printf("yeah...about that while loop....\n");
   	while(1)
   	{
       sleep(7);
-      getGPIOValue(GPIO_P9_12, value);// && strncmp(value, "0", 1)) || ();
-      printf("value == ||%s||\n", value);
+      getGPIOValue(GPIO_P9_12, &value);// && strncmp(value, "0", 1)) || ();
+      printf("value == ||%c||\n", value);
       //printf("value == |||%s|||\n", value);
   		cap >> scene;
 
