@@ -84,8 +84,8 @@ int main()
 
   	while(1)
   	{
-      while(getGPIOValue(GPIO_P9_12, value) && strcmp(value, "0"));
-      printf("value == |||%s|||\n", value);
+      while((getGPIOValue(GPIO_P9_12, value) && strcmp(value, "0")) || (printf("value == ||%s||\n", value) > 9000));
+      //printf("value == |||%s|||\n", value);
   		cap >> scene;
 
   		if( scene.data )
