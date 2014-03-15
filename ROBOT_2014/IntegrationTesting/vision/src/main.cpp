@@ -23,7 +23,7 @@ int main()
   int up[3] = {SHOT1_U, SHOT2_U, SHOT3_U};
   int down[3] = {SHOT1_D, SHOT2_D, SHOT3_D};
   int i=0;
-  char * value = "0";
+  char value[3];
 	Mat scene;
 
 	//enum {init, fire1, fire2, fire3} mode;
