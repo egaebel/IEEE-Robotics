@@ -88,6 +88,7 @@ void setup() {
     // when this pin is pulled low, the servo will fire
     attachInterrupt( READY_TO_FIRE_INTERRUPT, fire_handler, CHANGE );
     pinMode( START_AIMING_PIN, OUTPUT );
+    digitalWrite( START_AIMING_PIN, LOW );
     //*///----------------------------------------------------------
   
     delay(3000);
@@ -218,11 +219,12 @@ void loop() {
             }
         case FIRE:
             Serial.println("FIRE STATE");
+            motors.motorsStop();
             //FIRE!---------------------------------------------------------------------------
             //Wait for beagle bone to aim
             
             startTime = millis();
-            while (!fire && ((startTime + FIRE_WAIT_TIME) >= millis()));
+            while (!fire/* && ((startTime + FIRE_WAIT_TIME) >= millis())*/);
 
             //Determine which barrel to fire based on what line we're on
                 //lineCount is incremented everytime we COMPLETE a line
