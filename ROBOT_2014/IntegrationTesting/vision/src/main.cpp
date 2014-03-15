@@ -113,6 +113,7 @@ printf("yeah...about that while loop....\n");
 
             if((centroid.x > SHOT_L) && (centroid.x < SHOT_R) && (centroid.y > up[i]) && (centroid.y < down[i]))
             {
+              printf("firing...");
               setGPIOValue( GPIO_P9_23, "1" );
               usleep( 100000 );
               value = '1';
