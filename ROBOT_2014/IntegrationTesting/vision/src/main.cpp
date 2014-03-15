@@ -85,9 +85,9 @@ printf("yeah...about that while loop....\n");
   	while(1)
   	{
       sleep(7);
-      getGPIOValue(GPIO_P9_12, &value);// && strncmp(value, "0", 1)) || ();
+      while(getGPIOValue(GPIO_P9_12, &value) && strncmp(value, "0", 1));
       printf("value == ||%c||\n", value);
-      //printf("value == |||%s|||\n", value);
+
   		cap >> scene;
 
   		if( scene.data )
