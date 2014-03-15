@@ -48,7 +48,6 @@ void setup() {
 
     Serial.begin(9600);
     Serial.println("IN the beginning...");
-    Serial.println(HIGH);
     
     //Motor variables setup-----------
     motors.setup(PIN_PWM_LEFT, PIN_DIRECTION_LEFT, PIN_PWM_RIGHT, PIN_DIRECTION_RIGHT, DEFAULT_SPEED);
