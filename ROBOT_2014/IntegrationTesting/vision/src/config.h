@@ -45,8 +45,8 @@
 #define CAM_FPS			5
 
 // GPIO pin 50: GPIO1_18 or pin 14 on the P9 header
-#define GPIO_P9_14		50
-#define GPIO_P9_14_DIR	"out"
+#define GPIO_P9_23		49
+#define GPIO_P9_23_DIR	"out"
 
 // GPIO pin 60: GPIO1_28 or pin 12 on the P9 header
 #define GPIO_P9_12		60
@@ -132,5 +132,16 @@
 // 20000 + ( fmax( abs( pan_difference ), abs( tilt_difference ) ) * us_per_pixel )
 // frame shots processed per movement unit: (int)ceil( movement_time_us / shot_time_us );
 
-#endif
+#define SHOT_L			315
+#define SHOT_R			325
 
+#define SHOT1_U			235
+#define SHOT1_D			245
+
+#define SHOT2_U         220
+#define SHOT2_D         230
+
+#define SHOT3_U         205
+#define SHOT3_D			215
+
+#endif
