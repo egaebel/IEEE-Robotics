@@ -234,6 +234,9 @@ void loop() {
                     firing_servo_1.writeMicroseconds( SERVO_FIRE_POSITION );
                     delay( TRIGGER_DELAY );
                     firing_servo_1.writeMicroseconds( SERVO_REST_POSITION );
+
+                    //switch off servo 1
+                    pinMode(FIRING_SERVO_1_PIN, INPUT);
                     break;
 
                 // fire barrel 2
@@ -241,6 +244,9 @@ void loop() {
                     firing_servo_2.writeMicroseconds( SERVO_FIRE_POSITION );
                     delay( TRIGGER_DELAY );
                     firing_servo_2.writeMicroseconds( SERVO_REST_POSITION );
+
+                    //switch off servo 2
+                    pinMode(FIRING_SERVO_2_PIN, INPUT);
                     break;
 
                 // fire barrel 3
@@ -248,6 +254,9 @@ void loop() {
                     firing_servo_3.writeMicroseconds( SERVO_FIRE_POSITION );
                     delay( TRIGGER_DELAY );
                     firing_servo_1.writeMicroseconds( SERVO_REST_POSITION );
+
+                    //switch off servo 3
+                    pinMode(FIRING_SERVO_3_PIN, INPUT);
                     break;
             }
 
