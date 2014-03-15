@@ -1,4 +1,4 @@
-#include <cstdio>
+	#include <cstdio>
 #include <cmath>
 #include "opencv2/core/core.hpp"
 #include "opencv2/highgui/highgui.hpp"
@@ -86,8 +86,6 @@ printf("yeah...about that while loop....\n");
   	{
       sleep(7);
       while(getGPIOValue(GPIO_P9_12, &value) && value == '0');
-      printf("value == ||%c||\n", value);
-
   		cap >> scene;
 
   		if( scene.data )
