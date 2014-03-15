@@ -18,6 +18,9 @@ static ColorSensor colorSensor;
 //Different Servo Positions
 static const int SERVO_FIRE_POSITION = 544;
 static const int SERVO_REST_POSITION = 2400;
+static const int DIFFERENT_SERVO_FIRE_POSITION = 1000;
+static const int DIFFERENT_SERVO_REST_POSITION = 500;
+
 //Servo Delays
 static const int TRIGGER_DELAY = 1;
 static const int NOTIFY_DELAY = 1;
@@ -252,9 +255,9 @@ void loop() {
 
                 // fire barrel 3
                 case 2:
-                    firing_servo_3.writeMicroseconds( SERVO_FIRE_POSITION );
+                    firing_servo_3.writeMicroseconds( DIFFERENT_SERVO_FIRE_POSITION );
                     delay( TRIGGER_DELAY );
-                    firing_servo_1.writeMicroseconds( SERVO_REST_POSITION );
+                    firing_servo_1.writeMicroseconds( DIFFERENT_SERVO_REST_POSITION );
 
                     //switch off servo 3
                     pinMode(FIRING_SERVO_3_PIN, INPUT);
