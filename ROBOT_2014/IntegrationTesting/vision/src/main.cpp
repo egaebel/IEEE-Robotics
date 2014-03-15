@@ -84,9 +84,8 @@ int main()
 printf("yeah...about that while loop....\n");
   	while(1)
   	{
-      sleep(7);
-      while(getGPIOValue(GPIO_P9_12, &value) && value == '0');
   		cap >> scene;
+              while(getGPIOValue(GPIO_P9_12, &value) && value == '0');
 
   		if( scene.data )
     	{
@@ -102,13 +101,13 @@ printf("yeah...about that while loop....\n");
             printf("pan: %d tilt: %d\n", pan_position, tilt_position);
 
       			if(centroid.x < SHOT_L) //left
-      				pan_position -= movAmt;
-      			if(centroid.x > SHOT_R) //right
       				pan_position += movAmt;
+      			if(centroid.x > SHOT_R) //right
+      				pan_position -= movAmt;
       			if(centroid.y < up[i]) //up
-      				tilt_position -= movAmt;
-      			if(centroid.y > down[i]) //down
       				tilt_position += movAmt;
+      			if(centroid.y > down[i]) //down
+      				tilt_position -= movAmt;
 
 
             if((centroid.x > SHOT_L) && (centroid.x < SHOT_R) && (centroid.y > up[i]) && (centroid.y < down[i]))
@@ -144,7 +143,8 @@ printf("yeah...about that while loop....\n");
                 if(notFoundCount > 20);
                 {
                   printf( "Look right you bitch\n");
-                  set_servo_position(PAN_SERVO, INL_PAN_POSITION + adjAmt);
+		  pan_position = INL_PAN_POSITION - adjAmt;
+                  set_servo_position(PAN_SERVO, pan_position);
                 }
         		}
       		}

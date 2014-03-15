@@ -16,10 +16,10 @@
 #define UPPER_HUE		47//179
 #define MAX_HUE			179
 // FYI: saturation ranges from 0 to 255 in OpenCV
-#define LOWER_SAT		33
+#define LOWER_SAT		23
 #define UPPER_SAT		133
 // FYI: value ranges from 0 to 255 in OpenCV
-#define LOWER_VAL		20
+#define LOWER_VAL		10
 #define UPPER_VAL		109
 
 // hull size filter range
@@ -34,7 +34,7 @@
 
 // edge tuning
 #define ERODE_SIZE		3
-#define DILATE_SIZE		8//5
+#define DILATE_SIZE		11//5
 #define CANNY_LOW_THRESHOLD	100
 #define CANNY_HIGH_THRESHOLD	200
 #define CANNY_KERNEL_SIZE	3
@@ -132,16 +132,16 @@
 // 20000 + ( fmax( abs( pan_difference ), abs( tilt_difference ) ) * us_per_pixel )
 // frame shots processed per movement unit: (int)ceil( movement_time_us / shot_time_us );
 
-#define SHOT_L			315
-#define SHOT_R			325
+#define SHOT_L			100
+#define SHOT_R			160
 
-#define SHOT1_U			235
-#define SHOT1_D			245
+#define SHOT1_U			80
+#define SHOT1_D			160
 
-#define SHOT2_U         220
-#define SHOT2_D         230
+#define SHOT2_U         210
+#define SHOT2_D         240
 
 #define SHOT3_U         205
-#define SHOT3_D			215
+#define SHOT3_D			235
 
 #endif
