@@ -23,7 +23,7 @@ int main()
   int up[3] = {SHOT1_U, SHOT2_U, SHOT3_U};
   int down[3] = {SHOT1_D, SHOT2_D, SHOT3_D};
   int i=0;
-  char value = "0";
+  char * value = "0";
 	Mat scene;
 
 	//enum {init, fire1, fire2, fire3} mode;
@@ -84,7 +84,7 @@ int main()
 
   	while(1)
   	{
-      while(getGPIOValue(GPIO_P9_12, &value) && value == "0");
+      while(getGPIOValue(GPIO_P9_12, &value) && strcmp(value, "0"));
   		cap >> scene;
 
   		if( scene.data )
@@ -115,7 +115,7 @@ int main()
               setGPIOValue( GPIO_P9_23, "1" );
               usleep( 100000 );
               value = "1";
-              while(getGPIOValue(GPIO_P9_12, &value) && value == "1"));
+              while(getGPIOValue(GPIO_P9_12, &value) && strcmp(value, "1"));
               value = "0";
               i++;
             }

@@ -87,7 +87,7 @@ void setup() {
     pinMode( READY_TO_FIRE_PIN, INPUT_PULLUP );
     // when this pin is pulled low, the servo will fire
     attachInterrupt( READY_TO_FIRE_INTERRUPT, fire_handler, CHANGE );
-    pinMode( AIM_NEXT_BARREL_PIN, OUTPUT );
+    pinMode( START_AIMING_PIN, OUTPUT );
     //*///----------------------------------------------------------
   
     delay(3000);
