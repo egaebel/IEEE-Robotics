@@ -23,6 +23,9 @@ static const int TRIGGER_DELAY = 1;
 static const int NOTIFY_DELAY = 1;
 // The three firing barrel servos
 static Servo firing_servo_1, firing_servo_2, firing_servo_3;
+//Firing wait time and start time variable
+static const unsigned long FIRE_WAIT_TIME = 10000;
+static unsigned long startTime;
 // Set by hardware interrupt, indicates whether or not the camera is aiming at the target and ready to fire
 volatile boolean fire = false;
 // Interrupt handler that triggers on change of the ready to fire notification pin
@@ -39,9 +42,6 @@ static byte leftLineFollowBits;
 static byte rightLineFollowBits;
 
 static int lineCount = 0;
-
-static const unsigned long FIRE_WAIT_TIME = 10000;
-static unsigned long startTime;
 
 //Setup variables etc
 void setup() {
@@ -76,7 +76,7 @@ void setup() {
     //--------------------------------------
 
     //Firing Control setup----------------------------------------------
-    /*
+    
     firing_servo_1.attach( FIRING_SERVO_1_PIN );
     firing_servo_1.writeMicroseconds( SERVO_REST_POSITION );
     firing_servo_2.attach( FIRING_SERVO_2_PIN );

@@ -52,7 +52,7 @@ const int READY_TO_FIRE_PIN = 2;
 
 // Firing Servo Pins
 const int FIRING_SERVO_1_PIN = 13;
-const int FIRING_SERVO_2_PIN = 14;
-const int FIRING_SERVO_3_PIN = 15;
+const int FIRING_SERVO_2_PIN = 12;
+const int FIRING_SERVO_3_PIN = 11;
 
 #endif
