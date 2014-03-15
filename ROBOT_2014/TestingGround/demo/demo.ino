@@ -261,16 +261,11 @@ void loop() {
                     break;
             }
 
-            ///--------------------------------------------------------------------------------
+            //increment our count
+            lineCount++;
 
             //Stop aiming
             digitalWrite(START_AIMING_PIN, LOW);
-
-            //Not needed unless running without targeting/shooting
-            /*
-            motors.motorsStop();
-            delay(2000);
-            */
 
             state = GO_BACK;
             break;
