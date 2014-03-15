@@ -17,9 +17,13 @@ int main()
 	int tilt_position = INL_TILT_POSITION;
 	int locate_failures = 0;	
 	int num = 0;
-  int movAmt = 5000;
+  int movAmt = 10000;
   int notFoundCount = 0;
   int adjAmt = 200000;
+  int up[3] = {SHOT1_U, SHOT2_U, SHOT3_U};
+  int down[3] = {SHOT1_D, SHOT2_D, SHOT3_D};
+  int i=0;
+  char value = "0";
 	Mat scene;
 
 	//enum {init, fire1, fire2, fire3} mode;
@@ -41,16 +45,15 @@ int main()
 
     	return 1;
     }
-    /*if( !GPIOExport( GPIO_P8_31 ) || 
-    	!setGPIODirection( GPIO_P8_31, GPIO_P8_31_DIR ) || 
-    	!setGPIOValue( GPIO_P8_31, "0" ) )
+    if( !GPIOExport( GPIO_P9_23 ) || !setGPIODirection( GPIO_P9_23, GPIO_P9_23_DIR ) || !setGPIOValue( GPIO_P9_23, "0" ) )
   	{
     	#ifdef DEBUG
-      		printf( "failed to open GPIO P8_31 as output\n" );
+      		printf( "failed to open GPIO P9_23 as output\n" );
     	#endif
 
     	return 1;
   	}
+
   	if( !GPIOExport( GPIO_P9_12 ) || !setGPIODirection( GPIO_P9_12, GPIO_P9_12_DIR ) )
   	{
    		#ifdef DEBUG
@@ -58,7 +61,7 @@ int main()
     	#endif
 
     	return 1;
-  	}*/
+  	}
 
   	// open the camera
   	VideoCapture cap(0);
@@ -81,6 +84,7 @@ int main()
 
   	while(1)
   	{
+      while(getGPIOValue(GPIO_P9_12, &value) && value == "0");
   		cap >> scene;
 
   		if( scene.data )
@@ -96,14 +100,25 @@ int main()
       			printf("x: %d y: %d\n", centroid.x, centroid.y);
             printf("pan: %d tilt: %d\n", pan_position, tilt_position);
 
-      			if(centroid.x < 320) //left
+      			if(centroid.x < SHOT_L) //left
       				pan_position -= movAmt;
-      			if(centroid.x > 320) //right
+      			if(centroid.x > SHOT_R) //right
       				pan_position += movAmt;
-      			if(centroid.y < 240) //up
+      			if(centroid.y < up[i]) //up
       				tilt_position -= movAmt;
-      			if(centroid.y > 240) //down
+      			if(centroid.y > down[i]) //down
       				tilt_position += movAmt;
+
+
+            if((centroid.x > SHOT_L) && (centroid.x < SHOT_R) && (centroid.y > up[i]) && (centroid.y < down[i]))
+            {
+              setGPIOValue( GPIO_P9_23, "1" );
+              usleep( 100000 );
+              value = "1";
+              while(getGPIOValue(GPIO_P9_12, &value) && value == "1"));
+              value = "0";
+              i++;
+            }
 
       			set_servo_position( PAN_SERVO, pan_position );
       			set_servo_position( TILT_SERVO, tilt_position );
