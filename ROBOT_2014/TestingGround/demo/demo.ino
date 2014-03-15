@@ -52,6 +52,8 @@ void setup() {
     Serial.begin(9600);
     Serial.println("IN the beginning...");
     
+
+
     //Motor variables setup-----------
     motors.setup(PIN_PWM_LEFT, PIN_DIRECTION_LEFT, PIN_PWM_RIGHT, PIN_DIRECTION_RIGHT, DEFAULT_SPEED);
     motors.motorsStop();
@@ -84,7 +86,7 @@ void setup() {
     firing_servo_2.attach( FIRING_SERVO_2_PIN );
     firing_servo_2.writeMicroseconds( SERVO_REST_POSITION );
     firing_servo_3.attach( FIRING_SERVO_3_PIN );
-    firing_servo_3.writeMicroseconds( SERVO_REST_POSITION );
+    firing_servo_3.writeMicroseconds( DIFFERENT_SERVO_REST_POSITION );
 
     pinMode( READY_TO_FIRE_PIN, INPUT_PULLUP );
     // when this pin is pulled low, the servo will fire
@@ -142,6 +144,11 @@ void loop() {
                 Serial.println("FORWARD!");
                 motors.motorsDrive(FORWARD);
                 break;
+            }
+            //WE'RE DONE, WE WON, PEACE, PEACE BITCH
+            else if (lineCount == 3 && leftLineFollowBits == 0 && rightLineFollowBits == 0) {
+
+                motors.motorsStop();
             }
             else {
 
