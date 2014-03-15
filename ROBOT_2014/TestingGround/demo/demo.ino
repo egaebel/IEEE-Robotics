@@ -190,19 +190,14 @@ void loop() {
                 Serial.println("fuzzy intersection has happened***************************");
                 fuzzyIntersected = true;
                 delay(500);
+                state = FIRE;
+                break;
             }
             //If we're centered, OR we've encountered the blue block 
             else if (frontParallelLineFollower.isCentered(leftLineFollowBits, rightLineFollowBits) 
                 || (leftLineFollowBits >= 2 && rightLineFollowBits >= 2)) {
 
                 motors.motorsDrive(FORWARD);
-
-                //We see the blue block! FIRE! (and stop...)
-                if ((colorSensor.getColor() == BLUE) && fuzzyIntersected) {
-                    motors.motorsStop();
-                    state = FIRE;
-                    fuzzyIntersected = false;
-                }
                 break;
             }
             else {
@@ -261,8 +256,7 @@ void loop() {
             state = GO_BACK;
             break;
             
-            //Go back to the Main line-----------------------------------------------
-            
+        //Go back to the Main line-----------------------------------------------    
         case GO_BACK:
             Serial.println("go back state!");
             if(!backParallelLineFollower.intersection(leftLineFollowBits, rightLineFollowBits))
@@ -289,6 +283,7 @@ void loop() {
             state = TURN_RIGHT_ONTO_MAIN_LINE;
             break;
 
+        //
         case TURN_RIGHT_ONTO_MAIN_LINE:
             Serial.println("turn right onto main line state");
             do {
@@ -315,34 +310,6 @@ void loop() {
             state = MAIN_LINE;
             break;
 
-        //UN-USED STATE, WILL BE REMOVED
-        case IGNORE_SIDE_LINE:
-            Serial.println("ignore side line state");
-            if (frontParallelLineFollower.intersection(leftLineFollowBits, rightLineFollowBits)) {
-
-                motors.motorsDrive(FORWARD);
-                delay(1000);
-                state = MAIN_LINE;
-                break;
-            }
-            else if (frontParallelLineFollower.isCentered(leftLineFollowBits, rightLineFollowBits)) {
-                motors.motorsDrive(FORWARD);
-                break;
-            }
-            else {
-
-                if (!frontParallelLineFollower.isCentered(leftLineFollowBits, rightLineFollowBits) 
-                    && (leftLineFollowBits > rightLineFollowBits)) {
-                    
-                    motors.motorsTurnLeft();
-                }
-                if (!frontParallelLineFollower.isCentered(leftLineFollowBits, rightLineFollowBits) 
-                    && (leftLineFollowBits < rightLineFollowBits)) {
-
-                    motors.motorsTurnRight(); 
-                }
-                break;
-            }
         /////////////////////////////////////////////////////////
         //State entered when button pushed while in loop
             //Reset's state to beginning
