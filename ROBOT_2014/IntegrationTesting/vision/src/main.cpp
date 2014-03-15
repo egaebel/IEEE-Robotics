@@ -81,7 +81,7 @@ int main()
 
   	// initialize the camera
   	cap.grab();
-
+printf("yeah...about that while loop....\n");
   	while(1)
   	{
       while((getGPIOValue(GPIO_P9_12, value) && strcmp(value, "0")) || (printf("value == ||%s||\n", value) > 9000));
