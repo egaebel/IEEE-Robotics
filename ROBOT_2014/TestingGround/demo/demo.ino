@@ -19,6 +19,7 @@ static ColorSensor colorSensor;
 //Different Servo Positions
 const int SERVO_FIRE_POSITION = 544;
 const int SERVO_REST_POSITION = 2400;
+const int FIRE_WAIT_TIME = 10000;
 //Servo Delays
 const int TRIGGER_DELAY = 1;
 const int NOTIFY_DELAY = 1;
@@ -219,8 +220,9 @@ void loop() {
             Serial.println("FIRE STATE");
             //FIRE!---------------------------------------------------------------------------
             //Wait for beagle bone to aim
-            /*
-            while (!fire);
+            
+            int startTime = millis();
+            while (!fire && startTime + FIRE_WAIT_TIME >= millis());
 
             //Determine which barrel to fire based on what line we're on
                 //lineCount is incremented everytime we COMPLETE a line
@@ -253,7 +255,7 @@ void loop() {
             digitalWrite( AIM_NEXT_BARREL_PIN, HIGH );
             delay( NOTIFY_DELAY );
             digitalWrite( AIM_NEXT_BARREL_PIN, LOW );
-            //*///--------------------------------------------------------------------------------
+            ///--------------------------------------------------------------------------------
 
             motors.motorsStop();
             delay(2000);
