@@ -6,23 +6,21 @@
 #include <Servo.h>
 
 enum State { START = 1, MAIN_LINE, TURN_LEFT_ONTO_SIDE, SIDE_LINE_START, FIRE, 
-            GO_BACK, IGNORE_SIDE_LINE, TURN_RIGHT_ONTO_MAIN_LINE, RESET };
+            GO_BACK, TURN_RIGHT_ONTO_MAIN_LINE, RESET };
 
 //Hardware interfaces
 static Motors motors;
-static LineFollower lineFollower;
 static ParallelLineFollower frontParallelLineFollower;
 static ParallelLineFollower backParallelLineFollower;
 static ColorSensor colorSensor;
 
 //Firing variables--------------------
 //Different Servo Positions
-const int SERVO_FIRE_POSITION = 544;
-const int SERVO_REST_POSITION = 2400;
-const int FIRE_WAIT_TIME = 10000;
+static const int SERVO_FIRE_POSITION = 544;
+static const int SERVO_REST_POSITION = 2400;
 //Servo Delays
-const int TRIGGER_DELAY = 1;
-const int NOTIFY_DELAY = 1;
+static const int TRIGGER_DELAY = 1;
+static const int NOTIFY_DELAY = 1;
 // The three firing barrel servos
 static Servo firing_servo_1, firing_servo_2, firing_servo_3;
 // Set by hardware interrupt, indicates whether or not the camera is aiming at the target and ready to fire
@@ -41,6 +39,9 @@ static byte leftLineFollowBits;
 static byte rightLineFollowBits;
 
 static int lineCount = 0;
+
+static const unsigned long FIRE_WAIT_TIME = 10000;
+static unsigned long startTime;
 
 //Setup variables etc
 void setup() {
@@ -113,6 +114,7 @@ void loop() {
     }
     //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+    //~~~Dat State Machine~~~
     switch (state) {
 
         case START:
@@ -176,13 +178,16 @@ void loop() {
     
             //Backup to account for overturning
             motors.motorsDrive(BACKWARD);
-            delay(750);
+            delay(500);
 
             state = SIDE_LINE_START;
             break;
 
         case SIDE_LINE_START:
             Serial.println("side line starter"); 
+
+            //Start aiming at the target
+            digitalWrite(START_AIMING_PIN, HIGH);
             
             static bool fuzzyIntersected = false;
 
@@ -216,8 +221,8 @@ void loop() {
             //FIRE!---------------------------------------------------------------------------
             //Wait for beagle bone to aim
             
-            int startTime = millis();
-            while (!fire && startTime + FIRE_WAIT_TIME >= millis());
+            startTime = millis();
+            while (!fire && ((startTime + FIRE_WAIT_TIME) >= millis()));
 
             //Determine which barrel to fire based on what line we're on
                 //lineCount is incremented everytime we COMPLETE a line
@@ -246,14 +251,16 @@ void loop() {
                     break;
             }
 
-            // notify the BeagleBone to start aiming at the target for the next shot
-            digitalWrite( AIM_NEXT_BARREL_PIN, HIGH );
-            delay( NOTIFY_DELAY );
-            digitalWrite( AIM_NEXT_BARREL_PIN, LOW );
             ///--------------------------------------------------------------------------------
 
+            //Stop aiming
+            digitalWrite(START_AIMING_PIN, LOW);
+
+            //Not needed unless running without targeting/shooting
+            /*
             motors.motorsStop();
             delay(2000);
+            */
 
             state = GO_BACK;
             break;
@@ -261,21 +268,22 @@ void loop() {
         //Go back to the Main line-----------------------------------------------    
         case GO_BACK:
             Serial.println("go back state!");
-            if(!backParallelLineFollower.intersection(leftLineFollowBits, rightLineFollowBits))
-            {
-                if (backParallelLineFollower.isCentered(leftLineFollowBits, rightLineFollowBits) )
-                {
+            if(!backParallelLineFollower.intersection(leftLineFollowBits, rightLineFollowBits)) {
+
+                if (backParallelLineFollower.isCentered(leftLineFollowBits, rightLineFollowBits)) {
                     motors.motorsDrive(BACKWARD);
                     break;
                 }
-                else 
-                {
-                    if (!backParallelLineFollower.isCentered(leftLineFollowBits, rightLineFollowBits) && (leftLineFollowBits > rightLineFollowBits)) 
-                    {
+                else {
+
+                    if (!backParallelLineFollower.isCentered(leftLineFollowBits, rightLineFollowBits) 
+                        && (leftLineFollowBits > rightLineFollowBits)) {
+
                         motors.motorsTurnLeft();
                     }
-                    if (!backParallelLineFollower.isCentered(leftLineFollowBits, rightLineFollowBits) && (leftLineFollowBits < rightLineFollowBits)) 
-                    {
+                    if (!backParallelLineFollower.isCentered(leftLineFollowBits, rightLineFollowBits) 
+                        && (leftLineFollowBits < rightLineFollowBits)) {
+                        
                         motors.motorsTurnRight(); 
                     }
                     break;
@@ -284,7 +292,6 @@ void loop() {
 
             state = TURN_RIGHT_ONTO_MAIN_LINE;
             break;
-
         //
         case TURN_RIGHT_ONTO_MAIN_LINE:
             Serial.println("turn right onto main line state");
@@ -298,17 +305,18 @@ void loop() {
                 delay(500);
                 backParallelLineFollower.Get_Line_Data(leftLineFollowBits, rightLineFollowBits);
             } while (leftLineFollowBits || rightLineFollowBits);
-            Serial.println("");
+            Serial.println("after first do while");
             do {
                 motors.motorsTurnRight();
                 backParallelLineFollower.Get_Line_Data(leftLineFollowBits, rightLineFollowBits);
             } while (leftLineFollowBits || rightLineFollowBits);
-            Serial.println("");
+            Serial.println("after second do while");
             do {
                 motors.motorsTurnRight();
                 backParallelLineFollower.Get_Line_Data(leftLineFollowBits, rightLineFollowBits);
             } while (!leftLineFollowBits && !rightLineFollowBits);
-            Serial.println("");
+            Serial.println("after third do while");
+
             state = MAIN_LINE;
             break;
 
