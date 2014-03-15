@@ -85,7 +85,7 @@ printf("yeah...about that while loop....\n");
   	while(1)
   	{
       sleep(7);
-      while(getGPIOValue(GPIO_P9_12, &value) && strncmp(value, "0", 1));
+      while(getGPIOValue(GPIO_P9_12, &value) && value == '0');
       printf("value == ||%c||\n", value);
 
   		cap >> scene;
@@ -117,9 +117,9 @@ printf("yeah...about that while loop....\n");
             {
               setGPIOValue( GPIO_P9_23, "1" );
               usleep( 100000 );
-              value[0] = '1';
-              while(getGPIOValue(GPIO_P9_12, value) && strncmp(value, "1", 1));
-              value[0] = '0';
+              value = '1';
+              while(getGPIOValue(GPIO_P9_12, &value) && value == '1');
+              value = '0';
               i++;
             }
 
