@@ -84,7 +84,7 @@ int main()
 
   	while(1)
   	{
-      while(getGPIOValue(GPIO_P9_12, &value) && strcmp(value, "0"));
+      while(getGPIOValue(GPIO_P9_12, value) && strcmp(value, "0"));
   		cap >> scene;
 
   		if( scene.data )
@@ -115,7 +115,7 @@ int main()
               setGPIOValue( GPIO_P9_23, "1" );
               usleep( 100000 );
               value = "1";
-              while(getGPIOValue(GPIO_P9_12, &value) && strcmp(value, "1"));
+              while(getGPIOValue(GPIO_P9_12, value) && strcmp(value, "1"));
               value = "0";
               i++;
             }
