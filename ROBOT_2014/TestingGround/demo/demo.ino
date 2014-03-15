@@ -221,8 +221,6 @@ void loop() {
             motors.motorsStop();
             //FIRE!---------------------------------------------------------------------------
             //Wait for beagle bone to aim
-            
-            while (true || digitalWrite(START_AIMING_PIN, HIGH));
 
             startTime = millis();
             while (!fire/* && ((startTime + FIRE_WAIT_TIME) >= millis())*/);
