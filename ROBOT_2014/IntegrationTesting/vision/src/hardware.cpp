@@ -33,6 +33,7 @@ bool read_hardware_fs( const char* path, char* value, unsigned int length, const
     failed = true;
     printf("failed to read byte from file %s, read %d bytes\n", path, bytesRead);
   }
+  printf("returning true, with value == %c", *value);
   fclose( myInputHandle );
   return !failed;
 }
