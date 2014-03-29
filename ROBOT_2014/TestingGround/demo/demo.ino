@@ -297,8 +297,8 @@ void loop() {
             //Stop aiming
             digitalWrite(START_AIMING_PIN, LOW);
             */
-            delay(2000);
             motors.motorsStop();
+            delay(2000);
             state = GO_BACK;
             break;
             
