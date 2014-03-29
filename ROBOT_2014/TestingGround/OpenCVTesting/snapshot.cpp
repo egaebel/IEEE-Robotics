@@ -61,6 +61,7 @@ int main(int argc, char * argv[])
 
         if( scene.data )
         {
+            cvtColor(scene, scene, CV_BGR2HSV);
             char filename[20];
             snprintf( filename, 20, "./snapshot_%d.png", i+1); 
 	        printf("writing %s\n", filename);
