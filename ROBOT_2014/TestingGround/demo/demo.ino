@@ -13,21 +13,22 @@ static Motors motors;
 static ParallelLineFollower frontParallelLineFollower;
 static ParallelLineFollower backParallelLineFollower;
 static ColorSensor colorSensor;
-
+static unsigned long LAST_LINE_WAIT_TIME = 4000;
+static unsigned long INITIAL_WAIT_TIME = 60000;
 //Firing variables--------------------
 //Different Servo Positions
-static const int SERVO_FIRE_POSITION = 544;
+static const int SERVO_FIRE_POSITION = 244;
 static const int SERVO_REST_POSITION = 2400;
-static const int DIFFERENT_SERVO_FIRE_POSITION = 1000;
+static const int DIFFERENT_SERVO_FIRE_POSITION = 2000;
 static const int DIFFERENT_SERVO_REST_POSITION = 500;
-
+static bool timerFlipped = false;
 //Servo Delays
 static const int TRIGGER_DELAY = 1;
 static const int NOTIFY_DELAY = 1;
 // The three firing barrel servos
 static Servo firing_servo_1, firing_servo_2, firing_servo_3;
 //Firing wait time and start time variable
-static const unsigned long FIRE_WAIT_TIME = 10000;
+static const unsigned long FIRE_WAIT_TIME = 3000;
 static unsigned long startTime;
 // Set by hardware interrupt, indicates whether or not the camera is aiming at the target and ready to fire
 volatile boolean fire = false;
@@ -125,17 +126,32 @@ void loop() {
         case START:
             Serial.println("START");
 
-            if (colorSensor.getColor() == GREEN || digitalRead(PIN_START) == HIGH) {
+            if (!timerFlipped) {
+                startTime = millis();
+            }
+            if (colorSensor.getColor() == GREEN || (startTime + INITIAL_WAIT_TIME <= millis())) {
                 motors.motorsDrive(FORWARD);
                 delay(1000);
                 state = MAIN_LINE;
+                timerFlipped = false;
             }
             break;
 
         case MAIN_LINE:
             Serial.println("straight line");
             
-            if (frontParallelLineFollower.intersection(leftLineFollowBits, rightLineFollowBits)) {
+            if (lineCount == 3) {
+                if (!timerFlipped) {
+                    startTime = millis();
+                }
+                timerFlipped = true;
+                if ((startTime + LAST_LINE_WAIT_TIME) <= millis()) {
+
+                    motors.motorsStop();
+                }
+            }
+
+            if (lineCount != 3 && frontParallelLineFollower.intersection(leftLineFollowBits, rightLineFollowBits)) {
 
                 state = TURN_LEFT_ONTO_SIDE;
                 break; 
@@ -144,11 +160,6 @@ void loop() {
                 Serial.println("FORWARD!");
                 motors.motorsDrive(FORWARD);
                 break;
-            }
-            //WE'RE DONE, WE WON, PEACE, PEACE BITCH
-            else if (lineCount == 3 && leftLineFollowBits == 0 && rightLineFollowBits == 0) {
-
-                motors.motorsStop();
             }
             else {
 
@@ -188,7 +199,15 @@ void loop() {
     
             //Backup to account for overturning
             motors.motorsDrive(BACKWARD);
-            delay(500);
+            if (lineCount == 0 || lineCount == 2) {
+
+                delay(300);
+            }
+            else {
+                delay(150);
+            }
+            
+            
 
             state = SIDE_LINE_START;
             break;
@@ -228,12 +247,13 @@ void loop() {
             }
         case FIRE:
             Serial.println("FIRE STATE");
+            /*
             motors.motorsStop();
             //FIRE!---------------------------------------------------------------------------
             //Wait for beagle bone to aim
 
             startTime = millis();
-            while (!fire/* && ((startTime + FIRE_WAIT_TIME) >= millis())*/);
+            while (!fire && ((startTime + FIRE_WAIT_TIME) >= millis()));
 
             //Determine which barrel to fire based on what line we're on
                 //lineCount is incremented everytime we COMPLETE a line
@@ -264,7 +284,7 @@ void loop() {
                 case 2:
                     firing_servo_3.writeMicroseconds( DIFFERENT_SERVO_FIRE_POSITION );
                     delay( TRIGGER_DELAY );
-                    firing_servo_1.writeMicroseconds( DIFFERENT_SERVO_REST_POSITION );
+                    firing_servo_3.writeMicroseconds( DIFFERENT_SERVO_REST_POSITION );
 
                     //switch off servo 3
                     pinMode(FIRING_SERVO_3_PIN, INPUT);
@@ -276,7 +296,9 @@ void loop() {
 
             //Stop aiming
             digitalWrite(START_AIMING_PIN, LOW);
-
+            */
+            delay(2000);
+            motors.motorsStop();
             state = GO_BACK;
             break;
             
@@ -303,7 +325,10 @@ void loop() {
                     }
                     break;
                 }   
-            }           
+            }  
+
+            motors.motorsDrive(BACKWARD);
+            delay(250);         
 
             state = TURN_RIGHT_ONTO_MAIN_LINE;
             break;
@@ -313,9 +338,6 @@ void loop() {
             do {
                 motors.motorsDrive(BACKWARD);
                 delay(500);
-                if (leftLineFollowBits || rightLineFollowBits) {
-                    break;
-                }
                 motors.motorsTurnRight();
                 delay(500);
                 backParallelLineFollower.Get_Line_Data(leftLineFollowBits, rightLineFollowBits);
@@ -328,7 +350,7 @@ void loop() {
             Serial.println("after second do while");
             do {
                 motors.motorsTurnRight();
-                backParallelLineFollower.Get_Line_Data(leftLineFollowBits, rightLineFollowBits);
+                frontParallelLineFollower.Get_Line_Data(leftLineFollowBits, rightLineFollowBits);
             } while (!leftLineFollowBits && !rightLineFollowBits);
             Serial.println("after third do while");
 
