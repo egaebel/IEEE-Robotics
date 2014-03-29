@@ -53,7 +53,15 @@ void setup() {
     Serial.begin(9600);
     Serial.println("IN the beginning...");
     
-
+	while (1){
+		if (digitalRead(BUMPER_SWITCH) == HIGH){
+			Serial.println("WALL");
+		}
+		else 
+		{
+			Serial.println("NO WALL");
+		}
+	}
 
     //Motor variables setup-----------
     motors.setup(PIN_PWM_LEFT, PIN_DIRECTION_LEFT, PIN_PWM_RIGHT, PIN_DIRECTION_RIGHT, DEFAULT_SPEED);
