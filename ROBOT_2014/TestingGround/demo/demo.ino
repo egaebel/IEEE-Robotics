@@ -5,8 +5,8 @@
 #include <colorSensor.h>
 #include <Servo.h>
 
-enum State { START = 1, MAIN_LINE, TURN_LEFT_ONTO_SIDE, SIDE_LINE_START, FIRE, 
-            GO_BACK, TURN_RIGHT_ONTO_MAIN_LINE, RESET };
+enum State { START = 1, MAIN_LINE, TURN_LEFT_ONTO_SIDE, STRAIGHTEN_OUT_ON_SIDE_LINE, BACKUP_ON_SIDE_LINE, 
+                SIDE_LINE_START, FIRE, GO_BACK, TURN_RIGHT_ONTO_MAIN_LINE, BACKUP_ON_MAIN_LINE, RESET };
 
 //Hardware interfaces
 static Motors motors;
@@ -15,6 +15,8 @@ static ParallelLineFollower backParallelLineFollower;
 static ColorSensor colorSensor;
 static unsigned long LAST_LINE_WAIT_TIME = 4000;
 static unsigned long INITIAL_WAIT_TIME = 60000;
+static unsigned long BACKUP_ON_MAIN_LINE_WAIT_TIME = 2000;
+static unsigned long FORWARD_ON_MAIN_LINE_WAIT_TIME = 500;
 //Firing variables--------------------
 //Different Servo Positions
 static const int SERVO_FIRE_POSITION = 244;
@@ -52,16 +54,6 @@ void setup() {
 
     Serial.begin(9600);
     Serial.println("IN the beginning...");
-    
-	while (1){
-		if (digitalRead(BUMPER_SWITCH) == HIGH){
-			Serial.println("WALL");
-		}
-		else 
-		{
-			Serial.println("NO WALL");
-		}
-	}
 
     //Motor variables setup-----------
     motors.setup(PIN_PWM_LEFT, PIN_DIRECTION_LEFT, PIN_PWM_RIGHT, PIN_DIRECTION_RIGHT, DEFAULT_SPEED);
@@ -108,6 +100,19 @@ void setup() {
 
     Serial.println("waiting to go.....");
 
+    /*
+    while (1){
+        if (digitalRead(BUMPER_SWITCH) != HIGH){
+            Serial.println("WALL");
+        }
+        else 
+        {
+            Serial.println("NO WALL");
+        }
+    }
+    //*/
+    
+
     //Loop until start
     while((digitalRead(PIN_START) != HIGH));
     
@@ -137,6 +142,7 @@ void loop() {
             if (!timerFlipped) {
                 startTime = millis();
             }
+
             if (colorSensor.getColor() == GREEN || (startTime + INITIAL_WAIT_TIME <= millis())) {
                 motors.motorsDrive(FORWARD);
                 delay(1000);
@@ -148,6 +154,7 @@ void loop() {
         case MAIN_LINE:
             Serial.println("straight line");
             
+            //run to the end on a timer
             if (lineCount == 3) {
                 if (!timerFlipped) {
                     startTime = millis();
@@ -158,6 +165,8 @@ void loop() {
                     motors.motorsStop();
                 }
             }
+            ///-------------
+
 
             if (lineCount != 3 && frontParallelLineFollower.intersection(leftLineFollowBits, rightLineFollowBits)) {
 
@@ -194,30 +203,97 @@ void loop() {
                 delay(500);
                 frontParallelLineFollower.Get_Line_Data(leftLineFollowBits, rightLineFollowBits);
             } while (leftLineFollowBits || rightLineFollowBits);
-             
+
             do {
                 motors.motorsTurnLeft();
+                //motors.motorsDrive(FORWARD);
+                //delay(100);
                 frontParallelLineFollower.Get_Line_Data(leftLineFollowBits, rightLineFollowBits);
             } while (leftLineFollowBits || rightLineFollowBits);
-             
+
             do {
                 motors.motorsTurnLeft();
+                //motors.motorsDrive(FORWARD);
+                //delay(100);
                 frontParallelLineFollower.Get_Line_Data(leftLineFollowBits, rightLineFollowBits);
-            } while (!leftLineFollowBits && !rightLineFollowBits);
-    
-            //Backup to account for overturning
-            motors.motorsDrive(BACKWARD);
-            if (lineCount == 0 || lineCount == 2) {
+            } while (!frontParallelLineFollower.isCentered(leftLineFollowBits, rightLineFollowBits)); //!leftLineFollowBits && !rightLineFollowBits);
+            
+            motors.motorsStop();
+            delay(4000);
+            state = STRAIGHTEN_OUT_ON_SIDE_LINE;
+            break;
 
-                delay(300);
+        case STRAIGHTEN_OUT_ON_SIDE_LINE:
+            Serial.println("STRAIGHTEN_OUT_ON_SIDE_LINE");
+            //Straighten out
+            backParallelLineFollower.Get_Line_Data(leftLineFollowBits, rightLineFollowBits);
+            if (leftLineFollowBits == 0 && rightLineFollowBits == 0) {
+                Serial.println("motorsTurnLeft, bits all 00s");
+
+                motors.motorsTurnLeft();                
+            }
+            else if (backParallelLineFollower.isCentered(leftLineFollowBits, rightLineFollowBits) 
+                && leftLineFollowBits < 4 && rightLineFollowBits < 4) {
+
+                state = BACKUP_ON_SIDE_LINE;
+                break;
             }
             else {
-                delay(150);
+                Serial.println("elsed");
+                if (!backParallelLineFollower.isCentered(leftLineFollowBits, rightLineFollowBits) && (leftLineFollowBits > rightLineFollowBits)) {
+                    Serial.println("Correct to left");
+                    motors.motorsTurnLeft();
+                    motors.motorsDrive(BACKWARD);
+                }
+                else {//if (!backParallelLineFollower.isCentered(leftLineFollowBits, rightLineFollowBits) && (leftLineFollowBits <= rightLineFollowBits)) {
+                    Serial.println("Correct to right");
+                    motors.motorsTurnRight(); 
+                    motors.motorsDrive(BACKWARD);
+                }
             }
-            
-            
+            break;
+        case BACKUP_ON_SIDE_LINE:
 
-            state = SIDE_LINE_START;
+            if (lineCount == 0 || lineCount == 2) {
+                if (digitalRead(BUMPER_SWITCH) != HIGH) {
+
+                    motors.motorsStop();
+                    state = SIDE_LINE_START;
+                    break;
+                }
+                else if (backParallelLineFollower.isCentered(leftLineFollowBits, rightLineFollowBits) 
+                    && leftLineFollowBits < 4 && rightLineFollowBits < 4) {
+
+                    motors.motorsDrive(BACKWARD);
+                }
+                else {
+
+                    if (!backParallelLineFollower.isCentered(leftLineFollowBits, rightLineFollowBits) && (leftLineFollowBits > rightLineFollowBits)) {
+                        Serial.println("Correct to left");
+                        motors.motorsTurnLeft();
+                        motors.motorsDrive(BACKWARD);
+                    }
+                    if (!backParallelLineFollower.isCentered(leftLineFollowBits, rightLineFollowBits) && (leftLineFollowBits < rightLineFollowBits)) {
+                        Serial.println("Correct to right");
+                        motors.motorsTurnRight(); 
+                        motors.motorsDrive(BACKWARD);
+                    }
+                }
+            }
+            else {
+
+                if (digitalRead(BUMPER_SWITCH) != HIGH) {
+
+                    motors.motorsStop();
+                    state = SIDE_LINE_START;
+                    break;
+                }
+                else {
+
+                    motors.motorsDrive(BACKWARD);
+                    break;
+                }
+            }
             break;
 
         case SIDE_LINE_START:
@@ -230,8 +306,10 @@ void loop() {
 
             //If we hit at least 6 lights
             if (frontParallelLineFollower.fuzzyIntersection(leftLineFollowBits, rightLineFollowBits)) {
-                Serial.println("fuzzy intersection has happened***************************");
-                fuzzyIntersected = true;
+                //Serial.println("fuzzy intersection has happened***************************");
+                //fuzzyIntersected = true;
+                motors.motorsStop();
+                motors.motorsDrive(FORWARD);
                 delay(500);
                 state = FIRE;
                 break;
@@ -299,12 +377,13 @@ void loop() {
                     break;
             }
 
-            //increment our count
-            lineCount++;
-
             //Stop aiming
             digitalWrite(START_AIMING_PIN, LOW);
             */
+
+            //increment our count
+            lineCount++;
+
             motors.motorsStop();
             delay(2000);
             state = GO_BACK;
@@ -313,8 +392,31 @@ void loop() {
         //Go back to the Main line-----------------------------------------------    
         case GO_BACK:
             Serial.println("go back state!");
-            if(!backParallelLineFollower.intersection(leftLineFollowBits, rightLineFollowBits)) {
+            /*if (rightLineFollowBits == 0 && leftLineFollowBits == 0){
 
+                Serial.println("turn left...lol");
+                Serial.print("leftLineFollowBits == ");
+                Serial.println(leftLineFollowBits);
+                Serial.print("rightLineFollowBits == ");
+                Serial.println(rightLineFollowBits);
+                motors.motorsTurnLeft();
+                break;
+            }
+            else */
+            if (backParallelLineFollower.intersection(leftLineFollowBits, rightLineFollowBits)) {
+
+                Serial.print("leftLineFollowBits == ");
+                Serial.println(leftLineFollowBits);
+                Serial.print("rightLineFollowBits == ");
+                Serial.println(rightLineFollowBits);
+                motors.motorsDrive(BACKWARD);
+                delay(250);         
+                motors.motorsStop();
+                state = TURN_RIGHT_ONTO_MAIN_LINE;
+                break;
+            }
+            else if(!backParallelLineFollower.intersection(leftLineFollowBits, rightLineFollowBits)) {
+                Serial.println("NOT an intersection...fixing");
                 if (backParallelLineFollower.isCentered(leftLineFollowBits, rightLineFollowBits)) {
                     motors.motorsDrive(BACKWARD);
                     break;
@@ -334,12 +436,17 @@ void loop() {
                     break;
                 }   
             }  
-
-            motors.motorsDrive(BACKWARD);
-            delay(250);         
-
-            state = TURN_RIGHT_ONTO_MAIN_LINE;
-            break;
+            else {
+                Serial.print("leftLineFollowBits == ");
+                Serial.println(leftLineFollowBits);
+                Serial.print("rightLineFollowBits == ");
+                Serial.println(rightLineFollowBits);
+                motors.motorsDrive(BACKWARD);
+                delay(250);         
+                motors.motorsStop();
+                state = TURN_RIGHT_ONTO_MAIN_LINE;
+                break;
+            }
         //
         case TURN_RIGHT_ONTO_MAIN_LINE:
             Serial.println("turn right onto main line state");
@@ -362,9 +469,54 @@ void loop() {
             } while (!leftLineFollowBits && !rightLineFollowBits);
             Serial.println("after third do while");
 
-            state = MAIN_LINE;
+            state = BACKUP_ON_MAIN_LINE;
             break;
 
+        case BACKUP_ON_MAIN_LINE:
+        {
+            unsigned long initial_millis = millis();
+            do {
+
+                if (!frontParallelLineFollower.isCentered(leftLineFollowBits, rightLineFollowBits)) {
+                 
+                    if (leftLineFollowBits > rightLineFollowBits) {
+
+                        motors.motorsTurnLeft();
+                    }
+                    if (leftLineFollowBits < rightLineFollowBits) {
+
+                        motors.motorsTurnRight();
+                    }
+                }
+                else {
+
+                    motors.motorsDrive(BACKWARD);
+                }
+
+            } while((initial_millis + FORWARD_ON_MAIN_LINE_WAIT_TIME) > millis());
+
+            initial_millis = millis();
+            do {
+
+                if (!backParallelLineFollower.isCentered(leftLineFollowBits, rightLineFollowBits)) {
+                 
+                    if (leftLineFollowBits > rightLineFollowBits) {
+
+                        motors.motorsTurnLeft();
+                    }
+                    if (leftLineFollowBits < rightLineFollowBits) {
+
+                        motors.motorsTurnRight();
+                    }
+                }
+                else {
+
+                    motors.motorsDrive(BACKWARD);
+                }
+
+            } while((initial_millis + BACKUP_ON_MAIN_LINE_WAIT_TIME) > millis());
+            break;
+        }
         /////////////////////////////////////////////////////////
         //State entered when button pushed while in loop
             //Reset's state to beginning
@@ -384,35 +536,3 @@ void loop() {
     }
     //*/
 }
-
-/*
-void followTheLine(byte leftBits, byte rightBits)
-{
-    short leftPWM = 0;
-    short rightPWM = 0;
-    Turn turnDirection;
-
-    if (leftBits >= rightBits)
-    {
-        Serial.println("going left....");
-        leftPWM = motors.speed / leftBits;
-        rightPWM = motors.speed;
-                motors.motorsTurnLeft();
-    }
-    else if (rightBits > leftBits)
-    {
-        Serial.println("going right....");
-        leftPWM = motors.speed;
-        rightPWM = motors.speed / rightBits;
-                motors.motorsTurnRight();
-    }
-    else
-    {
-        leftPWM = motors.speed;
-        rightPWM = motors.speed;
-                motors.motorsDrive(FORWARD);
-    }
-
-    return;
-}
-*/
