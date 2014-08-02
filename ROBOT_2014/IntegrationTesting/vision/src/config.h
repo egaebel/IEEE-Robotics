@@ -12,15 +12,15 @@
 
 // FYI: hue ranges from 0 to 179 in OpenCV
 #define MIN_HUE			0
-#define LOWER_HUE		0//150
-#define UPPER_HUE		13//160
+#define LOWER_HUE		0//130
+#define UPPER_HUE		15//179
 #define MAX_HUE			179
 // FYI: saturation ranges from 0 to 255 in OpenCV
-#define LOWER_SAT		178//100
-#define UPPER_SAT		242//208
+#define LOWER_SAT		127
+#define UPPER_SAT		255
 // FYI: value ranges from 0 to 255 in OpenCV
-#define LOWER_VAL		165
-#define UPPER_VAL		219
+#define LOWER_VAL		120
+#define UPPER_VAL		185
 
 // hull size filter range
 // one corner of the target at furthest distance and 320x240 is about 180 square pixels
@@ -34,7 +34,7 @@
 
 // edge tuning
 #define ERODE_SIZE		3
-#define DILATE_SIZE		5
+#define DILATE_SIZE		11//5
 #define CANNY_LOW_THRESHOLD	100
 #define CANNY_HIGH_THRESHOLD	200
 #define CANNY_KERNEL_SIZE	3
@@ -45,8 +45,8 @@
 #define CAM_FPS			5
 
 // GPIO pin 50: GPIO1_18 or pin 14 on the P9 header
-#define GPIO_P9_14		50
-#define GPIO_P9_14_DIR	"out"
+#define GPIO_P9_23		49
+#define GPIO_P9_23_DIR	"out"
 
 // GPIO pin 60: GPIO1_28 or pin 12 on the P9 header
 #define GPIO_P9_12		60
@@ -95,7 +95,7 @@
 #define FIRE_THREE_Y		120
 
 // how many frames we should wait after not finding the target at all before returning to initial position
-#define LOCATE_FAIL_THRESHOLD	10
+#define LOCATE_FAIL_THRESHOLD	20
 
 //********************
 // inertia/acceleration and PID control related servo attributes
@@ -132,5 +132,16 @@
 // 20000 + ( fmax( abs( pan_difference ), abs( tilt_difference ) ) * us_per_pixel )
 // frame shots processed per movement unit: (int)ceil( movement_time_us / shot_time_us );
 
-#endif
+#define SHOT_L			333
+#define SHOT_R			300
 
+#define SHOT1_U			330
+#define SHOT1_D			290
+
+#define SHOT2_U         210
+#define SHOT2_D         240
+
+#define SHOT3_U         205
+#define SHOT3_D			235
+
+#endif

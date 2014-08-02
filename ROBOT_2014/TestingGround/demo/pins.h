@@ -44,7 +44,7 @@ static const unsigned short PIN_START = 42;
 
 //Firing Pins----------------------------------------
 // output pin to notify BeagleBone that it should aim using the parameters of the next barrel, either 2 or 3
-const int AIM_NEXT_BARREL_PIN = 0;
+const int START_AIMING_PIN = 43;
 
 // interrupt 0 is on digital pin 2 for Arduino Uno
 const int READY_TO_FIRE_INTERRUPT = 0;
@@ -52,7 +52,7 @@ const int READY_TO_FIRE_PIN = 2;
 
 // Firing Servo Pins
 const int FIRING_SERVO_1_PIN = 13;
-const int FIRING_SERVO_2_PIN = 14;
-const int FIRING_SERVO_3_PIN = 15;
+const int FIRING_SERVO_2_PIN = 12;
+const int FIRING_SERVO_3_PIN = 11;
 
 #endif

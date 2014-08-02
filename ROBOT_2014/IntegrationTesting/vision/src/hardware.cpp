@@ -28,8 +28,11 @@ bool read_hardware_fs( const char* path, char* value, unsigned int length, const
     return false;
   }
   bool failed = false;
-  if ( fread( value, sizeof(char), length, myInputHandle ) != length )
+  int bytesRead = 0;
+  if ( (bytesRead = fread( value, sizeof(char), length, myInputHandle )) != length ) {
     failed = true;
+    printf("failed to read byte from file %s, read %d bytes\n", path, bytesRead);
+  }
   fclose( myInputHandle );
   return !failed;
 }

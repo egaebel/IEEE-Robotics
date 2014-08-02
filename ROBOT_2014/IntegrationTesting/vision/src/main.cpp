@@ -1,4 +1,4 @@
-#include <cstdio>
+	#include <cstdio>
 #include <cmath>
 #include "opencv2/core/core.hpp"
 #include "opencv2/highgui/highgui.hpp"
@@ -17,18 +17,25 @@ int main()
 	int tilt_position = INL_TILT_POSITION;
 	int locate_failures = 0;	
 	int num = 0;
+  int movAmt = 17500;
+  int notFoundCount = 0;
+  int adjAmt = 200000;
+  int up[3] = {SHOT1_U, SHOT2_U, SHOT3_U};
+  int down[3] = {SHOT1_D, SHOT2_D, SHOT3_D};
+  int i=0;
+  char value = '\0';
 	Mat scene;
 
 	//enum {init, fire1, fire2, fire3} mode;
 
 	if( !enable_servo( PAN_SERVO ) || !set_servo_position( PAN_SERVO, INL_PAN_POSITION ) )
-  	{
+	{
     	#ifdef DEBUG
       		printf( "failed to open pan servo\n" );
     	#endif
 
-    	return 1;
-  	}
+  	return 1;
+	}
   	
   	if( !enable_servo( TILT_SERVO ) || !set_servo_position( TILT_SERVO, INL_TILT_POSITION ) )
   	{
@@ -38,16 +45,15 @@ int main()
 
     	return 1;
     }
-    /*if( !GPIOExport( GPIO_P8_31 ) || 
-    	!setGPIODirection( GPIO_P8_31, GPIO_P8_31_DIR ) || 
-    	!setGPIOValue( GPIO_P8_31, "0" ) )
+    if( !GPIOExport( GPIO_P9_23 ) || !setGPIODirection( GPIO_P9_23, GPIO_P9_23_DIR ) || !setGPIOValue( GPIO_P9_23, "0" ) )
   	{
     	#ifdef DEBUG
-      		printf( "failed to open GPIO P8_31 as output\n" );
+      		printf( "failed to open GPIO P9_23 as output\n" );
     	#endif
 
     	return 1;
   	}
+
   	if( !GPIOExport( GPIO_P9_12 ) || !setGPIODirection( GPIO_P9_12, GPIO_P9_12_DIR ) )
   	{
    		#ifdef DEBUG
@@ -55,7 +61,7 @@ int main()
     	#endif
 
     	return 1;
-  	}*/
+  	}
 
   	// open the camera
   	VideoCapture cap(0);
@@ -75,10 +81,11 @@ int main()
 
   	// initialize the camera
   	cap.grab();
-
+printf("yeah...about that while loop....\n");
   	while(1)
   	{
   		cap >> scene;
+              while(getGPIOValue(GPIO_P9_12, &value) && value == '0');
 
   		if( scene.data )
     	{
@@ -87,20 +94,38 @@ int main()
     		if( locateTarget( &scene, &centroid, num ) )
       		{
       			locate_failures = 0;
+            notFoundCount = 0;
 
-      			/*if(centroid.x < 320) //left
-      				pan_position -= 20000;
-      			if(centroid.x > 320) //right
-      				pan_position += 20000;
-      			if(centroid.y < 240) //up
-      				tilt_position += 20000;
-      			if(centroid.y > 240) //down
-      				tilt_position -= 20000;
+            printf("located that fucking target, preparing to fuck it...\n");
+      			printf("x: %d y: %d\n", centroid.x, centroid.y);
+            printf("pan: %d tilt: %d\n", pan_position, tilt_position);
+
+      			if(centroid.x < SHOT_L) //left
+      				pan_position += movAmt;
+      			if(centroid.x > SHOT_R) //right
+      				pan_position -= movAmt;
+      			if(centroid.y < up[i]) //up
+      				tilt_position += movAmt;
+      			if(centroid.y > down[i]) //down
+      				tilt_position -= movAmt;
+
+
+            if((centroid.x < SHOT_L) && (centroid.x > SHOT_R)/* && (centroid.y > up[i]) && (centroid.y < down[i])*/)
+            {
+              printf("firing...");
+              setGPIOValue( GPIO_P9_23, "0" );
+              usleep( 100000 );
+              value = '1';
+printf("hey fucK\n");
+              while(getGPIOValue(GPIO_P9_12, &value) && value == '1');
+              value = '0';
+              i++;
+            }
 
       			set_servo_position( PAN_SERVO, pan_position );
       			set_servo_position( TILT_SERVO, tilt_position );
-      		*/
-      		}
+      		
+      		} 
       		else
       		{
         		locate_failures++;
@@ -114,6 +139,14 @@ int main()
           			set_servo_position( PAN_SERVO, INL_PAN_POSITION );
           			set_servo_position( TILT_SERVO, INL_TILT_POSITION );
           			locate_failures = 0;
+                notFoundCount++;
+
+                if(notFoundCount > 20);
+                {
+                  printf( "Look right you bitch\n");
+		  pan_position = INL_PAN_POSITION - adjAmt;
+                  set_servo_position(PAN_SERVO, pan_position);
+                }
         		}
       		}
   		}
@@ -123,14 +156,16 @@ int main()
         		printf( "failed to capture image\n");
      		#endif
     	}
+
+      num++;
   	}
 
   	// disable all servos
   	usleep( 500000 );
- 	disable_servo( PAN_SERVO );
-	disable_servo( TILT_SERVO );
+ 	  disable_servo( PAN_SERVO );
+	  disable_servo( TILT_SERVO );
 
-	// disconnect the GPIOs
+	  // disconnect the GPIOs
   	//GPIOUnexport( GPIO_P8_31 );
   	//GPIOUnexport( GPIO_P9_12 );
 

@@ -35,7 +35,7 @@ bool getGPIOValue( int gpio_pin, char *getValue )
 {
   char value_handle[64];
   sprintf( value_handle, "/sys/class/gpio/gpio%d/value", gpio_pin );
-  return read_hardware_fs( value_handle, getValue, 1, "ab" );
+  return read_hardware_fs( value_handle, getValue, 1, "r" );
 }
 
 bool GPIOUnexport( int gpio_pin )
