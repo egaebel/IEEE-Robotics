@@ -55,4 +55,6 @@ const int FIRING_SERVO_1_PIN = 13;
 const int FIRING_SERVO_2_PIN = 12;
 const int FIRING_SERVO_3_PIN = 11;
 
+// Wall bumper switch
+const int BUMPER_SWITCH = 41;
 #endif
